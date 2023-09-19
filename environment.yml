@@ -1,0 +1,24 @@
+name: drone-rl
+channels:
+  - pytorch
+  - conda-forge
+  - nvidia
+  - defaults
+dependencies:
+  - ipykernel
+  - gymnasium
+  - numpy
+  - matplotlib
+  - pandas
+  - pip
+  - torchaudio
+  - torchvision
+  - pytorch
+  - pytorch-cuda=11.7
+  - stable-baselines3
+  - spyder-kernels
+  - spyder
+  - opencv
+  - tensorboard
+  - rich
+prefix: C:\Users\napat\anaconda3\envs\drone-rl
