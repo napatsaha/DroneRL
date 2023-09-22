@@ -9,11 +9,11 @@ import os
 
 from envs.mountain_car import MountainCarWrapper
 
-num_reps = 20
+num_reps = 10
 
 # Allows previous folders to be added
-specific_run_name = None
-continue_rep = False
+specific_run_name = "MountainCar_8"
+continue_rep = True
 
 parent_dir = "test1"
 run_name = "MountainCar"
@@ -42,7 +42,7 @@ for rep in range(num_reps):
     rep_path = os.path.join(run_dir, rep_name)
 
     env = gym.make("MountainCar-v0")
-    env = MountainCarWrapper(env, include_velocity=False)
+    # env = MountainCarWrapper(env, include_velocity=False)
     # run_name = "MountainCar_7"
 
     agent = DQN(

@@ -198,10 +198,9 @@ class DQNPolicy:
 
         self.logger.record("rollout/exploration_rate", self.exploration_rate)
 
-        self.logger.record("time/episode", self._episode_num)
+        self.logger.record("time/episodes", self._episode_num)
         self.logger.record("time/time_elapsed", int(time_elapsed), exclude="tensorboard")
         self.logger.record("time/total_timesteps", self.num_timesteps)
-
 
         self.logger.dump(step=self.num_timesteps)
 
