@@ -17,6 +17,8 @@ from gymnasium import spaces
 from collections import deque
 from torch.nn import functional as F
 
+from gymnasium import Space
+
 from stable_baselines3.common.buffers import ReplayBuffer
 from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.base_class import BaseAlgorithm
@@ -43,21 +45,31 @@ class DQNPolicy:
 
     def __init__(
             self, 
-            observation_space,
-            action_space,
-            gamma=0.99, tau=1.0,
-            total_timesteps=10000,
-            target_update_freq: int=10,
-            log_freq: int=4, train_freq: int=4,
+            observation_space: Space,
+            action_space: Space,
+            learning_rate: float = 1e-4,
+            buffer_size: int = 1_000_000,
+            batch_size: int = 100,
+            gamma: float = 0.99,
+            tau: float = 1.0,
+            train_freq: int = 4,
+            gradient_steps: int = -1,
+            total_timesteps: int = 100000,
+            target_update_interval: int = 10,
+            log_interval: int = 4,
             exploration_fraction: float = 0.1,
             exploration_initial_eps: float = 1.0,
             exploration_final_eps: float = 0.05,
             stats_window_size: int = 100,
-            buffer_size=100000, batch_size=100,
-            net_kwargs=None, optim_kwargs=None,
-            log_dir="logs", log_name=None,
-            log_output=["csv","stdout","tensorboard"],
-            reset_num_timesteps: bool = False):
+            max_grad_norm: float = 10.0,
+            net_kwargs=None,
+            optim_kwargs=None,
+            # logger: Optional[Logger] = None,
+            # log_dir="logs",
+            # log_name=None,
+            # log_output=["csv","stdout"],
+            # reset_num_timesteps: bool = False
+    ):
         
         self.name = "DQN"
         
@@ -67,28 +79,35 @@ class DQNPolicy:
         self.replay_buffer_size = buffer_size
         self.batch_size = batch_size
         self.device = get_device("auto")
-        
+
+        self.learning_rate = learning_rate
         self.gamma = gamma
         self.tau = tau
-        self.max_grad_norm = 10
+        self.max_grad_norm = max_grad_norm
+        self.gradient_steps = gradient_steps
         
         self.exploration_rate = 0.0
         self.exploration_schedule = get_linear_fn(
             exploration_initial_eps, 
             exploration_final_eps,
             exploration_fraction)
-        
+
+        self.episode_done = False
         self.num_timesteps = 0
         self.total_timesteps = total_timesteps
-        self.target_update_freq = target_update_freq
-        self.log_freq = log_freq
+        self.target_update_freq = target_update_interval
+        self.log_interval = log_interval
         self.train_freq = train_freq
         self.stats_window_size = stats_window_size
         
         self.net_kwargs = net_kwargs if net_kwargs is not None else {}
         self.optim_kwargs = optim_kwargs if optim_kwargs is not None else {}
 
-        self.logger = self._setup_logger(log_output, log_dir, log_name, reset_num_timesteps)        
+        self.logger = None
+        # if logger is not None:
+        #     self.logger = logger
+        # else:
+        #     self.logger = self._setup_logger(log_output, log_dir, log_name, reset_num_timesteps)
 
         self._build()
         self._setup()
@@ -104,6 +123,7 @@ class DQNPolicy:
         
         self.optimizer = th.optim.Adam(
             self.q_net.parameters(),
+            lr = self.learning_rate,
             **self.optim_kwargs
             )
                 
@@ -111,7 +131,8 @@ class DQNPolicy:
         """Convenient Q Network constructor with device casting."""
         return QNetwork(
             self.observation_space, self.action_space, 
-            **self.net_kwargs).to(self.device)
+            **self.net_kwargs
+        ).to(self.device)
     
     def _update_target_net(self, tau: float=None) -> None:
         """Perform Polyak Update on target Q Network."""
@@ -128,6 +149,7 @@ class DQNPolicy:
         self.start_time = time.time_ns()
 
     def _setup_logger(self, log_output, log_dir, log_name, reset_num_timesteps) -> Logger:
+        """Default logger setup if no logger is passed through."""
         log_name = self.name if log_name is None else log_name
         lastest_id = get_latest_run_id(log_dir, log_name)
         if reset_num_timesteps: 
@@ -138,7 +160,10 @@ class DQNPolicy:
         
         logger = configure(save_path, log_output)
         return logger
-    
+
+    def set_logger(self, logger: Logger):
+        self.logger = logger
+
     def store_transition(self, obs, next_obs, action, reward, done, truncated, info):
         """Store transition into buffer after storing truncated in info"""
         obs = np.array(obs)
@@ -155,7 +180,7 @@ class DQNPolicy:
         
         self.replay_buffer.add(obs, next_obs, action, reward, done, infos)
         
-    def _on_step(self):
+    def step(self):
         """Update necessary values after each step in environment.
         
         Primarily, updates exploration rate, and target Q Network.
@@ -168,7 +193,8 @@ class DQNPolicy:
         if self.num_timesteps == self.total_timesteps:
             self.done = True
 
-        if self.num_timesteps % self.log_freq:
+        # Only record once at the end of episode and when at log_interval intervals
+        if self.episode_done and self._episode_num % self.log_interval == 0:
             self._dump_logs()
 
     def _update_episode_info(self, reward, done):
@@ -180,8 +206,10 @@ class DQNPolicy:
         :return:
         """
         if not done:
+            self.episode_done = done
             self.rewards.append(reward)
         else:
+            self.episode_done = done
             # At end of Episode
             self.ep_rew_buffer.append(sum(self.rewards))
             self.ep_len_buffer.append(len(self.rewards))
@@ -204,6 +232,13 @@ class DQNPolicy:
 
         self.logger.dump(step=self.num_timesteps)
 
+    def setup_learn(self, total_timesteps, log_interval):
+        if self.logger is None:
+            raise Exception("Logger has not been setup yet. Cannot start learning.")
+
+        self.total_timesteps = total_timesteps
+        self.log_interval = log_interval
+
     def predict(self, obs: th.Tensor):
         """
         Make prediction based on epsilon-greedy.
@@ -223,13 +258,14 @@ class DQNPolicy:
             action = self.action_space.sample()
         else:
             with th.no_grad():
-                obs = obs_as_tensor(obs, self.device)
+                obs = obs_as_tensor(np.array(obs), self.device)
                 action = self.q_net.predict(obs)
                 if len(action) == 1:
                     action = action.item()
         return action
     
-    def train(self, gradient_steps: int = -1, batch_size: int = None) -> None:
+    def train(self, gradient_steps: Optional[int] = None,
+              batch_size: int = None) -> None:
         """
         Perform Bellman's Equation update as many times as gradient_steps by
         sampling batch_size samples from the replay buffer.
@@ -247,7 +283,10 @@ class DQNPolicy:
         """
         # Based on:
         # stable_baselines3.dqn.dqn.DQN.train()
-        
+
+        if gradient_steps is None:
+            gradient_steps = self.gradient_steps
+
         if gradient_steps < 0:
             gradient_steps = self.train_freq
         

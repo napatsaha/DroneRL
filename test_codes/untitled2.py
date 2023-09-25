@@ -25,7 +25,7 @@ env = gym.make("MountainCar-v0")
 env = MountainCarWrapper(env)
 # state, _ = env.reset()
 run_name = "MountainCar"
-run_dir = "test1"
+run_dir = "test2"
 
 # agent1 = DQN("MlpPolicy", env=env)
 # agent2 = DQN("MlpPolicy", env=env)
@@ -40,13 +40,26 @@ run_dir = "test1"
 # q_net = QNetwork(env.observation_space, env.action_space)
 # q_net(state)
 
-policy = DQNPolicy(env.observation_space, env.action_space, buffer_size=100000,
-                   total_timesteps=100000, log_output=["csv", "stdout"],
-                   exploration_fraction=0.3, log_name=run_name,
-                   log_dir=f"logs/{run_dir}")
+policy = DQNPolicy(
+    env.observation_space, env.action_space,
+    train_freq=16,
+    gradient_steps=8,
+    batch_size=128,
+    buffer_size=100000,
+    exploration_fraction=0.2,
+    exploration_final_eps=0.07,
+    target_update_interval=600,
+    learning_rate=4e-3,
+    net_kwargs=dict(net_arch=[256,256]),
+    total_timesteps=int(2e5),
+    log_interval=10,
+    log_output=["csv", "stdout"],
+    log_name=run_name,
+    log_dir=f"logs/{run_dir}"
+)
 
 
-train_freq = 4
+
 learning_starts = 10000
 e = 0
 while not policy.done:
@@ -63,7 +76,7 @@ while not policy.done:
         if policy.num_timesteps > learning_starts and policy.num_timesteps % policy.train_freq == 0:
             policy.train()
             
-        policy._on_step()
+        policy.step()
         
         state = nextstate
         n_steps += 1
@@ -75,4 +88,4 @@ env.close()
 if not os.path.exists(os.path.join("model",run_dir)):
     os.mkdir(f"model/{run_dir}")
 
-th.save(policy.q_net.state_dict(), f"model/test1/{policy.run_name}.pt")
+th.save(policy.q_net.state_dict(), f"model/{run_dir}/{policy.run_name}.pt")

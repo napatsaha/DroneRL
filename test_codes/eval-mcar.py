@@ -6,9 +6,10 @@ import gymnasium as gym
 import numpy as np
 import os
 
-run_name = "MountainCar_7"
+run_name = "MountainCar_4"
+dir_name = "test2"
 
-agent = DQN.load(os.path.join("model","test1",run_name))
+agent = DQN.load(os.path.join("model",dir_name,run_name))
 
 env = gym.make("MountainCar-v0", render_mode="human")
 # env = MountainCarWrapper(env)

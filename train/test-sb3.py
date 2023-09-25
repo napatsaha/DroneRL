@@ -9,7 +9,7 @@ Evaluates agent using previously trained model
 
 import yaml, os
 import numpy as np
-from environment import DroneCatch
+from envs.environment import DroneCatch
 from stable_baselines3 import PPO, DQN, SAC, DDPG, TD3, A2C
 from stable_baselines3.common.env_checker import check_env
 
