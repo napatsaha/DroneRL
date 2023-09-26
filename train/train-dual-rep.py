@@ -5,7 +5,7 @@ Repetition framework based on train-mcar-rep.py
 """
 
 from stable_baselines3.dqn import DQN
-from algorithm.agent import DQNAgent
+from algorithm.agent import DualAgent
 
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -14,7 +14,7 @@ import gymnasium as gym
 import numpy as np
 import os
 
-from envs.mountain_car import MountainCarWrapper
+from envs.dual import DualDrone
 
 num_reps = 10
 
@@ -22,8 +22,8 @@ num_reps = 10
 specific_run_name = None
 continue_rep = True if specific_run_name is not None else False
 
-parent_dir = "test2"
-run_name = "MountainCar"
+parent_dir = "dual1"
+run_name = "DualDrone"
 
 if specific_run_name is None and run_name is not None:
     current_id = get_latest_run_id(os.path.join("logs", parent_dir), run_name)
@@ -33,10 +33,12 @@ if specific_run_name is None and run_name is not None:
 else:
     current_dir = specific_run_name
 
-run_dir = os.path.join(parent_dir, current_dir) # "test1/MountainCar_7"
+run_dir = os.path.join(parent_dir, current_dir) # "e.g. test1/MountainCar_7"
 
 # Create new folders
 for path in ["logs", "model"]:
+    if not os.path.exists(os.path.join(path, parent_dir)):
+        os.mkdir(os.path.join(path, parent_dir))
     joint_path = os.path.join(path, run_dir)
     if not os.path.exists(joint_path):
         os.mkdir(joint_path)
@@ -52,11 +54,9 @@ for rep in range(num_reps):
     rep_name = f"{rep_base_name}_{rep_id}"
     rep_path = os.path.join(run_dir, rep_name)
 
-    env = gym.make("MountainCar-v0")
-    # env = MountainCarWrapper(env, include_velocity=False)
-    # run_name = "MountainCar_7"
+    env = DualDrone()
 
-    agent = DQNAgent(
+    agent = DualAgent(
         env,
         train_freq=16,
         gradient_steps=8,
@@ -72,20 +72,23 @@ for rep in range(num_reps):
     )
 
     log_dir = os.path.join("logs", rep_path)
-    print(f"Logging to {log_dir}")
-    logger = configure(
-        log_dir,
-        format_strings=["csv"]
-    )
-    agent.set_logger(logger)
+    # print(f"Logging to {log_dir}")
+    # logger = configure(
+    #     log_dir,
+    #     format_strings=["csv"]
+    # )
+    # agent.set_logger(logger)
+
+    agent.set_logger_by_dir(log_dir, format_strings=['csv'])
 
     agent.learn(
-        total_timesteps=int(2e5),
-        log_interval=10
+        total_timesteps=int(5e4),
+        log_interval=10,
+        progress_bar=True
     )
 
     model_dir = os.path.join("model",run_dir)
-    print(f"Saving model to {model_dir}")
+
     agent.save(model_dir, rep_name)
 
 # n_eval=30

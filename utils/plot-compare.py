@@ -14,7 +14,7 @@ if labels is None or len(labels) != len(runs):
     labels = runs
 for scalar in scalar_names:
     for run, tag in zip(runs, labels):
-        file = os.path.join("logs", run, "progress.csv")
+        file = os.path.join("../test_codes/logs", run, "progress.csv")
 
         progress = pd.read_csv(file)
 

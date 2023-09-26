@@ -36,7 +36,7 @@ bin_width = 2000
 run_df_list = []
 for run in run_names:
     df_list = []
-    for dirpath, dirnames, filenames in os.walk(os.path.join("logs", parent_dir, run)):
+    for dirpath, dirnames, filenames in os.walk(os.path.join("../test_codes/logs", parent_dir, run)):
         if len(dirnames) > 0:
             continue
 

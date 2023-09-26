@@ -12,7 +12,7 @@ scalar_names = ['rollout/ep_len_mean', 'rollout/ep_rew_mean']
 if not isinstance(run_name, list) or len(run_name) < 2:
     if isinstance(run_name, list) and len(run_name) == 1:
         run_name = run_name[0]
-    file = os.path.join("logs", run_dir, run_name, "progress.csv")
+    file = os.path.join("../test_codes/logs", run_dir, run_name, "progress.csv")
 
     progress = pd.read_csv(file)
 
@@ -25,7 +25,7 @@ elif isinstance(run_name, list):
         labels = run_name
     for scalar in scalar_names:
         for run, tag in zip(run_name, labels):
-            file = os.path.join("logs", run_dir, run, "progress.csv")
+            file = os.path.join("../test_codes/logs", run_dir, run, "progress.csv")
 
             progress = pd.read_csv(file)
 

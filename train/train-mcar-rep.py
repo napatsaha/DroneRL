@@ -19,7 +19,7 @@ parent_dir = "test1"
 run_name = "MountainCar"
 
 if specific_run_name is None and run_name is not None:
-    current_id = get_latest_run_id(os.path.join("logs", parent_dir), run_name)
+    current_id = get_latest_run_id(os.path.join("../test_codes/logs", parent_dir), run_name)
     if not continue_rep:
         current_id += 1
     current_dir = f"{run_name}_{current_id}"
@@ -30,14 +30,14 @@ run_dir = os.path.join(parent_dir, current_dir) # "test1/MountainCar_7"
 
 # Create new folders
 if not continue_rep:
-    os.mkdir(os.path.join("logs", run_dir))
+    os.mkdir(os.path.join("../test_codes/logs", run_dir))
     os.mkdir(os.path.join("model", run_dir))
 
 rep_base_name = "DQN"
 
 # Enables continued training in same directory
 for rep in range(num_reps):
-    rep_id = get_latest_run_id(os.path.join("logs", run_dir), rep_base_name) + 1
+    rep_id = get_latest_run_id(os.path.join("../test_codes/logs", run_dir), rep_base_name) + 1
     rep_name = f"{rep_base_name}_{rep_id}"
     rep_path = os.path.join(run_dir, rep_name)
 
@@ -61,7 +61,7 @@ for rep in range(num_reps):
         verbose=1
     )
 
-    log_dir = os.path.join("logs", rep_path)
+    log_dir = os.path.join("../test_codes/logs", rep_path)
     print(f"Logging to {log_dir}")
     logger = configure(
         log_dir,

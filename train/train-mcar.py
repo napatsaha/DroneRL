@@ -28,7 +28,7 @@ agent = DQN(
 )
 
 logger = configure(
-    os.path.join("logs", "test1", run_name),
+    os.path.join("../test_codes/logs", "test1", run_name),
     format_strings=["csv", 'stdout']
 )
 agent.set_logger(logger)
