@@ -149,7 +149,10 @@ class DQNPolicy:
         self.start_time = time.time_ns()
 
     def _setup_logger(self, log_output, log_dir, log_name, reset_num_timesteps) -> Logger:
-        """Default logger setup if no logger is passed through."""
+        """
+        Default logger setup if no logger is passed through.
+        Depreciated for passing explicit logger
+        """
         log_name = self.name if log_name is None else log_name
         lastest_id = get_latest_run_id(log_dir, log_name)
         if reset_num_timesteps: 
@@ -239,7 +242,7 @@ class DQNPolicy:
         self.total_timesteps = total_timesteps
         self.log_interval = log_interval
 
-    def predict(self, obs: th.Tensor):
+    def predict(self, obs: th.Tensor, deterministic: bool = False):
         """
         Make prediction based on epsilon-greedy.
 
@@ -254,7 +257,7 @@ class DQNPolicy:
             Chosen action.
 
         """
-        if np.random.rand() < self.exploration_rate:
+        if not deterministic and np.random.rand() < self.exploration_rate:
             action = self.action_space.sample()
         else:
             with th.no_grad():

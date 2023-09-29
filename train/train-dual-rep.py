@@ -54,7 +54,11 @@ for rep in range(num_reps):
     rep_name = f"{rep_base_name}_{rep_id}"
     rep_path = os.path.join(run_dir, rep_name)
 
-    env = DualDrone()
+    env = DualDrone(
+        reward_mult=10.0,
+        predator_move_speed=3,
+        trunc_limit=300
+    )
 
     agent = DualAgent(
         env,
@@ -67,8 +71,8 @@ for rep in range(num_reps):
         learning_starts=10000,
         buffer_size=100000,
         batch_size=128,
-        learning_rate=4e-3,
-        net_kwargs=dict(net_arch=[256, 256])
+        learning_rate=1e-4,
+        net_kwargs=dict(net_arch=[64, 64])
     )
 
     log_dir = os.path.join("logs", rep_path)
@@ -82,7 +86,7 @@ for rep in range(num_reps):
     agent.set_logger_by_dir(log_dir, format_strings=['csv'])
 
     agent.learn(
-        total_timesteps=int(5e4),
+        total_timesteps=int(2e5),
         log_interval=10,
         progress_bar=True
     )

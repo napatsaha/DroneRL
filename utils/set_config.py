@@ -10,7 +10,7 @@ Useful to update default parameter when environment class is modified.
 """
 
 import yaml, os
-from environment import DroneCatch
+from envs.environment import DroneCatch
 from stable_baselines3 import DQN
 
 # param_list = ['resolution', 'icon_scale', 'prey_move_angle', 'predator_move_speed', 'dist_mult', 'reward_mult', 
@@ -24,10 +24,11 @@ def pull_default_params(object_class):
     dct = {key: val for key, val in zip(param_names, param_defaults)}
     return dct
 
-dct = {"environment": pull_default_params(DroneCatch),
-       "algorithm": "dqn",
-       "learn": {"total_timesteps": 2.0e+5},
-       "model": pull_default_params(DQN)}
+if __name__ == "__main__":
+    dct = {"environment": pull_default_params(DroneCatch),
+           "algorithm": "dqn",
+           "learn": {"total_timesteps": 2.0e+5},
+           "model": pull_default_params(DQN)}
 
-with open(os.path.join("config","default.yaml"), "w") as file:
-    yaml.dump(dct, file)
+    with open(os.path.join("config","default.yaml"), "w") as file:
+        yaml.dump(dct, file)
