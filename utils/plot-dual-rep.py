@@ -19,7 +19,7 @@ def q3(a):
 
 parent_dir = "dual1"
 run_base_name = "DualDrone"
-run_id = 7
+run_id = 11
 agent_names = ["predator", "prey"]
 labels = agent_names
 run_name = f"{run_base_name}_{run_id}"
@@ -47,7 +47,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join("logs", parent_dir, run
 
 for agent in agent_names:
     run_df = pd.concat(df_dict[agent], keys=[*range(1, len(df_dict[agent]) + 1)],
-                       names=["run_id", "row_id"])
+                       names=["run_ids", "row_id"])
     run_df.rename(columns=lambda x: x.split("/")[1], inplace=True)
 
     run_df = run_df.loc[:, [time_units, *scalars]]

@@ -46,7 +46,7 @@ for run in run_names:
         df_list.append(df)
 
     run_df = pd.concat(df_list, keys=[*range(1, len(df_list) + 1)],
-                       names=["run_id", "row_id"])
+                       names=["run_ids", "row_id"])
     run_df.rename(columns = lambda x: x.split("/")[1], inplace=True)
     
     run_df = run_df.loc[:, [time_units, *scalars]]
