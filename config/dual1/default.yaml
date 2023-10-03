@@ -3,8 +3,8 @@ environment:
   frame_delay: 50
   icon_scale: 0.1
   obs_image: false
-  predator_move_speed: 5
-  prey_move_angle: 20
+  predator_move_speed: 2.5
+  prey_move_angle: 5
   radius: 0.8
   random_predator: true
   random_prey: true

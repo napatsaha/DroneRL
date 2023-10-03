@@ -226,12 +226,16 @@ class DualAgent:
     def load(self, dir_path, run_name):
         for name, policy in self.agents.items():
             file = next(filter(lambda x: x.endswith(f"{run_name}_{name}.pt"), os.listdir(dir_path)))
-            print(f"Loading {name} model from {file}")
             file_path = os.path.join(dir_path, file)
+            print(f"Loading {name} model from {file_path}")
             state_dict = th.load(file_path)
             policy.q_net.load_state_dict(state_dict)
 
-    def evaluate(self, num_eps: int = 20, render: bool = True):
+    def evaluate(self, num_eps: int = 20, render: bool = True,
+                 frame_delay: int = 20):
+
+        if render:
+            self.env.set_frame_delay(frame_delay)
 
         for episode in range(num_eps):
             state, _ = self.env.reset()
@@ -245,7 +249,8 @@ class DualAgent:
 
                 nextstate, reward, done, truncated, info = self.env.step(action)
 
-                self.env.render()
+                if render:
+                    self.env.render()
 
                 state = nextstate
 

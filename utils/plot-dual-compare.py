@@ -19,7 +19,7 @@ def q3(a):
 
 parent_dir = "dual1"
 run_base_name = "DualDrone"
-run_ids = [8, 7, 9]
+run_ids = [8,7,9,12]
 changing_var = "predator"
 agent_names = ["predator","prey"]
 save = True
@@ -32,6 +32,11 @@ variable = extract_config(parent_dir=parent_dir, run_name=run_names[0],
 variable = next(filter(lambda x: x.startswith(changing_var), variable.keys()))
 labels = [extract_config(parent_dir=parent_dir, run_name=run,
                           name=["environment", variable]) for run in run_names]
+# Sort again based on ascending values of variable
+run_ids = np.array(run_ids)[np.argsort(labels)]
+run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
+labels = sorted(labels)
+
 # Y-axis
 scalars = ["ep_len_mean", "ep_rew_mean", "loss"]
 # scalars = ["loss"]
@@ -79,8 +84,11 @@ for agent in agent_names:
     df_dict[agent] = combined_df
 
 # Plot
-cmap = mpl.colormaps["Set1"]
-colors = cmap.colors[:len(run_names)]
+# cmap = mpl.colormaps["viridis"]
+# colors = cmap.colors[:len(run_names)]
+cmap = mpl.colormaps.get_cmap("viridis")
+colors = cmap(np.linspace(0,1,num=len(run_names)))
+
 for agent in agent_names:
     for scalar in scalars:
         fig, ax = plt.subplots(figsize=(15, 10))
@@ -91,13 +99,14 @@ for agent in agent_names:
             ax.plot(z.index, z['median'], color=c, label=lab)
         plt.legend(loc="upper left", title=variable)
         plt.xlabel(z.index.name.replace("_", " ").title())
+        plt.ylabel(scalar.replace("_", " ").title())
         plt.title(f"""
-                  {agent}
-                  {scalar.replace('_', ' ').title()}
+        Effect of changing {variable}
+                  Agent: {agent.capitalize()}
                   """)
         if save:
             if not os.path.exists(os.path.join("plot", parent_dir)):
                 os.mkdir(os.path.join("plot", parent_dir))
 
-            plt.savefig(os.path.join("plot", parent_dir, f"{run_name}_{'-'.join(map(str, run_ids))}_{agent}_{scalar.replace('_','-')}"))
+            plt.savefig(os.path.join("plot", parent_dir, f"{variable.replace('_','-')}_{run_base_name}_{'-'.join(map(str, run_ids))}_{agent}_{scalar.replace('_','-')}"))
         plt.show()

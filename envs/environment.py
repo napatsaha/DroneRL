@@ -23,7 +23,7 @@ class DroneCatch(Env):
     
     def __init__(self, obs_image: bool=False,
                  resolution: int=800, icon_scale: float=0.1,
-                 prey_move_angle: int=5, predator_move_speed: int=5, radius: float=0.8,
+                 prey_move_angle: float=5, predator_move_speed: float=5, radius: float=0.8,
                  random_prey: bool=True, random_predator: bool=True,
                  dist_mult: float=0.1, reward_mult: float=1.0,
                  trunc_limit: int=100, frame_delay: int=50,
@@ -382,4 +382,6 @@ class DroneCatch(Env):
     def randomise_prey_position(self):
         angle = np.random.randint(360)
         self.prey.reset_position(angle)
-        
+
+    def set_frame_delay(self, frame_delay):
+        self.frame_delay = frame_delay

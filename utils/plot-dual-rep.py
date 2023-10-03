@@ -23,7 +23,7 @@ run_id = 11
 agent_names = ["predator", "prey"]
 labels = agent_names
 run_name = f"{run_base_name}_{run_id}"
-save = True
+save = False
 
 # Y-axis
 scalars = ["ep_len_mean", "ep_rew_mean", "loss"]
