@@ -11,11 +11,11 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from envs.display import Predator, Prey
+from envs.display import Predator, AngularPrey
 
 class DroneCatch(Env):
     """
-    Predator-Prey Drone gym environment for reinforcement learning.
+    Predator-AngularPrey Drone gym environment for reinforcement learning.
     
     """
     
@@ -25,6 +25,7 @@ class DroneCatch(Env):
                  resolution: int=800, icon_scale: float=0.1,
                  prey_move_angle: float=5, predator_move_speed: float=5, radius: float=0.8,
                  random_prey: bool=True, random_predator: bool=True,
+                 min_distance: float = 0, verbose: int = 0,
                  dist_mult: float=0.1, reward_mult: float=1.0,
                  trunc_limit: int=100, frame_delay: int=50,
                  render_mode: str="human", manual_control: bool=False):
@@ -64,7 +65,8 @@ class DroneCatch(Env):
         super(DroneCatch, self).__init__()
         
         # Build a canvas
-        
+
+        self.verbose = verbose
         self.resolution = resolution if not isinstance(resolution, tuple) else resolution[0]
         self.canvas_shape = np.array((resolution, resolution))
         self.canvas_width = self.canvas_shape[0]
@@ -91,18 +93,26 @@ class DroneCatch(Env):
                 high = np.ones(5),
                 dtype = np.float64)
         
-        # Predator/Prey configurations
+        # Predator/AngularPrey configurations
         self.predator_move_speed = predator_move_speed
         self.prey_move_angle = prey_move_angle
         self.radius = radius
+
+        # Parameters related to spawning
         self.random_prey = random_prey
         self.random_predator = random_predator
-        
-        # Initialises Predator and Prey classes
-        self.prey = Prey(self.canvas_shape, 
-                         angle_delta=prey_move_angle, 
-                         radius=round(self.radius * self.canvas_width/2),
-                         icon_size=(self.icon_size, self.icon_size))
+        if min_distance <= 1:
+            assert min_distance >= 0, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
+            self.min_distance = min_distance
+        else:
+            assert min_distance < resolution, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
+            self.min_distance = float(min_distance) / resolution
+
+        # Initialises Predator and AngularPrey classes
+        self.prey = AngularPrey(self.canvas_shape,
+                                angle_delta=prey_move_angle,
+                                radius=round(self.radius * self.canvas_width/2),
+                                icon_size=(self.icon_size, self.icon_size))
         self.predator = Predator(self.canvas_shape,
                                  icon_size=(self.icon_size, self.icon_size))
         
@@ -138,17 +148,13 @@ class DroneCatch(Env):
         
     def reset(self, seed=None):
         
-        # Reset Positions for Predator and Prey
+        # Reset Positions for Predator and AngularPrey
         for elem in [self.predator, self.prey]:
             elem.reset_position()
-            
-        # Randomise if necessary
-        if self.random_prey:
-            self.randomise_prey_position()
-        if self.random_predator:
-            self.randomise_predator_position() 
 
-            
+        # Randomise if necessary
+        self.reset_position()
+
         # Imprints new positions onto environment canvas
         self.draw_canvas()
         
@@ -157,12 +163,31 @@ class DroneCatch(Env):
         self.trunc_count = 0
         
         return obs, {}
-        
+
+    def reset_position(self):
+
+        # Loop to ensure no overlap between Predator and AngularPrey
+        while True:
+            if self.random_prey:
+                self.randomise_prey_position()
+            if self.random_predator:
+                self.randomise_predator_position()
+
+            distance = self.calculate_distance(normalise=True)
+
+            if not self.detect_collision() and distance > self.min_distance:
+                if self.verbose == 3:
+                    print(f"{distance:.3f}")
+                elif self.verbose == 4:
+                    distance = self.calculate_distance(normalise=False)
+                    print(f"{distance:.1f}")
+                break
+
     def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
         """
         Take an action and transition the environment to the next step.
         
-        Predator moves by the provided action; Prey moves in a constant trajectory 
+        Predator moves by the provided action; AngularPrey moves in a constant trajectory
         around a circle counter-clockwise.
 
         Parameters
@@ -296,7 +321,7 @@ class DroneCatch(Env):
     
     def detect_collision(self) -> bool:
         """
-        Detect whether the Predator and Prey drone are in contact with each other (overlapping).        
+        Detect whether the Predator and AngularPrey drone are in contact with each other (overlapping).
 
         Returns
         -------
@@ -311,7 +336,7 @@ class DroneCatch(Env):
     
     def calculate_distance(self, normalise: bool=False) -> float:
         """
-        Calculate current distance between Predator and Prey.
+        Calculate current distance between Predator and AngularPrey.
 
         Parameters
         ----------
@@ -321,7 +346,7 @@ class DroneCatch(Env):
         Returns
         -------
         float
-            Euclidean Distance between Predator and Prey.
+            Euclidean Distance between Predator and AngularPrey.
 
         """
         scale = np.array(self.canvas_shape) if normalise else 1.0
@@ -370,14 +395,8 @@ class DroneCatch(Env):
             return obs
         
     def randomise_predator_position(self):
-        
-        # Loop to ensure no overlap between Predator and Prey
-        while True:
-            rand_pos = np.random.randint(self.canvas_shape)
-            self.predator.reset_position(*rand_pos)
-            
-            if not self.detect_collision():
-                break
+        rand_pos = np.random.randint(self.canvas_shape)
+        self.predator.reset_position(*rand_pos)
             
     def randomise_prey_position(self):
         angle = np.random.randint(360)

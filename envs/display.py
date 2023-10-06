@@ -7,6 +7,7 @@ Created on Fri Jul 28 12:51:49 2023
 
 import cv2
 import numpy as np
+from gymnasium import spaces
 import matplotlib.pyplot as plt
 
 class Point(object):
@@ -44,13 +45,18 @@ class Point(object):
         
     def clamp(self, n, minn, maxn):
         return max(min(maxn, n), minn)
-    
+
+
 class Predator(Point):
-    def __init__(self, canvas_size, icon_size = (32,32)):
+    def __init__(self, canvas_size,
+                 icon_size = (32,32),
+                 image = "drone2.png"):
         super(Predator, self).__init__(canvas_size, icon_size)
         
-        self.icon = cv2.imread("drone2.png", 0) / 255
+        self.icon = cv2.imread(image, 0) / 255
         self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
+
+        self.action_space = spaces.Discrete(5)
         
         self.reset_position()
 
@@ -75,20 +81,55 @@ class Predator(Point):
         if y is None: y = self.y_max/2
         
         self.set_position(x, y)
-    
-class Prey(Point):
-    def __init__(self, canvas_size, angle_delta, radius, icon_size = (32,32)):
-        super(Prey, self).__init__(canvas_size, icon_size)
-        self.icon = cv2.imread("drone.png", 0) / 255
+
+    def convert_action(self, action):
+        """
+        Converts scalar action into (x,y) directional movement.
+
+        0: (0, 0)
+        1: (0, 1) # Up
+        2: (-1, 0) # left
+        3: (0, -1) # Down
+        4: (1, 0) # Right
+
+        Parameters
+        ----------
+        action : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        x : TYPE
+            DESCRIPTION.
+        y : TYPE
+            DESCRIPTION.
+
+        """
+        if action > 0:
+            x = np.cos(action * np.pi / 2).astype('int')
+            y = np.sin(action * np.pi / 2).astype('int')
+        else:
+            x, y = 0, 0
+        return x, y
+
+
+class AngularPrey(Point):
+    def __init__(self, canvas_size, angle_delta, radius,
+                 icon_size = (32,32),
+                 image = "drone.png"):
+        super(AngularPrey, self).__init__(canvas_size, icon_size)
+        self.icon = cv2.imread(image, 0) / 255
         self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
-        
+
+        self.action_space = spaces.Discrete(3)
+
         self.angle_delta = angle_delta
         self.radius = radius
         self.reset_position()
         
     def reset_position(self, default_angle: int=0):
         """
-        Reset angle of Prey on the circumference. Optionally, an angle can be specified.
+        Reset angle of AngularPrey on the circumference. Optionally, an angle can be specified.
 
         Parameters
         ----------
@@ -114,9 +155,44 @@ class Prey(Point):
         if action is None:
             action = 1
         else:
-            assert 0 <= action <= 2, "Prey Action out of range: Only accept [0, 1, 2]"
+            assert 0 <= action <= 2, "AngularPrey Action out of range: Only accept [0, 1, 2]"
             mapper = {0:0, 1:-1, 2:1}
             action = mapper[action]
             
         self.angle = (self.angle + action * self.angle_delta) % 360
         self.update_position()
+
+
+class CardinalPrey(Predator):
+    def __init__(self, canvas_size, **kwargs):
+        """
+        A version of prey that allows cardinal direction movement instead of
+        in a circle.
+
+        Identical to predator except uses prey drone image, and defaults to
+        spawning in upper left quadrant instead of in the centre.
+
+        """
+        super().__init__(canvas_size, image="drone.png", **kwargs)
+
+    def reset_position(self, x: float = None, y: float = None) -> None:
+        """
+        Reset position of Predator. Optionally, (x,y) coordinates can be specified.
+
+        Parameters
+        ----------
+        x : float, optional
+            DESCRIPTION. The default is None.
+        y : float, optional
+            DESCRIPTION. The default is None.
+
+        Returns
+        -------
+        None
+            DESCRIPTION.
+
+        """
+        if x is None: x = self.x_max / 4
+        if y is None: y = self.y_max / 4
+
+        self.set_position(x, y)

@@ -17,9 +17,9 @@ def q3(a):
     return np.quantile(a, q=0.75)
 
 
-parent_dir = "dual1"
-run_base_name = "DualDrone"
-run_id = 11
+parent_dir = "dual2"
+run_base_name = "DualLateral"
+run_id = 1
 agent_names = ["predator", "prey"]
 labels = agent_names
 run_name = f"{run_base_name}_{run_id}"

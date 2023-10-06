@@ -12,13 +12,14 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from envs.display import Predator, Prey
+from envs.display import Predator, AngularPrey
 from envs.environment import DroneCatch
+from envs.display import CardinalPrey
 
 
 class DualDrone(DroneCatch):
     """
-    DroneCatch environment where both Predator and Prey are able to learn simultaneously.
+    DroneCatch environment where both Predator and AngularPrey are able to learn simultaneously.
     
     Observations and Rewards returned will have an extra dimension:
         [predator, prey]
@@ -43,13 +44,15 @@ class DualDrone(DroneCatch):
         action_prey = action[1]
         action_pred = action[0]
 
-        # Move prey
-        self.prey.move_in_circle(action_prey)
+        self._move_agents(action_prey, action_pred)
 
-        # Move Predator
-        delta = np.array([*self.convert_action(action_pred)]) * \
-                self.move_speed
-        self.predator.move(*delta)
+        # # Move prey
+        # self.prey.move_in_circle(action_prey)
+        #
+        # # Move Predator
+        # delta = np.array([*self.convert_action(action_pred)]) * \
+        #         self.move_speed
+        # self.predator.move(*delta)
 
         # Updates canvas
         self.draw_canvas()
@@ -84,8 +87,47 @@ class DualDrone(DroneCatch):
     def get_observation(self) -> List[np.ndarray]:
         obs = super().get_observation()
         return [obs, obs]
+
+    def _move_agents(self, action_prey, action_pred):
+        # Move prey
+        self.prey.move_in_circle(action_prey)
+
+        # Move Predator
+        delta = np.array([*self.convert_action(action_pred)]) * \
+                self.move_speed
+        self.predator.move(*delta)
         
         
-    
-    
-    
+class DualLateral(DualDrone):
+    """
+    Allows prey to move into cardinal directions instead of circularly.
+    """
+    def __init__(self, prey_move_speed = 5, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        delattr(self, "prey_move_angle")
+        # del self.prey_move_angle
+
+        self.prey_move_speed = prey_move_speed
+        self.action_space = [spaces.Discrete(5) for _ in range(2)]
+
+        self._predator_speed = round(self.predator_move_speed * 0.01 * self.canvas_width)
+        self._prey_speed = round(self.prey_move_speed * 0.01 * self.canvas_width)
+
+        self.prey = CardinalPrey(self.canvas_shape,
+                                 icon_size=(self.icon_size, self.icon_size))
+
+    def _move_agents(self, action_prey, action_pred):
+        # Move prey
+        delta = np.array([*self.convert_action(action_prey)]) * \
+                self._prey_speed
+        self.prey.move(*delta)
+
+        # Move Predator
+        delta = np.array([*self.convert_action(action_pred)]) * \
+                self._predator_speed
+        self.predator.move(*delta)
+
+    def randomise_prey_position(self):
+        rand_pos = np.random.randint(self.canvas_shape)
+        self.prey.reset_position(*rand_pos)

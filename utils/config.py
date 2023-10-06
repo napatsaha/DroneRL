@@ -1,5 +1,5 @@
-import os, yaml
-
+import os, yaml, itertools
+from typing import Dict
 
 def extract_config(path=None,
                    parent_dir=None,
@@ -22,3 +22,39 @@ def extract_config(path=None,
     else:
         return config
 
+
+def update_nested_dict(old_dict: Dict, new_dict: Dict):
+    for key, val in new_dict.items():
+        if isinstance(val, Dict):
+            old_dict[key] = update_nested_dict(old_dict.get(key, {}), val)
+        else:
+            old_dict[key] = new_dict[key]
+    return old_dict
+
+
+def permute_dict(d):
+    key, val = zip(*d.items())
+    return [dict(zip(key, v)) for v in itertools.product(*val)]
+
+def dict_of_list_to_list_of_dict(dct):
+    for key, val in dct.items():
+        if isinstance(val, dict):
+            if any(map(lambda x: isinstance(x, list), val.values())):
+                return permute_dict(val)
+            else:
+                l = dict_of_list_to_list_of_dict(val)
+                return [{key: item} for item in l]
+        elif isinstance(val, list):
+            return [{key: item} for item in val]
+        else:
+            return [dct]
+
+def expand_dict(dct):
+    for key, val in dct.items():
+        if isinstance(val, dict):
+            l = expand_dict(val)
+            return [{key: item} for item in l]
+        elif isinstance(val, list):
+            return [{key: item} for item in val]
+        else:
+            return [dct]

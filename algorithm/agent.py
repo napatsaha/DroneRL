@@ -101,9 +101,11 @@ class DualAgent:
             agent_order: Optional[List[str]] = ("predator", "prey"),
             # num_reps: int = 1,
             learning_starts: int = 50000,
+            verbose: Optional[int] = 0,
             **policy_kwargs
     ):
         # self.num_reps = num_reps
+        self.verbose = verbose
         self.learning_starts = learning_starts
         self.num_timesteps = 0
 
