@@ -17,10 +17,10 @@ def q3(a):
     return np.quantile(a, q=0.75)
 
 
-parent_dir = "dual1"
-run_base_name = "DualDrone"
-run_ids = [8,7,9,12]
-changing_var = "predator"
+parent_dir = "dual2"
+run_base_name = "DualLateral"
+run_ids = [7,8,9,10,11,12]
+changing_var = "prey_move_speed"
 agent_names = ["predator","prey"]
 save = True
 
@@ -86,7 +86,7 @@ for agent in agent_names:
 # Plot
 # cmap = mpl.colormaps["viridis"]
 # colors = cmap.colors[:len(run_names)]
-cmap = mpl.colormaps.get_cmap("viridis")
+cmap = mpl.colormaps.get_cmap("inferno")
 colors = cmap(np.linspace(0,1,num=len(run_names)))
 
 for agent in agent_names:
@@ -101,8 +101,9 @@ for agent in agent_names:
         plt.xlabel(z.index.name.replace("_", " ").title())
         plt.ylabel(scalar.replace("_", " ").title())
         plt.title(f"""
+        {scalar.replace("_"," ").title()}
         Effect of changing {variable}
-                  Agent: {agent.capitalize()}
+        {run_base_name}   Agent: {agent.capitalize()}
                   """)
         if save:
             if not os.path.exists(os.path.join("plot", parent_dir)):

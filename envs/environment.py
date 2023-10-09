@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from envs.display import Predator, AngularPrey
+from envs.display import Predator, AngularPrey, Point
 
 class DroneCatch(Env):
     """
@@ -319,7 +319,7 @@ class DroneCatch(Env):
             x,y = 0,0
         return x,y
     
-    def detect_collision(self) -> bool:
+    def detect_collision(self, object1: Point=None, object2: Point=None) -> bool:
         """
         Detect whether the Predator and AngularPrey drone are in contact with each other (overlapping).
 
@@ -329,12 +329,19 @@ class DroneCatch(Env):
             Collided or not.
 
         """
-        x_collided = np.abs(self.predator.x - self.prey.x) <= (self.predator.icon_w/2 + self.prey.icon_w/2)
-        y_collided = np.abs(self.predator.y - self.prey.y) <= (self.predator.icon_h/2 + self.prey.icon_h/2)
+        if object1 is None:
+            object1 = self.predator
+        if object2 is None:
+            object2 = self.prey
+
+        x_collided = np.abs(object1.x - object2.x) <= (object1.icon_w/2 + object2.icon_w/2)
+        y_collided = np.abs(object1.y - object2.y) <= (object1.icon_h/2 + object2.icon_h/2)
         
         return x_collided & y_collided
     
-    def calculate_distance(self, normalise: bool=False) -> float:
+    def calculate_distance(self,
+                           object1: Point=None, object2: Point=None,
+                           normalise: bool=False) -> float:
         """
         Calculate current distance between Predator and AngularPrey.
 
@@ -349,11 +356,16 @@ class DroneCatch(Env):
             Euclidean Distance between Predator and AngularPrey.
 
         """
+        if object1 is None:
+            object1 = self.predator
+        if object2 is None:
+            object2 = self.prey
+
         scale = np.array(self.canvas_shape) if normalise else 1.0
-        pred_pos = self.predator.get_position() / scale
-        prey_pos = self.prey.get_position() / scale
+        pos1 = object1.get_position() / scale
+        pos2 = object2.get_position() / scale
         
-        dist = np.linalg.norm(pred_pos - prey_pos)
+        dist = np.linalg.norm(pos1 - pos2)
         
         return dist
     

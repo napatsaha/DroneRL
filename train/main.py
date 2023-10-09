@@ -22,10 +22,10 @@ if __name__ == "__main__":
             config_file="config/dual2/default.yaml",
             parent_dir="dual2",
             run_name="DualLateral",
-            num_reps=5,
+            num_reps=10,
             config_overrides=config,
             verbose=1,
-            continue_previous=True
+            continue_previous=False
         )
         print()
     print(datetime.datetime.now())

@@ -36,9 +36,11 @@ class MultiDrone(DroneCatch):
                  num_predators: int = 1,
                  num_preys: int = 1,
                  cardinal_prey: bool = True,
+                 distance_strategy: str = "minimum",
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.distance_strategy = distance_strategy
         self.cardinal_prey = cardinal_prey
         self.num_preys = num_preys
         self.num_predators = num_predators
@@ -47,6 +49,8 @@ class MultiDrone(DroneCatch):
         self.predator = []
         self.action_space = []
         self.observation_space = []
+        self.agent_list = []
+        self.distances = []
 
         num_obs = sum([
             # Coordinates
@@ -74,6 +78,7 @@ class MultiDrone(DroneCatch):
             self.prey.append(agent)
             self.action_space.append(agent.action_space)
             self.observation_space.append(obs_space)
+            self.agent_list.append("prey")
 
         for i in range(self.num_predators):
             agent = Predator(canvas_size=self.canvas_shape,
@@ -81,6 +86,7 @@ class MultiDrone(DroneCatch):
             self.predator.append(agent)
             self.action_space.append(agent.action_space)
             self.observation_space.append(obs_space)
+            self.agent_list.append("predator")
 
         self.agents = [*self.prey, *self.predator]
 
@@ -93,24 +99,16 @@ class MultiDrone(DroneCatch):
         # Updates canvas
         self.draw_canvas()
 
-        # Calculate reward
-        reward = self.calculate_reward()
-        reward_pred = self.dist_mult * self.calculate_reward()
-        reward_prey = self.dist_mult * (- self.calculate_reward())
-
         # Observation before termination
         obs = self.get_observation()
 
-        ## Reset episode if termination conditions met
-        # Check for collision
+        # Check if termination conditions met
         if self.detect_collision():
-            # self.reset()
-            reward_pred = 1.0 * self.reward_mult
-            reward_prey = -1.0 * self.reward_mult
             done = True
             info["is_success"] = True
 
-        reward = [reward_pred, reward_prey]
+        # Calculate reward
+        reward = self.get_reward(done)
 
         # Check if Number of Steps exceed Truncation Limit
         self.trunc_count += 1
@@ -125,7 +123,30 @@ class MultiDrone(DroneCatch):
         obs = super().get_observation()
         return [obs, obs]
 
-    def _move_agents(self, action):
+    def get_reward(self, done):
+        """
+        Get list of reward for each of the agent in the environment.
+        """
+        reward_list = []
+        for i, agent_type in enumerate(self.agent_list):
+            if agent_type == "prey":
+                if done:
+                    sign = -1.0
+                else:
+                    sign = 1.0
+            else:
+                if done:
+                    sign = 1.0
+                else:
+                    sign = -1.0
+            reward = sign * self.calculate_reward(done)
+            reward_list.append(reward)
+        return reward_list
+
+    def _move_agents(self, actions: List[int]) -> None:
+        for agent, action in zip(self.agents, actions):
+            agent.move(action)
+
         # Move prey
         self.prey.move_in_circle(action_prey)
 
@@ -133,5 +154,56 @@ class MultiDrone(DroneCatch):
         delta = np.array([*self.convert_action(action_pred)]) * \
                 self.move_speed
         self.predator.move(*delta)
-        
-        
+
+    def calculate_reward(self, done) -> float:
+        """
+        Calculate current intermediate (non-terminal) reward for the agent.
+
+        """
+        if done:
+            reward = self.reward_mult
+        else:
+            intermediate_reward = self.calculate_distance(normalise=True)
+            reward = self.dist_mult * intermediate_reward
+
+        return reward
+
+    def precalculate_distance(self, normalise: bool = False):
+        for prey in self.prey:
+            for predator in self.predator:
+                dist = super().calculate_distance(prey, predator, normalise=normalise)
+                self.distances.append(dist)
+
+
+    def calculate_distance(self, normalise: bool=False) -> float:
+        if self.distance_strategy == "minimum":
+            return min(self.distances)
+        elif self.distance_strategy == "average":
+            return np.mean(self.distances).item()
+        elif self.distance_strategy == "sum":
+            return sum(self.distances)
+        else:
+            pass
+
+    def get_observation(self) -> np.ndarray:
+        """
+        Obtain observation at current time step.
+
+        Returns
+        -------
+        obs : np.ndarray
+            2D Array if obs_image, else (5,) 1D array.
+
+        """
+        if self.obs_image:
+            obs = self.canvas
+            return obs
+        else:
+            pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
+            prey_pos = self.prey.get_position() / np.array(self.canvas_shape)
+
+            dist = np.linalg.norm(pred_pos - prey_pos)
+
+            obs = np.r_[pred_pos, prey_pos, dist]
+
+            return obs
