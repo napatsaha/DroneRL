@@ -5,6 +5,8 @@ Created on Thu Jul 27 14:52:20 2023
 @author: napat
 """
 
+from typing import List
+
 import gymnasium as gym
 from gymnasium import Env, Space, spaces
 import cv2
@@ -20,10 +22,12 @@ class DroneCatch(Env):
     """
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
+    agents = List[Point]
     
     def __init__(self, obs_image: bool=False,
                  resolution: int=800, icon_scale: float=0.1,
-                 prey_move_angle: float=5, predator_move_speed: float=5, radius: float=0.8,
+                 predator_move_speed: float=5, prey_move_speed: float=5,
+                 prey_move_angle: float=5, radius: float=0.8,
                  random_prey: bool=True, random_predator: bool=True,
                  min_distance: float = 0, verbose: int = 0,
                  dist_mult: float=0.1, reward_mult: float=1.0,
@@ -41,7 +45,7 @@ class DroneCatch(Env):
         icon_scale : float, optional
             Size of both predator and prey icons in relation to screen width/height. The default is 0.1.
         prey_move_angle : int, optional
-            Amount of angles (in degrees) that the prey will move in each timestep (counter-clockwise). The default is 5.
+            Amount of angles (in degrees) that the prey will move_to_position in each timestep (counter-clockwise). The default is 5.
         predator_move_speed : int, optional
             The speed at which the predator moves. The default is 5.
         radius : float, optional
@@ -95,6 +99,8 @@ class DroneCatch(Env):
         
         # Predator/AngularPrey configurations
         self.predator_move_speed = predator_move_speed
+        self.prey_move_speed = prey_move_speed
+        # For non cardinal movement
         self.prey_move_angle = prey_move_angle
         self.radius = radius
 
@@ -115,6 +121,7 @@ class DroneCatch(Env):
                                 icon_size=(self.icon_size, self.icon_size))
         self.predator = Predator(self.canvas_shape,
                                  icon_size=(self.icon_size, self.icon_size))
+        self.agents = [self.prey, self.predator]
         
         # Episode Control variables
         self.trunc_limit = trunc_limit
@@ -149,7 +156,7 @@ class DroneCatch(Env):
     def reset(self, seed=None):
         
         # Reset Positions for Predator and AngularPrey
-        for elem in [self.predator, self.prey]:
+        for elem in self.agents:
             elem.reset_position()
 
         # Randomise if necessary
@@ -168,10 +175,17 @@ class DroneCatch(Env):
 
         # Loop to ensure no overlap between Predator and AngularPrey
         while True:
-            if self.random_prey:
-                self.randomise_prey_position()
-            if self.random_predator:
-                self.randomise_predator_position()
+            for object in self.agents:
+                if object.name == "prey" and self.random_prey:
+                    object.randomise_position()
+                elif object.name == "predator" and self.random_predator:
+                    object.randomise_position()
+                else:
+                    object.reset_position()
+            # if self.random_prey:
+            #     self.randomise_prey_position()
+            # if self.random_predator:
+            #     self.randomise_predator_position()
 
             distance = self.calculate_distance(normalise=True)
 
@@ -193,7 +207,7 @@ class DroneCatch(Env):
         Parameters
         ----------
         action : int
-            Direction to move the Predator (range [0,4]).
+            Direction to move_to_position the Predator (range [0,4]).
 
         Returns
         -------
@@ -219,7 +233,7 @@ class DroneCatch(Env):
         
         # Move Predator
         delta = np.array([*self.convert_action(action)]) * self.move_speed
-        self.predator.move(*delta)
+        self.predator.move_to_position(*delta)
         
         # Updates canvas
         self.draw_canvas()
@@ -285,7 +299,7 @@ class DroneCatch(Env):
         self.canvas = np.ones(self.canvas_shape)
         
         # Draw icons
-        for icon in [self.prey, self.predator]:
+        for icon in self.agents:
             self.canvas = self.draw_icon(
                 self.canvas, icon.icon, icon.x, icon.y)
             

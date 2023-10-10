@@ -13,7 +13,7 @@ from algorithm.policy import DQNPolicy
 from stable_baselines3.common.type_aliases import GymEnv
 from stable_baselines3.common.logger import Logger, configure
 from collections import namedtuple
-from envs.dual import DualDrone
+from envs import DualDrone, MultiDrone
 
 class DQNAgent:
     """
@@ -261,6 +261,14 @@ class DualAgent:
     def _setup_learn(self, total_timesteps, log_interval):
         for policy in self.agents.values():
             policy.setup_learn(total_timesteps, log_interval)
+
+
+class MultiAgent(DualAgent):
+    def __init__(self, env: MultiDrone, *args, **kwargs):
+        super().__init__(env,
+                         agent_order=env.agent_list,
+                         *args, **kwargs)
+
 
 if __name__ == "__main__":
     env = DualDrone()

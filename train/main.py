@@ -6,26 +6,52 @@ Meant to be edited.
 import datetime
 
 from train import train
-from envs.dual import DualLateral
-from algorithm.agent import DualAgent
+from envs import DualLateral, MultiDrone
+from algorithm import DualAgent, MultiAgent
 from utils import extract_config, expand_dict
 
 if __name__ == "__main__":
-    experiment_file = "config/dual2/experiment2.yaml"
-    experiment_list = expand_dict(extract_config(experiment_file))
+    ##########
+    # Training Details
+    parent_dir = "multi1"
+    run_name = "DoublePredator"
+    experiment_file = None
+    config_file = "config/multi1/default.yaml"
+    num_reps = 1
+    verbose = 1
+    continue_run = False
+    ##########
 
-    for config in experiment_list:
+    if experiment_file is not None:
+        experiment_list = expand_dict(extract_config(experiment_file))
+
+        for config in experiment_list:
+            print(datetime.datetime.now())
+            train(
+                MultiAgent,
+                MultiDrone,
+                config_file=config_file,
+                parent_dir=parent_dir,
+                run_name=run_name,
+                num_reps=num_reps,
+                config_overrides=config,
+                verbose=verbose,
+                continue_previous=continue_run
+            )
+            print()
+        print(datetime.datetime.now())
+
+    else:
         print(datetime.datetime.now())
         train(
-            DualAgent,
-            DualLateral,
-            config_file="config/dual2/default.yaml",
-            parent_dir="dual2",
-            run_name="DualLateral",
-            num_reps=10,
-            config_overrides=config,
-            verbose=1,
-            continue_previous=False
+            MultiAgent,
+            MultiDrone,
+            config_file=config_file,
+            parent_dir=parent_dir,
+            run_name=run_name,
+            num_reps=num_reps,
+            verbose=verbose,
+            continue_previous=continue_run
         )
         print()
-    print(datetime.datetime.now())
+        print(datetime.datetime.now())

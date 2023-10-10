@@ -1,0 +1,42 @@
+environment_class: MultiDrone
+environment:
+  dist_mult: 0.1
+  reward_mult: 10.0
+  obs_image: false
+  num_predators: 2
+  num_preys: 1
+  cardinal_prey: true
+  distance_strategy: minimum
+  predator_move_speed: 5
+  prey_move_speed: 10
+  radius: 0.8
+  random_predator: true
+  random_prey: true
+  min_distance: 0.2
+  resolution: 800
+  icon_scale: 0.1
+  frame_delay: 5
+  trunc_limit: 300
+agent_class: MultiAgent
+agent:
+  learning_starts: 10000
+  learning_rate: 0.0001
+  buffer_size: 100000
+  batch_size: 128
+  gamma: 0.99
+  tau: 1.0
+  train_freq: 16
+  gradient_steps: 8
+  target_update_interval: 600
+  exploration_fraction: 0.2
+  exploration_initial_eps: 1.0
+  exploration_final_eps: 0.07
+  stats_window_size: 100
+  max_grad_norm: 10.0
+  net_kwargs:
+    net_arch:
+    - 64
+    - 64
+learn:
+  total_timesteps: 200000
+  log_interval: 10

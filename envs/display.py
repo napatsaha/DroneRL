@@ -4,6 +4,7 @@ Created on Fri Jul 28 12:51:49 2023
 
 @author: napat
 """
+from typing import List
 
 import cv2
 import numpy as np
@@ -11,7 +12,11 @@ from gymnasium import spaces
 import matplotlib.pyplot as plt
 
 class Point(object):
-    def __init__(self, canvas_size, icon_shape = (32,32)):
+
+    icon: np.ndarray
+    name: str
+
+    def __init__(self, canvas_size: List[int], icon_shape = (32,32)):
         
         self.x = 0
         self.y = 0
@@ -30,10 +35,11 @@ class Point(object):
         
         self.clamp_position()
         
-    def get_position(self):
-        return np.array((self.x, self.y))
+    def get_position(self, normalise=False):
+        scale = self.x_max if normalise else 1.0
+        return np.array((self.x, self.y)) / scale
         
-    def move(self, x, y):
+    def move_to_position(self, x, y):
         self.x += x
         self.y += y
         
@@ -49,10 +55,14 @@ class Point(object):
 
 class Predator(Point):
     def __init__(self, canvas_size,
+                 speed: float = 5,
                  icon_size = (32,32),
                  image = "drone2.png"):
         super(Predator, self).__init__(canvas_size, icon_size)
-        
+
+        self.name = "predator"
+        self.speed = speed
+        self.move_speed = round(self.speed * 0.01 * self.canvas_size[0])
         self.icon = cv2.imread(image, 0) / 255
         self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
@@ -112,12 +122,21 @@ class Predator(Point):
             x, y = 0, 0
         return x, y
 
+    def move(self, action):
+        delta = np.array([*self.convert_action(action)]) * \
+                self.move_speed
+        self.move_to_position(*delta)
+
+    def randomise_position(self):
+        rand_pos = np.random.randint(self.canvas_size)
+        self.reset_position(*rand_pos)
 
 class AngularPrey(Point):
     def __init__(self, canvas_size, angle_delta, radius,
                  icon_size = (32,32),
                  image = "drone.png"):
         super(AngularPrey, self).__init__(canvas_size, icon_size)
+        self.name = "prey"
         self.icon = cv2.imread(image, 0) / 255
         self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
@@ -162,6 +181,13 @@ class AngularPrey(Point):
         self.angle = (self.angle + action * self.angle_delta) % 360
         self.update_position()
 
+    def move(self, action):
+        self.move_in_circle(action)
+
+    def randomise_position(self):
+        angle = np.random.randint(360)
+        self.reset_position(angle)
+
 
 class CardinalPrey(Predator):
     def __init__(self, canvas_size, **kwargs):
@@ -174,6 +200,7 @@ class CardinalPrey(Predator):
 
         """
         super().__init__(canvas_size, image="drone.png", **kwargs)
+        self.name = "prey"
 
     def reset_position(self, x: float = None, y: float = None) -> None:
         """

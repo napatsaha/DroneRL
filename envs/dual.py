@@ -52,7 +52,7 @@ class DualDrone(DroneCatch):
         # # Move Predator
         # delta = np.array([*self.convert_action(action_pred)]) * \
         #         self.move_speed
-        # self.predator.move(*delta)
+        # self.predator.move_to_position(*delta)
 
         # Updates canvas
         self.draw_canvas()
@@ -95,13 +95,14 @@ class DualDrone(DroneCatch):
         # Move Predator
         delta = np.array([*self.convert_action(action_pred)]) * \
                 self.move_speed
-        self.predator.move(*delta)
+        self.predator.move_to_position(*delta)
         
         
 class DualLateral(DualDrone):
     """
-    Allows prey to move into cardinal directions instead of circularly.
+    Allows prey to move_to_position into cardinal directions instead of circularly.
     """
+
     def __init__(self, prey_move_speed = 5, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -117,16 +118,18 @@ class DualLateral(DualDrone):
         self.prey = CardinalPrey(self.canvas_shape,
                                  icon_size=(self.icon_size, self.icon_size))
 
+        self.agents = [self.prey, self.predator]
+
     def _move_agents(self, action_prey, action_pred):
         # Move prey
         delta = np.array([*self.convert_action(action_prey)]) * \
                 self._prey_speed
-        self.prey.move(*delta)
+        self.prey.move_to_position(*delta)
 
         # Move Predator
         delta = np.array([*self.convert_action(action_pred)]) * \
                 self._predator_speed
-        self.predator.move(*delta)
+        self.predator.move_to_position(*delta)
 
     def randomise_prey_position(self):
         rand_pos = np.random.randint(self.canvas_shape)

@@ -5,7 +5,7 @@ DroneCatch environment with multiple predators and/or preys.
 All are active agents.
 """
 
-from typing import List
+from typing import List, Any, Optional, Union
 
 import gymnasium as gym
 from gymnasium import Env, Space, spaces
@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from envs.display import Predator, AngularPrey, CardinalPrey
+from envs.display import Predator, AngularPrey, CardinalPrey, Point
 from envs.environment import DroneCatch
 
 
@@ -27,10 +27,11 @@ class MultiDrone(DroneCatch):
     Similarly, actions passed to step() must also have an extra dimension:
         [predator, prey]
     """
+    agents: List[Point]
     observation_space = List[Space]
     action_space = List[Space]
-    prey = List
-    predator = List
+    prey = List[Point]
+    predator = List[Point]
 
     def __init__(self,
                  num_predators: int = 1,
@@ -67,7 +68,8 @@ class MultiDrone(DroneCatch):
             if self.cardinal_prey:
                 agent = CardinalPrey(
                     canvas_size=self.canvas_shape,
-                    icon_size=(self.icon_size, self.icon_size))
+                    icon_size=(self.icon_size, self.icon_size),
+                    speed=self.prey_move_speed)
             else:
                 agent = AngularPrey(
                     self.canvas_shape,
@@ -78,15 +80,16 @@ class MultiDrone(DroneCatch):
             self.prey.append(agent)
             self.action_space.append(agent.action_space)
             self.observation_space.append(obs_space)
-            self.agent_list.append("prey")
+            self.agent_list.append(f"{agent.name}{i+1}")
 
         for i in range(self.num_predators):
             agent = Predator(canvas_size=self.canvas_shape,
-                             icon_size=(self.icon_size, self.icon_size))
+                             icon_size=(self.icon_size, self.icon_size),
+                             speed=self.predator_move_speed)
             self.predator.append(agent)
             self.action_space.append(agent.action_space)
             self.observation_space.append(obs_space)
-            self.agent_list.append("predator")
+            self.agent_list.append(f"{agent.name}{i+1}")
 
         self.agents = [*self.prey, *self.predator]
 
@@ -98,6 +101,8 @@ class MultiDrone(DroneCatch):
 
         # Updates canvas
         self.draw_canvas()
+
+        # self.precalculate_distance(normalise=True)
 
         # Observation before termination
         obs = self.get_observation()
@@ -119,17 +124,17 @@ class MultiDrone(DroneCatch):
 
         return obs, reward, done, truncated, info
 
-    def get_observation(self) -> List[np.ndarray]:
-        obs = super().get_observation()
-        return [obs, obs]
+    def _move_agents(self, actions: List[int]) -> None:
+        for agent, action in zip(self.agents, actions):
+            agent.move(action)
 
-    def get_reward(self, done):
+    def get_reward(self, done: bool = False):
         """
         Get list of reward for each of the agent in the environment.
         """
         reward_list = []
-        for i, agent_type in enumerate(self.agent_list):
-            if agent_type == "prey":
+        for agent in self.agents:
+            if agent.name == "prey":
                 if done:
                     sign = -1.0
                 else:
@@ -139,71 +144,113 @@ class MultiDrone(DroneCatch):
                     sign = 1.0
                 else:
                     sign = -1.0
-            reward = sign * self.calculate_reward(done)
+            reward = sign * self.calculate_each_reward(agent, done)
             reward_list.append(reward)
         return reward_list
 
-    def _move_agents(self, actions: List[int]) -> None:
-        for agent, action in zip(self.agents, actions):
-            agent.move(action)
-
-        # Move prey
-        self.prey.move_in_circle(action_prey)
-
-        # Move Predator
-        delta = np.array([*self.convert_action(action_pred)]) * \
-                self.move_speed
-        self.predator.move(*delta)
-
-    def calculate_reward(self, done) -> float:
+    def calculate_each_reward(self, agent, done: bool = False) -> float:
         """
-        Calculate current intermediate (non-terminal) reward for the agent.
-
+        Calculate individual reward for a specific agent
         """
         if done:
             reward = self.reward_mult
         else:
-            intermediate_reward = self.calculate_distance(normalise=True)
+            intermediate_reward = self.calculate_each_distance(agent, normalise=True)
             reward = self.dist_mult * intermediate_reward
 
         return reward
 
     def precalculate_distance(self, normalise: bool = False):
+        self.distances = []
         for prey in self.prey:
             for predator in self.predator:
                 dist = super().calculate_distance(prey, predator, normalise=normalise)
                 self.distances.append(dist)
 
-
-    def calculate_distance(self, normalise: bool=False) -> float:
-        if self.distance_strategy == "minimum":
-            return min(self.distances)
-        elif self.distance_strategy == "average":
-            return np.mean(self.distances).item()
-        elif self.distance_strategy == "sum":
-            return sum(self.distances)
-        else:
-            pass
-
-    def get_observation(self) -> np.ndarray:
+    def calculate_each_distance(self,
+                                agent: Union[Point, None],
+                                normalise: bool=False, strategy: str = None) -> float:
         """
-        Obtain observation at current time step.
+        Calculate distance for a specific agent, according to one of the following strategies:
+        - minimum: Take the shortest distance between each of the predators and each of the preys
+        - average: Take the mean predator-prey distances.
+        - sum: Take the total of all predator-prey distances.
+        - individual: (Not implemented yet; perhaps some form of distance that is only related to
+            the agent in question)
+
+        Parameters
+        ----------
+        agent
+        normalise
+        strategy
 
         Returns
         -------
-        obs : np.ndarray
-            2D Array if obs_image, else (5,) 1D array.
+        float
 
         """
-        if self.obs_image:
-            obs = self.canvas
-            return obs
+        self.precalculate_distance(normalise)
+
+        if strategy is None:
+            strategy = self.distance_strategy
+
+        if strategy == "minimum":
+            return min(self.distances)
+        elif strategy == "average":
+            return np.mean(self.distances).item()
+        elif strategy == "sum":
+            return sum(self.distances)
+        elif strategy == "individual":
+            raise NotImplementedError()
         else:
-            pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
-            prey_pos = self.prey.get_position() / np.array(self.canvas_shape)
+            pass
 
-            dist = np.linalg.norm(pred_pos - prey_pos)
+    def calculate_distance(self,
+                           object1: Point=None, object2: Point=None,
+                           normalise: bool=False) -> float:
+        """
+        Calculate the minimum distance out of all predator-prey pairs.
 
-            obs = np.r_[pred_pos, prey_pos, dist]
+        Used in reset_position().
 
-            return obs
+        Parameters
+        ----------
+        object1
+        object2
+        normalise
+
+        Returns
+        -------
+        float
+        """
+        return self.calculate_each_distance(agent=None, strategy="minimum",
+                                            normalise=normalise)
+
+    def get_each_observation(self, agent):
+        obs = []
+        for object in self.agents:
+            pos = object.get_position(normalise=True)
+            obs.extend(pos)
+        return np.array(obs)
+
+    def get_observation(self) -> np.ndarray:
+        """
+        """
+        obs = []
+        for object in self.agents:
+            obs.append(self.get_each_observation(object))
+        return np.array(obs)
+
+    def detect_collision(self) -> bool:
+        for prey in self.prey:
+            for predator in self.predator:
+                if super().detect_collision(prey, predator):
+                    return True
+        return False
+
+    def sample_action(self):
+        actions = []
+        for space in self.action_space:
+            actions.append(space.sample())
+        return actions
+
