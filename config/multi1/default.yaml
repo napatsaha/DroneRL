@@ -1,13 +1,14 @@
 environment_class: MultiDrone
 environment:
+  num_predators: 2
+  num_preys: 1
   dist_mult: 0.1
   reward_mult: 10.0
   obs_image: false
-  num_predators: 2
-  num_preys: 1
   cardinal_prey: true
-  distance_strategy: minimum
-  predator_move_speed: 5
+  reward_distance_strategy: individual-minimum
+  observation_distance_strategy: none
+  predator_move_speed: 2
   prey_move_speed: 10
   radius: 0.8
   random_predator: true

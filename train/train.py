@@ -155,6 +155,8 @@ def train(
                 format_strings=log_outputs
             )
             agent.set_logger(logger)
+        else:
+            agent.set_logger_by_dir(log_dir, format_strings=log_outputs)
 
         agent.learn(
             progress_bar=progress_bar,

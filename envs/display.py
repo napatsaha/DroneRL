@@ -53,6 +53,7 @@ class Point(object):
         return max(min(maxn, n), minn)
 
 
+
 class Predator(Point):
     def __init__(self, canvas_size,
                  speed: float = 5,

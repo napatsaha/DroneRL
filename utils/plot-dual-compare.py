@@ -17,12 +17,12 @@ def q3(a):
     return np.quantile(a, q=0.75)
 
 
-parent_dir = "dual2"
-run_base_name = "DualLateral"
-run_ids = [7,8,9,10,11,12]
-changing_var = "prey_move_speed"
-agent_names = ["predator","prey"]
-save = True
+parent_dir = "multi1"
+run_base_name = "DoublePredator"
+run_ids = [2,3]
+changing_var = "reward_distance_strategy"
+agent_names = ["predator1","predator2","prey1"]
+save = False
 
 run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
 
@@ -86,7 +86,7 @@ for agent in agent_names:
 # Plot
 # cmap = mpl.colormaps["viridis"]
 # colors = cmap.colors[:len(run_names)]
-cmap = mpl.colormaps.get_cmap("inferno")
+cmap = mpl.colormaps.get_cmap("Set1")
 colors = cmap(np.linspace(0,1,num=len(run_names)))
 
 for agent in agent_names:

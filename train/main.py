@@ -17,9 +17,10 @@ if __name__ == "__main__":
     run_name = "DoublePredator"
     experiment_file = None
     config_file = "config/multi1/default.yaml"
-    num_reps = 1
+    num_reps = 10
     verbose = 1
     continue_run = False
+    run_id = None
     ##########
 
     if experiment_file is not None:
@@ -36,7 +37,8 @@ if __name__ == "__main__":
                 num_reps=num_reps,
                 config_overrides=config,
                 verbose=verbose,
-                continue_previous=continue_run
+                continue_previous=continue_run,
+                specific_run_id=run_id
             )
             print()
         print(datetime.datetime.now())
@@ -51,7 +53,8 @@ if __name__ == "__main__":
             run_name=run_name,
             num_reps=num_reps,
             verbose=verbose,
-            continue_previous=continue_run
+            continue_previous=continue_run,
+            specific_run_id=run_id
         )
         print()
         print(datetime.datetime.now())

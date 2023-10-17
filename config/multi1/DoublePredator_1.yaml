@@ -1,0 +1,42 @@
+agent:
+  batch_size: 128
+  buffer_size: 100000
+  exploration_final_eps: 0.07
+  exploration_fraction: 0.2
+  exploration_initial_eps: 1.0
+  gamma: 0.99
+  gradient_steps: 8
+  learning_rate: 0.0001
+  learning_starts: 10000
+  max_grad_norm: 10.0
+  net_kwargs:
+    net_arch:
+    - 64
+    - 64
+  stats_window_size: 100
+  target_update_interval: 600
+  tau: 1.0
+  train_freq: 16
+agent_class: MultiAgent
+environment:
+  cardinal_prey: true
+  dist_mult: 0.1
+  distance_strategy: minimum
+  frame_delay: 5
+  icon_scale: 0.1
+  min_distance: 0.2
+  num_predators: 2
+  num_preys: 1
+  obs_image: false
+  predator_move_speed: 5
+  prey_move_speed: 10
+  radius: 0.8
+  random_predator: true
+  random_prey: true
+  resolution: 800
+  reward_mult: 10.0
+  trunc_limit: 300
+environment_class: MultiDrone
+learn:
+  log_interval: 10
+  total_timesteps: 200000

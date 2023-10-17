@@ -10,9 +10,18 @@ import time
 from envs import *
 import numpy as np
 
-env = MultiDrone(num_predators=2, num_preys=2, min_distance=0.2, prey_move_speed=10)
+env = MultiDrone(
+    num_predators=2,
+    num_preys=1,
+    min_distance=0.2,
+    reward_distance_strategy="individual-minimum",
+    observation_distance_strategy="individual-all",
+    prey_move_speed=10)
 
 num_eps = 10
+delay = 10
+
+env.set_frame_delay(delay)
 
 try:
     for i in range(num_eps):
