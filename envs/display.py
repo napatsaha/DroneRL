@@ -52,6 +52,11 @@ class Point(object):
     def clamp(self, n, minn, maxn):
         return max(min(maxn, n), minn)
 
+    def reset_position(self):
+        pass
+
+    def randomise_position(self):
+        pass
 
 
 class Predator(Point):

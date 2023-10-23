@@ -6,12 +6,12 @@ import os, yaml
 from algorithm import DualAgent, MultiAgent
 from envs import DualDrone, DualLateral, MultiDrone
 
-AgentClass = DualAgent
-EnvironmentClass = DualLateral
-parent_dir = "dual2"
-run_base_name = "DualLateral"
-run_id = 10
-rep_name = "DQN_1"
+AgentClass = MultiAgent
+EnvironmentClass = MultiDrone
+parent_dir = "multi1"
+run_base_name = "DoublePredator"
+run_id = 6
+rep_name = "DQN_5"
 
 run_name = f"{run_base_name}_{run_id}"
 config_file = os.path.join("config", parent_dir, f"{run_name}.yaml")

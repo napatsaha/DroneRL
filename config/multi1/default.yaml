@@ -6,8 +6,10 @@ environment:
   reward_mult: 10.0
   obs_image: false
   cardinal_prey: true
-  reward_distance_strategy: individual-minimum
-  observation_distance_strategy: none
+  reward_distance_strategy: global-minimum
+  observation_distance_strategy: individual-all
+  use_relative_position: true
+  include_own_position: true
   predator_move_speed: 2
   prey_move_speed: 10
   radius: 0.8

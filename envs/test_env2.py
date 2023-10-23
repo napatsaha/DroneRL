@@ -16,7 +16,11 @@ env = MultiDrone(
     min_distance=0.2,
     reward_distance_strategy="individual-minimum",
     observation_distance_strategy="individual-all",
-    prey_move_speed=10)
+    use_relative_position=True,
+    include_own_position=False,
+    prey_move_speed=10,
+    verbose=4
+)
 
 num_eps = 10
 delay = 10
