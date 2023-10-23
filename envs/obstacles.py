@@ -85,7 +85,7 @@ class Canvas:
     def close(self):
         cv2.destroyWindow(self.name)
 
-
+# Add collisions
 
 def distance(line: Line, point: Point):
     x0, y0 = point.get_xy()
