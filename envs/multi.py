@@ -10,7 +10,7 @@ import gymnasium as gym
 from gymnasium import Env, Space, spaces
 import numpy as np
 
-from envs.display import Predator, AngularPrey, CardinalPrey, Point
+from envs.display import Predator, AngularPrey, CardinalPrey, Mover
 from envs.environment import DroneCatch
 
 
@@ -29,11 +29,11 @@ class MultiDrone(DroneCatch):
     distances, and aggregation (closest, mean, sum, all) dictates how those distances
     are to be collated.
     """
-    agents: List[Point]
+    agents: List[Mover]
     observation_space = List[Space]
     action_space = List[Space]
-    prey = List[Point]
-    predator = List[Point]
+    prey = List[Mover]
+    predator = List[Mover]
 
     def __init__(self,
                  num_predators: int = 1,
@@ -314,7 +314,7 @@ class MultiDrone(DroneCatch):
             raise Exception("Invalid distance strategy")
 
     # def calculate_distance(self,
-    #                        object1: Point=None, object2: Point=None,
+    #                        object1: Mover=None, object2: Mover=None,
     #                        normalise: bool=False) -> float:
     #     """
     #     Calculate the minimum distance out of all predator-prey pairs.

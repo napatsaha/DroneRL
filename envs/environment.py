@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from envs.display import Predator, AngularPrey, Point
+from envs.display import Predator, AngularPrey, Mover
 
 class DroneCatch(Env):
     """
@@ -22,7 +22,7 @@ class DroneCatch(Env):
     """
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
-    agents = List[Point]
+    agents = List[Mover]
     
     def __init__(self, obs_image: bool=False,
                  resolution: int=800, icon_scale: float=0.1,
@@ -333,7 +333,7 @@ class DroneCatch(Env):
             x,y = 0,0
         return x,y
     
-    def detect_collision(self, object1: Point=None, object2: Point=None) -> bool:
+    def detect_collision(self, object1: Mover=None, object2: Mover=None) -> bool:
         """
         Detect whether the Predator and AngularPrey drone are in contact with each other (overlapping).
 
@@ -354,7 +354,7 @@ class DroneCatch(Env):
         return x_collided & y_collided
     
     def calculate_distance(self,
-                           object1: Point=None, object2: Point=None,
+                           object1: Mover=None, object2: Mover=None,
                            normalise: bool=False) -> float:
         """
         Calculate current distance between Predator and AngularPrey.

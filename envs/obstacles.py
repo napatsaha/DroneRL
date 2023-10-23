@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from skimage import draw
 import cv2
 
-from envs.display import Predator
+# from envs.display import Predator
 
 class Geometry(ABC):
 
@@ -48,15 +48,21 @@ class Circle(Geometry):
         self.center = center
         self.radius = int(radius)
 
+    @classmethod
+    def from_coords(cls, x, y, radius):
+        """Accepts x,y coordinates as separate parameters instead of
+        point objects."""
+        return cls(Point(x,y), radius)
+
     def draw_on(self, canvas):
         xx,yy,val = draw.circle_perimeter_aa(
-            self.x, self.y, self.radius,
+            int(self.x), int(self.y), self.radius,
         shape=canvas.shape)
         canvas[xx,yy] = val
         return canvas
 
     def detect_collision(self, line: Line):
-        d = distance(self.center, line)
+        d = distance(line, Point(self.x, self.y))
         return d <= self.radius
 
 
@@ -81,6 +87,9 @@ class Canvas:
         cartesian = np.transpose(np.flip(self.canvas, 1))
         cv2.imshow(self.name, cartesian)
         cv2.waitKey(frame_delay)
+
+    def clear(self):
+        self.canvas = np.ones((self.height, self.width))
 
     def close(self):
         cv2.destroyWindow(self.name)
@@ -107,11 +116,19 @@ if __name__ == "__main__":
 
     line = Line(Point(0.3*W, 0.8*W), Point(0.7*W, 0.1*W))
     # circle = Circle(Point(0.7*W, 0.9*W), 0.1*W)
+    circle = Circle.from_coords(0.5*W, 0.5*W, 0.1*W)
 
-    circle = BallCollider((W,W))
+    print(circle.detect_collision(line))
+
+    # circle = BallCollider((W,W))
 
     canvas.draw(line)
     canvas.draw(circle)
 
+
+
     canvas.show(0)
+
+
+
     canvas.close()

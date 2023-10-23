@@ -11,23 +11,29 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-class Point(object):
+from .obstacles import Circle, Point
+
+
+class Mover(Circle):
 
     icon: np.ndarray
     name: str
 
     def __init__(self, canvas_size: List[int], icon_shape = (32,32)):
-        
-        self.x = 0
-        self.y = 0
+
+        # self.x = 0
+        # self.y = 0
         self.icon_w = icon_shape[1]
         self.icon_h = icon_shape[0]
+        radius = ((self.icon_h / 2) **2 + (self.icon_w / 2)**2)**0.5
         
         self.canvas_size = canvas_size
         self.x_min = 0
         self.x_max = canvas_size[1]
         self.y_min = 0
         self.y_max = canvas_size[0]
+
+        super().__init__(Point(self.x_max/2, self.y_max/2), radius)
         
     def set_position(self, x, y):
         self.x = x
@@ -59,7 +65,7 @@ class Point(object):
         pass
 
 
-class Predator(Point):
+class Predator(Mover):
     def __init__(self, canvas_size,
                  speed: float = 5,
                  icon_size = (32,32),
@@ -137,7 +143,7 @@ class Predator(Point):
         rand_pos = np.random.randint(self.canvas_size)
         self.reset_position(*rand_pos)
 
-class AngularPrey(Point):
+class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,
                  icon_size = (32,32),
                  image = "drone.png"):
