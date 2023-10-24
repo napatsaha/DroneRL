@@ -19,12 +19,19 @@ class Mover(Circle):
     icon: np.ndarray
     name: str
 
-    def __init__(self, canvas_size: List[int], icon_shape = (32,32)):
+    def __init__(self, canvas_size: List[int], icon_shape = (32,32), image = None):
 
         # self.x = 0
         # self.y = 0
+
         self.icon_w = icon_shape[1]
         self.icon_h = icon_shape[0]
+        if image is not None:
+            self.icon = cv2.imread(image, 0) / 255
+            self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
+        else:
+            self.icon = np.zeros((self.icon_h, self.icon_w))
+
         radius = ((self.icon_h / 2) **2 + (self.icon_w / 2)**2)**0.5
         
         self.canvas_size = canvas_size
@@ -64,19 +71,27 @@ class Mover(Circle):
     def randomise_position(self):
         pass
 
+    def draw_on(self, canvas):
+        shapeX, shapeY = self.icon.shape
+        canvas[
+            round(self.x - 0.5*shapeX):round(self.x + 0.5*shapeX),
+            round(self.y - 0.5*shapeY):round(self.y + 0.5*shapeY)
+               ] = self.icon
+        return canvas
+
 
 class Predator(Mover):
     def __init__(self, canvas_size,
                  speed: float = 5,
                  icon_size = (32,32),
                  image = "drone2.png"):
-        super(Predator, self).__init__(canvas_size, icon_size)
+        super(Predator, self).__init__(canvas_size, icon_size, image=image)
 
         self.name = "predator"
         self.speed = speed
         self.move_speed = round(self.speed * 0.01 * self.canvas_size[0])
-        self.icon = cv2.imread(image, 0) / 255
-        self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
+        # self.icon = cv2.imread(image, 0) / 255
+        # self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
         self.action_space = spaces.Discrete(5)
         
@@ -147,10 +162,10 @@ class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,
                  icon_size = (32,32),
                  image = "drone.png"):
-        super(AngularPrey, self).__init__(canvas_size, icon_size)
+        super(AngularPrey, self).__init__(canvas_size, icon_size, image=image)
         self.name = "prey"
-        self.icon = cv2.imread(image, 0) / 255
-        self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
+        # self.icon = cv2.imread(image, 0) / 255
+        # self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
         self.action_space = spaces.Discrete(3)
 

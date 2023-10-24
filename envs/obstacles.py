@@ -15,9 +15,9 @@ class Geometry(ABC):
 
 class Point(Geometry):
 
-    def __init__(self, x=0, y=0):
-        self.x = int(x)
-        self.y = int(y)
+    def __init__(self, x: float=0, y: float=0):
+        self.x = x
+        self.y = y
 
     def get_xy(self):
         return self.x, self.y
@@ -25,20 +25,53 @@ class Point(Geometry):
     def draw_on(self, canvas):
         pass
 
+    def __str__(self):
+        return "({}, {})".format(self.x, self.y)
+
+    def __repr__(self):
+        return "Point{}".format(str(self))
+
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+
+class AlgebraicLine(Geometry):
+    pass
 
 class Line(Geometry):
 
     def __init__(self, point1: Point, point2: Point):
         self.point1 = point1
         self.point2 = point2
+        self.length = distance_point_to_point(point1, point2)
+        self.slope = slope_between_points(point1, point2)
+        self.intercept = self.point1.y - self.slope * self.point1.x
+        self.angle = np.arctan(self.slope)
+
+    def substitute(self, x=None, y=None):
+        if x is None and y is None:
+            raise Exception("Both x and y cannot be missing.")
+        elif y is None:
+            y = self.slope * x + self.intercept
+            return y
+        elif x is None:
+            x = (y - self.intercept) / self.slope
+            return x
+
+    # def __contains__(self, item: Point):
+    #     if self.point1.x <= item.x <= self.point2.x and \
+    #         self.point1.y
 
     def draw_on(self, canvas):
         xx, yy, val = draw.line_aa(
-            self.point1.x, self.point1.y,
-            self.point2.x, self.point2.y
+            int(self.point1.x), int(self.point1.y),
+            int(self.point2.x), int(self.point2.y)
         )
         canvas[xx, yy] = val
         return canvas
+
+    def __str__(self):
+        return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
 
 
 class Circle(Geometry):
@@ -62,8 +95,31 @@ class Circle(Geometry):
         return canvas
 
     def detect_collision(self, line: Line):
-        d = distance(line, Point(self.x, self.y))
-        return d <= self.radius
+        center = Point(self.x, self.y)
+        # First check if passed line segment ends
+        if any([distance_point_to_point(center, end_point) > line.length for end_point in (line.point1, line.point2)]):
+            return False
+        # Otherwise check if radius is less than distance
+        else:
+            d = distance_line_point(line, center)
+            return d <= self.radius
+
+    def closest_position_to_line(self, line: Line):
+        # Determines whether circle is above or underneath the line
+        sign_y = np.sign(self.y - line.substitute(x=self.x))
+        sign_x = np.sign(self.x - line.substitute(y=self.y))
+
+        # Closest point ON the line
+        P = closest_point_to_line(Point(self.x, self.y), line)
+
+        # Deviation from P to safe point G
+        x = sign_x * self.radius * np.sin(np.abs(line.angle))
+        y = sign_y * self.radius * np.cos(np.abs(line.angle))
+
+        # Add deviation to point P to get G
+        G = P + Point(x,y)
+
+        return G
 
 
 class Canvas:
@@ -86,7 +142,8 @@ class Canvas:
         # Transform [i,j] indexing to (x,y) coordinates
         cartesian = np.transpose(np.flip(self.canvas, 1))
         cv2.imshow(self.name, cartesian)
-        cv2.waitKey(frame_delay)
+        key = cv2.waitKey(frame_delay)
+        return key
 
     def clear(self):
         self.canvas = np.ones((self.height, self.width))
@@ -96,7 +153,7 @@ class Canvas:
 
 # Add collisions
 
-def distance(line: Line, point: Point):
+def distance_line_point(line: Line, point: Point):
     x0, y0 = point.get_xy()
     x1, y1 = line.point1.get_xy()
     x2, y2 = line.point2.get_xy()
@@ -106,6 +163,34 @@ def distance(line: Line, point: Point):
 
     d = numer / denom
     return d
+
+def distance_point_to_line(point: Point, line: Line):
+    return distance_line_point(line, point)
+
+def distance_point_to_point(point1: Point, point2: Point):
+    """Euclidean distance between two points"""
+    x1, y1 = point1.get_xy()
+    x2, y2 = point2.get_xy()
+
+    d = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+    return d
+
+def slope_between_points(point1: Point, point2: Point):
+    return (point2.y - point1.y) / (point2.x - point1.x)
+
+
+def closest_point_to_line(point: Point, line: Line):
+    # Find perpendicular line
+    perpendicular_slope = -1/(line.slope)
+    perpendicular_intercept = point.y - perpendicular_slope * point.x # y=mx+b -> b=y-mx
+
+    # Find intersecting point
+    x = (perpendicular_intercept - line.intercept) / (line.slope - perpendicular_slope)
+        # a1x + b1 = a2x + b2
+        # x = (b2-b1) / (a1-a2)
+    y = line.substitute(x=x)
+
+    return Point(x, y)
 
 
 if __name__ == "__main__":

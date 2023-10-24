@@ -1,13 +1,15 @@
-from envs.obstacles import Circle, Line, Point, Canvas, distance
+from envs.obstacles import Circle, Line, Point, Canvas, distance_line_point
 from envs.display import Predator
 
 W = 500
 canvas = Canvas(W, W)
 
-line = Line(Point(0.3 * W, 0.8 * W), Point(0.7 * W, 0.1 * W))
+line = Line(Point(0.3 * W, 0.6 * W), Point(0.7 * W, 0.2 * W))
 # circle = Circle(Point(0.7*W, 0.9*W), 0.1*W)
 # circle = Circle.from_coords(0.7 * W, 0.9 * W, 0.1 * W)
 agent = Predator([W,W])
+
+# agent.move_to_position(400, 400)
 
 for ep in range(10):
 
@@ -28,7 +30,7 @@ for ep in range(10):
 
         if agent.detect_collision(line):
             print(f"Last action: {agent.convert_action(a)}")
-            canvas.show(0)
+            canvas.show(100)
             break
 
 canvas.close()
