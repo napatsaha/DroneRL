@@ -10,8 +10,8 @@ AgentClass = MultiAgent
 EnvironmentClass = MultiDrone
 parent_dir = "multi1"
 run_base_name = "DoublePredator"
-run_id = 6
-rep_name = "DQN_5"
+run_id = 5
+rep_name = "DQN_1"
 
 run_name = f"{run_base_name}_{run_id}"
 config_file = os.path.join("config", parent_dir, f"{run_name}.yaml")

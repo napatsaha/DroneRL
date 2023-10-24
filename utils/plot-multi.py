@@ -19,7 +19,7 @@ def q3(a):
 
 parent_dir = "multi1"
 run_base_name = "DoublePredator"
-run_id = 2
+run_id = 6
 agent_names = ['prey1', 'predator1', 'predator2']
 labels = agent_names
 run_name = f"{run_base_name}_{run_id}"

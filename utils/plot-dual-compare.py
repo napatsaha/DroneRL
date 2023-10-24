@@ -19,7 +19,7 @@ def q3(a):
 
 parent_dir = "multi1"
 run_base_name = "DoublePredator"
-run_ids = [2,3]
+run_ids = [6,5]
 changing_var = "reward_distance_strategy"
 agent_names = ["predator1","predator2","prey1"]
 save = False
@@ -38,7 +38,7 @@ run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
 labels = sorted(labels)
 
 # Y-axis
-scalars = ["ep_len_mean", "ep_rew_mean", "loss"]
+scalars = ["ep_len_mean", "ep_rew_mean"]
 # scalars = ["loss"]
 
 # X-Axis
