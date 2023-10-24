@@ -16,11 +16,13 @@ while key >=0 and key not in (27,):
 
     G = circle.closest_position_to_line(line)
 
-    circle2 = Circle(G, radius)
+
 
     canvas.draw(line)
     canvas.draw(circle)
-    canvas.draw(circle2)
+    if G is not None:
+        circle2 = Circle(G, radius)
+        canvas.draw(circle2)
 
     key = canvas.show(0)
     print(key)

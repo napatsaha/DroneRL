@@ -43,6 +43,7 @@ class Line(Geometry):
     def __init__(self, point1: Point, point2: Point):
         self.point1 = point1
         self.point2 = point2
+        self.end_points = (self.point1, self.point2)
         self.length = distance_point_to_point(point1, point2)
         self.slope = slope_between_points(point1, point2)
         self.intercept = self.point1.y - self.slope * self.point1.x
@@ -105,12 +106,15 @@ class Circle(Geometry):
             return d <= self.radius
 
     def closest_position_to_line(self, line: Line):
+        if self.is_clear_of_line(line):
+            return None
+
         # Determines whether circle is above or underneath the line
         sign_y = np.sign(self.y - line.substitute(x=self.x))
         sign_x = np.sign(self.x - line.substitute(y=self.y))
 
         # Closest point ON the line
-        P = closest_point_to_line(Point(self.x, self.y), line)
+        P = closest_point_on_line(Point(self.x, self.y), line)
 
         # Deviation from P to safe point G
         x = sign_x * self.radius * np.sin(np.abs(line.angle))
@@ -121,6 +125,13 @@ class Circle(Geometry):
 
         return G
 
+    def is_clear_of_line(self, line: Line):
+        """Check whether circle is in a position where the closest perpendicular point lies
+        outside line segment."""
+        center = Point(self.x, self.y)
+        dist = max(*(distance_point_to_point(center, end) for end in line.end_points))
+        is_clear = (dist + self.radius) >= line.length
+        return is_clear
 
 class Canvas:
 
@@ -179,7 +190,7 @@ def slope_between_points(point1: Point, point2: Point):
     return (point2.y - point1.y) / (point2.x - point1.x)
 
 
-def closest_point_to_line(point: Point, line: Line):
+def closest_point_on_line(point: Point, line: Line):
     # Find perpendicular line
     perpendicular_slope = -1/(line.slope)
     perpendicular_intercept = point.y - perpendicular_slope * point.x # y=mx+b -> b=y-mx
