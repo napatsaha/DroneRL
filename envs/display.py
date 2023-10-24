@@ -11,7 +11,7 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-from .obstacles import Circle, Point
+from .geometry import Circle, Point
 
 
 class Mover(Circle):

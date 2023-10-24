@@ -1,4 +1,13 @@
-from envs.obstacles import Circle, Line, Point, Canvas, distance_line_point
+"""
+Test if circle can detect collision with line.
+
+When collided the screen freezes and waits for input,
+as well as displaying previous action that led to collision.
+
+Also test if drone agent can properly inherit from circle object.
+"""
+
+from envs.geometry import Circle, Line, Point, Canvas, distance_line_point
 from envs.display import Predator
 
 W = 500

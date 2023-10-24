@@ -1,3 +1,7 @@
+"""
+Test drawing lines using skimage draw.line_aa method.
+"""
+
 # import pygame
 #
 # pygame.Rect.colliderect()

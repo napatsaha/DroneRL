@@ -1,3 +1,21 @@
+"""
+Controls geometry elements.
+
+Include geometry classes such as:
+- Point
+- Line
+- Circle
+as well as
+- Canvas - for drawing objects on
+
+Also handles distance calculations, collision detection, and
+closest position for collision prevention between circle and line.
+
+Mover class from display.py which controls Predator and Prey
+inherits from Circle class.
+"""
+
+
 import math
 import numpy as np
 from abc import ABC, abstractmethod
@@ -98,7 +116,8 @@ class Circle(Geometry):
     def detect_collision(self, line: Line):
         center = Point(self.x, self.y)
         # First check if passed line segment ends
-        if any([distance_point_to_point(center, end_point) > line.length for end_point in (line.point1, line.point2)]):
+        # if any([distance_point_to_point(center, end_point) > line.length for end_point in (line.point1, line.point2)]):
+        if self.is_clear_of_line(line):
             return False
         # Otherwise check if radius is less than distance
         else:
@@ -221,10 +240,6 @@ if __name__ == "__main__":
     canvas.draw(line)
     canvas.draw(circle)
 
-
-
     canvas.show(0)
-
-
 
     canvas.close()

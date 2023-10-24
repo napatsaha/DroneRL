@@ -1,4 +1,8 @@
-from envs.obstacles import Point, Line, Circle, Canvas
+"""
+Test if circle can generate closest-circle touching line, with random line positioning
+"""
+
+from envs.geometry import Point, Line, Circle, Canvas
 import numpy as np
 import cv2
 
