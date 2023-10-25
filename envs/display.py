@@ -15,14 +15,29 @@ from .geometry import Circle, Point
 
 
 class Mover(Circle):
+    """
+    A Movable object, used to subclass Predator and Prey.
+
+    Inherited from Circle object for its colliding properties, but
+    the display is a rectangle.
+    """
 
     icon: np.ndarray
     name: str
 
-    def __init__(self, canvas_size: List[int], icon_shape = (32,32), image = None):
+    def __init__(self,
+                 canvas_size: List[int],
+                 icon_shape = (32,32),
+                 image = None,
+                 obstacle_list = None):
 
         # self.x = 0
         # self.y = 0
+
+        if obstacle_list is None:
+            self.obstacle_list = []
+        else:
+            self.obstacle_list = obstacle_list
 
         self.icon_w = icon_shape[1]
         self.icon_h = icon_shape[0]
@@ -32,6 +47,7 @@ class Mover(Circle):
         else:
             self.icon = np.zeros((self.icon_h, self.icon_w))
 
+        # Radius = Distance from center to corner of rectangle
         radius = ((self.icon_h / 2) **2 + (self.icon_w / 2)**2)**0.5
         
         self.canvas_size = canvas_size
@@ -40,7 +56,7 @@ class Mover(Circle):
         self.y_min = 0
         self.y_max = canvas_size[0]
 
-        super().__init__(Point(self.x_max/2, self.y_max/2), radius)
+        super().__init__(self.x_max/2, self.y_max/2, radius)
         
     def set_position(self, x, y):
         self.x = x
@@ -57,6 +73,8 @@ class Mover(Circle):
         self.y += y
         
         self.clamp_position()
+        for obs in self.obstacle_list:
+            super().clamp_position(obs)
         
     def clamp_position(self):
         self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
@@ -84,8 +102,8 @@ class Predator(Mover):
     def __init__(self, canvas_size,
                  speed: float = 5,
                  icon_size = (32,32),
-                 image = "drone2.png"):
-        super(Predator, self).__init__(canvas_size, icon_size, image=image)
+                 image = "drone2.png", **kwargs):
+        super(Predator, self).__init__(canvas_size, icon_size, image=image, **kwargs)
 
         self.name = "predator"
         self.speed = speed
@@ -157,6 +175,7 @@ class Predator(Mover):
     def randomise_position(self):
         rand_pos = np.random.randint(self.canvas_size)
         self.reset_position(*rand_pos)
+
 
 class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,

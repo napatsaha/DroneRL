@@ -17,10 +17,15 @@ inherits from Circle class.
 
 
 import math
+from typing import Union
+
 import numpy as np
 from abc import ABC, abstractmethod
 from skimage import draw
 import cv2
+
+from utils import clamp
+
 
 # from envs.display import Predator
 
@@ -94,21 +99,20 @@ class Line(Geometry):
 
 
 class Circle(Geometry):
-    def __init__(self, center: Point, radius):
-        self.x = center.x
-        self.y = center.y
-        self.center = center
-        self.radius = int(radius)
+    def __init__(self, x: float, y: float, radius: float):
+        self.x = x
+        self.y = y
+        self.radius = radius
 
-    @classmethod
-    def from_coords(cls, x, y, radius):
-        """Accepts x,y coordinates as separate parameters instead of
-        point objects."""
-        return cls(Point(x,y), radius)
+    # @classmethod
+    # def from_coords(cls, x, y, radius):
+    #     """Accepts x,y coordinates as separate parameters instead of
+    #     point objects."""
+    #     return cls(Point(x,y), radius)
 
     def draw_on(self, canvas):
         xx,yy,val = draw.circle_perimeter_aa(
-            int(self.x), int(self.y), self.radius,
+            int(self.x), int(self.y), int(self.radius),
         shape=canvas.shape)
         canvas[xx,yy] = val
         return canvas
@@ -124,13 +128,29 @@ class Circle(Geometry):
             d = distance_line_point(line, center)
             return d <= self.radius
 
-    def closest_position_to_line(self, line: Line):
+    def direction_from(self, line: Line):
+        """
+        Return (x, y) unit vector telling the direction of this object is in relation
+        to another object (e.g. a line).
+
+        For example, if this circle is below and right of a line, this method will return
+        (+1.0, -1.0).
+        """
+        sign_y = np.sign(self.y - line.substitute(x=self.x))
+        sign_x = np.sign(self.x - line.substitute(y=self.y))
+
+        return sign_x, sign_y
+
+    def closest_position_to_line(self, line: Line) -> Union[Point, None]:
+        """
+        Returns the point closest to where the circle can safely touch the line without overlapping.
+
+        """
         if self.is_clear_of_line(line):
             return None
 
         # Determines whether circle is above or underneath the line
-        sign_y = np.sign(self.y - line.substitute(x=self.x))
-        sign_x = np.sign(self.x - line.substitute(y=self.y))
+        sign_x, sign_y = self.direction_from(line)
 
         # Closest point ON the line
         P = closest_point_on_line(Point(self.x, self.y), line)
@@ -149,8 +169,25 @@ class Circle(Geometry):
         outside line segment."""
         center = Point(self.x, self.y)
         dist = max(*(distance_point_to_point(center, end) for end in line.end_points))
-        is_clear = (dist + self.radius) >= line.length
+        is_clear = (dist) >= (line.length + self.radius)
         return is_clear
+
+    def clamp_position(self, obstacle: Line):
+        """Clamps position of circle with an obstable (line), to prevent
+        passing through obstacle when moving."""
+        G = self.closest_position_to_line(obstacle)
+
+        if G is None:
+            return
+        else:
+            sign_x, sign_y = self.direction_from(obstacle)
+
+            clamp_x = min if sign_x < 0 else max
+            clamp_y = min if sign_y < 0 else max
+
+            self.x = clamp_x(self.x, G.x)
+            self.y = clamp_y(self.y, G.y)
+
 
 class Canvas:
 
@@ -168,11 +205,14 @@ class Canvas:
     def draw(self, obj: Geometry):
         self.canvas = obj.draw_on(self.canvas)
 
-    def show(self, frame_delay: int=0):
+    def show(self, frame_delay: int=0, manual=False):
         # Transform [i,j] indexing to (x,y) coordinates
         cartesian = np.transpose(np.flip(self.canvas, 1))
         cv2.imshow(self.name, cartesian)
-        key = cv2.waitKey(frame_delay)
+        if manual:
+            key = cv2.waitKeyEx(0)
+        else:
+            key = cv2.waitKey(frame_delay)
         return key
 
     def clear(self):
