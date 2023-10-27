@@ -10,7 +10,7 @@ Repeat same configurations many times.
 
 import yaml, os
 # import numpy as np
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 from stable_baselines3 import PPO, DQN, SAC, DDPG, TD3, A2C
 from stable_baselines3.common.env_checker import check_env
 

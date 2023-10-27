@@ -13,7 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from envs.display import Predator, AngularPrey
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 from envs.display import CardinalPrey
 
 

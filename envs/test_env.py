@@ -10,7 +10,7 @@ Used for testing environment.
 """
 
 import time
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 import matplotlib.pyplot as plt
 
 manual = False

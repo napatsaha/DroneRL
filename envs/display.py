@@ -4,14 +4,14 @@ Created on Fri Jul 28 12:51:49 2023
 
 @author: napat
 """
-from typing import List
+from typing import List, Union
 
 import cv2
 import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-from .geometry import Circle, Point
+from .geometry import Circle, Point, Line
 
 
 class Mover(Circle):
@@ -71,12 +71,31 @@ class Mover(Circle):
     def move_to_position(self, x, y):
         self.x += x
         self.y += y
-        
+
         self.clamp_position()
-        for obs in self.obstacle_list:
-            super().clamp_position(obs)
+
+    def clamp_position_by_obstacle(self, obstacle: Line):
+        """Clamps position of circle with an obstable (line), to prevent
+        passing through obstacle when moving."""
+        G = self.closest_position_to_line(obstacle)
+
+        if G is None:
+            return
+        else:
+            sign_x, sign_y = self.direction_from(obstacle)
+
+            clamp_x = min if sign_x < 0 else max
+            clamp_y = min if sign_y < 0 else max
+
+            self.x = clamp_x(self.x, G.x)
+            self.y = clamp_y(self.y, G.y)
         
     def clamp_position(self):
+        # Clamp by obstacle
+        for obs in self.obstacle_list:
+            self.clamp_position_by_obstacle(obs)
+
+        # Clamp by canvas edge
         self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
         self.y = self.clamp(self.y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
         
@@ -88,6 +107,12 @@ class Mover(Circle):
 
     def randomise_position(self):
         pass
+
+    def add_obstacle(self, obstacle: Union[list, Line]):
+        if isinstance(obstacle, list):
+            self.obstacle_list.extend(obstacle)
+        else:
+            self.obstacle_list.append(obstacle)
 
     def draw_on(self, canvas):
         shapeX, shapeY = self.icon.shape
@@ -118,19 +143,6 @@ class Predator(Mover):
     def reset_position(self, x: float=None, y: float=None) -> None:
         """
         Reset position of Predator. Optionally, (x,y) coordinates can be specified.
-
-        Parameters
-        ----------
-        x : float, optional
-            DESCRIPTION. The default is None.
-        y : float, optional
-            DESCRIPTION. The default is None.
-
-        Returns
-        -------
-        None
-            DESCRIPTION.
-
         """
         if x is None: x = self.x_max/2
         if y is None: y = self.y_max/2
@@ -176,6 +188,8 @@ class Predator(Mover):
         rand_pos = np.random.randint(self.canvas_size)
         self.reset_position(*rand_pos)
 
+    def sample_action(self) -> int:
+        return self.action_space.sample()
 
 class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,
@@ -234,6 +248,9 @@ class AngularPrey(Mover):
         angle = np.random.randint(360)
         self.reset_position(angle)
 
+    def sample_action(self) -> int:
+        return self.action_space.sample()
+
 
 class CardinalPrey(Predator):
     def __init__(self, canvas_size, **kwargs):
@@ -251,19 +268,6 @@ class CardinalPrey(Predator):
     def reset_position(self, x: float = None, y: float = None) -> None:
         """
         Reset position of Predator. Optionally, (x,y) coordinates can be specified.
-
-        Parameters
-        ----------
-        x : float, optional
-            DESCRIPTION. The default is None.
-        y : float, optional
-            DESCRIPTION. The default is None.
-
-        Returns
-        -------
-        None
-            DESCRIPTION.
-
         """
         if x is None: x = self.x_max / 4
         if y is None: y = self.y_max / 4

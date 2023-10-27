@@ -11,7 +11,7 @@ from gymnasium import Env, Space, spaces
 import numpy as np
 
 from envs.display import Predator, AngularPrey, CardinalPrey, Mover
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 
 
 class MultiDrone(DroneCatch):

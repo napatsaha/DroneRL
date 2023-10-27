@@ -6,7 +6,7 @@ Created on Mon Aug 21 12:53:05 2023
 """
 
 import time
-from environment import DroneCatch
+from environment_v0 import DroneCatch
 import matplotlib.pyplot as plt
 
 angle = 5

@@ -10,7 +10,7 @@ Useful to update default parameter when environment class is modified.
 """
 
 import yaml, os
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 from stable_baselines3 import DQN
 
 # param_list = ['resolution', 'icon_scale', 'prey_move_angle', 'predator_move_speed', 'dist_mult', 'reward_mult', 

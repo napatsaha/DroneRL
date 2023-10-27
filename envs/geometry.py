@@ -172,21 +172,7 @@ class Circle(Geometry):
         is_clear = (dist) >= (line.length + self.radius)
         return is_clear
 
-    def clamp_position(self, obstacle: Line):
-        """Clamps position of circle with an obstable (line), to prevent
-        passing through obstacle when moving."""
-        G = self.closest_position_to_line(obstacle)
 
-        if G is None:
-            return
-        else:
-            sign_x, sign_y = self.direction_from(obstacle)
-
-            clamp_x = min if sign_x < 0 else max
-            clamp_y = min if sign_y < 0 else max
-
-            self.x = clamp_x(self.x, G.x)
-            self.y = clamp_y(self.y, G.y)
 
 
 class Canvas:

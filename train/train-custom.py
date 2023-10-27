@@ -9,7 +9,7 @@ import os
 import torch as th
 import numpy as np
 import gymnasium as gym
-from envs.environment import DroneCatch
+from envs.environment_v0 import DroneCatch
 from stable_baselines3 import DQN
 from stable_baselines3.common.buffers import ReplayBuffer
 from stable_baselines3.common.logger import CSVOutputFormat, configure
