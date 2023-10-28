@@ -86,6 +86,17 @@ class Line(Geometry):
     #     if self.point1.x <= item.x <= self.point2.x and \
     #         self.point1.y
 
+    def __contains__(self, point: Point):
+        """
+        Checks if a point lies in this line segment.
+        """
+        # First check if the point algebraically lies on the line
+        lies_on_line = np.abs(point.y - self.substitute(x=point.x)) <= np.finfo(np.float32).eps
+        # Then check if the point is within the same (x,y) range as the line segment
+        inside_x = min(self.point1.x, self.point2.x) <= point.x <= max(self.point1.x, self.point2.x)
+        inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
+        return lies_on_line and (inside_x and inside_y)
+
     def draw_on(self, canvas):
         xx, yy, val = draw.line_aa(
             int(self.point1.x), int(self.point1.y),
@@ -96,6 +107,12 @@ class Line(Geometry):
 
     def __str__(self):
         return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
+
+    def __repr__(self):
+        if self.point1.x <= self.point2.x:
+            return f"Line({self.point1}, {self.point2})"
+        else:
+            return f"Line({self.point2}, {self.point1})"
 
 
 class Circle(Geometry):
@@ -167,11 +184,26 @@ class Circle(Geometry):
     def is_clear_of_line(self, line: Line):
         """Check whether circle is in a position where the closest perpendicular point lies
         outside line segment."""
-        center = Point(self.x, self.y)
-        dist = max(*(distance_point_to_point(center, end) for end in line.end_points))
-        is_clear = (dist) >= (line.length + self.radius)
-        return is_clear
 
+        center = Point(self.x, self.y)
+        P = closest_point_on_line(center, line)
+        return P not in line
+
+        # # Previous implementation
+        # center = Point(self.x, self.y)
+        # dist = max(*(distance_point_to_point(center, end) for end in line.end_points))
+        # is_clear = (dist) >= (line.length + self.radius)
+        # return is_clear
+
+    def distance_to_line(self, line: Line) -> float:
+        """
+        Closest distance to specified line, taking into account lines that are clear of sight,
+        by returning Inf instead.
+        """
+        if self.is_clear_of_line(line):
+            return np.Inf
+        else:
+            return distance_point_to_line(Point(self.x, self.y), line)
 
 
 
@@ -247,6 +279,16 @@ def closest_point_on_line(point: Point, line: Line):
     y = line.substitute(x=x)
 
     return Point(x, y)
+
+
+def generate_random_line(canvas_shape: tuple[int, int], seed=None) -> Line:
+    width = canvas_shape[1]
+    height = canvas_shape[0]
+    np.random.seed(seed)
+    p1 = Point(np.random.randint(width), np.random.randint(height))
+    p2 = Point(np.random.randint(width), np.random.randint(height))
+    line = Line(p1, p2)
+    return line
 
 
 if __name__ == "__main__":

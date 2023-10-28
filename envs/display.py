@@ -92,8 +92,16 @@ class Mover(Circle):
         
     def clamp_position(self):
         # Clamp by obstacle
-        for obs in self.obstacle_list:
-            self.clamp_position_by_obstacle(obs)
+        if len(self.obstacle_list) > 0:
+            # Find nearest in-sight obstacle
+            dist_list = [self.distance_to_line(obs) for obs in self.obstacle_list]
+            idx = np.argmin(dist_list)
+            obstacle = self.obstacle_list[idx]
+            # Clamp only to nearest effective obstacle
+            self.clamp_position_by_obstacle(obstacle)
+
+        # for obs in self.obstacle_list:
+        #     self.clamp_position_by_obstacle(obs)
 
         # Clamp by canvas edge
         self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
