@@ -58,8 +58,81 @@ class Point(Geometry):
         return Point(self.x + other.x, self.y + other.y)
 
 
-class AlgebraicLine(Geometry):
-    pass
+class InfLine(Geometry):
+    """
+    Infinite line defined algebraically by ax + by + c = 0
+
+    Contains methods such as:
+    - substitute(x or y)
+    - intersect
+    - closest point on line
+    - closesst object
+    """
+    def __init__(self, a, b, c):
+        """
+        ax + by + c = 0
+        """
+        self.c = c
+        self.b = b
+        self.a = a
+
+        try:
+            self.slope = - self.a / self.b
+        except ZeroDivisionError:
+            self.slope = np.nan
+
+        try:
+            self.intercept = - self.c / self.b
+        except ZeroDivisionError:
+            self.intercept = np.nan
+
+    @classmethod
+    def from_slope(cls, slope: float, point: Point):
+        x1, y1 = point.get_xy()
+        a = slope
+        b = -1
+        c = y1 - slope * x1
+
+        return cls(a, b, c)
+
+    def get_coefs(self) -> tuple[float, float, float]:
+        return self.a, self.b, self.c
+
+    def substitute(self, x=None, y=None):
+        try:
+            if x is None and y is None:
+                raise Exception("Both x and y cannot be missing.")
+            elif y is None:
+                y = - (self.a * x + self.c) / self.b
+                return y
+            elif x is None:
+                x = - (self.b * y + self.c) / self.a
+                return x
+        except ZeroDivisionError:
+            return np.nan
+
+    def intersect(self, other: 'InfLine') -> Point:
+        """
+        Return an intersection point between two lines.
+        """
+        # Line equations ax + by + c = 0
+        a1, b1, c1 = self.get_coefs()
+        a2, b2, c2 = other.get_coefs()
+
+        # Using homogeneous coordinates (a,b,c)
+        c = a1 * b2 - a2 * b1
+        a = (b1 * c2 - b2 * c1)
+        b = (a2 * c1 - a1 * c2)
+
+        # (x,y) = (a/c, b/c)
+        x = a/c
+        y = b/c
+
+        return Point(x, y)
+
+    def draw_on(self, canvas):
+        pass
+
 
 class Line(Geometry):
 
@@ -97,7 +170,7 @@ class Line(Geometry):
         inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
         return lies_on_line and (inside_x and inside_y)
 
-    def draw_on(self, canvas):
+    def draw_on(self, canvas: np.ndarray):
         xx, yy, val = draw.line_aa(
             int(self.point1.x), int(self.point1.y),
             int(self.point2.x), int(self.point2.y)
