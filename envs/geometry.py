@@ -17,7 +17,7 @@ inherits from Circle class.
 
 
 import math
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -32,7 +32,7 @@ from utils import clamp
 class Geometry(ABC):
 
     @abstractmethod
-    def draw_on(self, canvas):
+    def draw_on(self, canvas: 'Canvas'):
         ...
 
 
@@ -214,6 +214,16 @@ class Ray(InfLine):
         else:
             return None
 
+    def draw_on(self, canvas: 'Canvas'):
+        end = Point()
+        for bound in canvas.boundaries:
+            p = self.intersect(bound)
+            if p:
+                end = p
+                break
+        segment = Line(self.origin, end)
+        return segment.draw_on(canvas)
+
     def _is_in_same_quadrant(self, point: Point):
         expected_quadrant = np.array(quadrant(self.angle))
         actual_quadrant = np.sign((point - self.origin).get_xy())
@@ -274,13 +284,15 @@ class Line(InfLine):
         check = value_check & range_check
         return check
 
-    def draw_on(self, canvas: np.ndarray):
-        xx, yy, val = draw.line_aa(
+    def draw_on(self, canvas: 'Canvas'):
+        xx, yy = draw.line(
             int(self.point1.x), int(self.point1.y),
             int(self.point2.x), int(self.point2.y)
         )
-        canvas[xx, yy] = val
-        return canvas
+        np.clip(xx, canvas.xmin, canvas.width - 1, out=xx)
+        np.clip(yy, canvas.ymin, canvas.height - 1, out=yy)
+        canvas.canvas[xx, yy] = 0
+        return canvas.canvas
 
     # def __str__(self):
     #     return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
@@ -304,12 +316,13 @@ class Circle(Geometry):
     #     point objects."""
     #     return cls(Point(x,y), radius)
 
-    def draw_on(self, canvas):
+    def draw_on(self, canvas: 'Canvas'):
         xx,yy,val = draw.circle_perimeter_aa(
             int(self.x), int(self.y), int(self.radius),
-        shape=canvas.shape)
-        canvas[xx,yy] = val
-        return canvas
+        shape=canvas.canvas.shape)
+
+        canvas.canvas[xx,yy] = val
+        return canvas.canvas
 
     def detect_collision(self, line: Line):
         center = Point(self.x, self.y)
@@ -383,8 +396,9 @@ class Circle(Geometry):
             return distance_point_to_line(Point(self.x, self.y), line)
 
 
-
 class Canvas:
+
+    boundaries: list[Line]
 
     def __init__(self, width: int, height: int = None,
                  name: str = "environment"):
@@ -393,12 +407,28 @@ class Canvas:
 
         self.width = width
         self.height = height
+        self.xmin = 0
+        self.ymin = 0
 
         self.canvas = np.ones((self.height, self.width))
         self.name = name
 
-    def draw(self, obj: Geometry):
-        self.canvas = obj.draw_on(self.canvas)
+        self._create_boundaries()
+
+    def _create_boundaries(self):
+        self.boundaries = []
+        corners = [Point(0,0), Point(0, self.height), Point(self.width, self.height), Point(self.width, 0)]
+        lagged  = corners[1:] + [corners[0]]
+        for p1, p2 in zip(corners, lagged):
+            bound = Line(p1, p2)
+            self.boundaries.append(bound)
+
+    def draw(self, obj: Union[Geometry, List[Geometry]]):
+        if isinstance(obj, List):
+            for item in obj:
+                self.canvas = item.draw_on(self)
+        else:
+            self.canvas = obj.draw_on(self)
 
     def show(self, frame_delay: int=0, manual=False):
         # Transform [i,j] indexing to (x,y) coordinates

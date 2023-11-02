@@ -1,3 +1,6 @@
+"""
+Miscellaneous writing space for now.
+"""
 from envs.geometry import Point, InfLine, Ray, quadrant, Line
 import numpy as np
 

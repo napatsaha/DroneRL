@@ -1,8 +1,11 @@
 """
 Ray, InfLine, Line and intersections
+
+Test rays in a radial alignment from Point (0,0) to see if they intersect only
+with line segments that crosses only each line.
 """
 
-from envs.geometry import Point, InfLine, Ray, quadrant, Line
+from envs.geometry import Point, InfLine, Ray, quadrant, Line, Canvas
 import numpy as np
 
 # ray1 = Ray(np.pi/4, Point(0,0)) # y = x
@@ -10,19 +13,31 @@ import numpy as np
 # ray3 = Ray(np.pi * 3/2, Point(0,0)) # x = 0 down
 # ray4 = Ray(0, Point(0,0)) # y = 0
 
-rays = [Ray(i * np.pi/4, Point(0,0)) for i in range(8)]
+W = 800
+canvas = Canvas(W, W)
+
+origin = Point(W/2,W/2)
+
+rays = [Ray(i * np.pi/4, origin) for i in range(8)]
 
 # obs1 = InfLine.from_slope(-1, Point(0,5)) # y=-x+5
 # obs2 = InfLine.from_slope(-1, Point(0,-5)) # y = -x-5
-line1 = Line(Point(5,1), Point(5,-1))
-line2 = Line(Point(-1,5), Point(1,5))
-line3 = Line(Point(-5,1), Point(-5,-1))
-line4 = Line(Point(-1,-5), Point(1,-5))
 
-lineq1 = Line(Point(2,5), Point(5,2))
-lineq2 = Line(Point(-2,5), Point(-5,2))
-lineq3 = Line(Point(-2,-5), Point(-5,-2))
-lineq4 = Line(Point(2,-5), Point(5,-2))
+a = W/2.5
+b = W/10
+c = W/5
+
+# Axis parallel lines
+line1 = Line(Point(a,b) + origin, Point(a,-b) + origin)
+line2 = Line(Point(-b,a) + origin, Point(b,a) + origin)
+line3 = Line(Point(-a,b) + origin, Point(-a,-b) + origin)
+line4 = Line(Point(-b,-a) + origin, Point(b,-a) + origin)
+
+# Diagonal lines
+lineq1 = Line(Point(c,a) + origin, Point(a,c) + origin)
+lineq2 = Line(Point(-c,a) + origin, Point(-a,c) + origin)
+lineq3 = Line(Point(-c,-a) + origin, Point(-a,-c) + origin)
+lineq4 = Line(Point(c,-a) + origin, Point(a,-c) + origin)
 
 lines = [
     line1, lineq1,
@@ -38,6 +53,12 @@ for line in lines:
         point = ray.intersect(line)
         print(f"{str(point).ljust(15)}", end="\t")
     print(end="\n")
+
+canvas.clear()
+canvas.draw(lines)
+canvas.draw(rays)
+canvas.show()
+canvas.close()
 
 # [ray.intersect(line1) for ray in rays]
 # [ray.intersect(line2) for ray in rays]

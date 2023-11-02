@@ -1,3 +1,7 @@
+"""
+Test manual controlling of predator through an instantiated environment.
+Test navigation of agent around obstacles.
+"""
 from envs.environment_v1 import DroneCatch
 
 
