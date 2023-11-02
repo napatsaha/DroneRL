@@ -49,13 +49,16 @@ class Point(Geometry):
         pass
 
     def __str__(self):
-        return "({}, {})".format(self.x, self.y)
+        return "({}, {})".format(round(self.x, 2), round(self.y, 2))
 
     def __repr__(self):
         return "Point{}".format(str(self))
 
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Point(self.x - other.x, self.y - other.y)
 
 
 class InfLine(Geometry):
@@ -65,9 +68,10 @@ class InfLine(Geometry):
     Contains methods such as:
     - substitute(x or y)
     - intersect
-    - closest point on line
-    - closesst object
+    - closest point on a line
+    - closest object
     """
+
     def __init__(self, a, b, c):
         """
         ax + by + c = 0
@@ -88,12 +92,21 @@ class InfLine(Geometry):
 
     @classmethod
     def from_slope(cls, slope: float, point: Point):
-        x1, y1 = point.get_xy()
-        a = slope
-        b = -1
-        c = y1 - slope * x1
+        # x1, y1 = point.get_xy()
+        # a = slope
+        # b = -1
+        # c = y1 - slope * x1
+        a, b, c = cls._convert_slope(slope, point)
 
         return cls(a, b, c)
+
+    @classmethod
+    def from_angle(cls, angle: float, point: Point):
+        """
+        Create an infinite line from an angle in radians, and a point.
+        """
+        slope = np.tan(angle)
+        return cls.from_slope(slope, point)
 
     def get_coefs(self) -> tuple[float, float, float]:
         return self.a, self.b, self.c
@@ -124,6 +137,9 @@ class InfLine(Geometry):
         a = (b1 * c2 - b2 * c1)
         b = (a2 * c1 - a1 * c2)
 
+        if c == 0:
+            return None
+
         # (x,y) = (a/c, b/c)
         x = a/c
         y = b/c
@@ -133,27 +149,112 @@ class InfLine(Geometry):
     def draw_on(self, canvas):
         pass
 
+    @classmethod
+    def _convert_slope(self, slope: float, point: Point) -> tuple:
+        """
+        Convert a slope and a point into (a,b,c) coefficients in the form
+        ax + by + c = 0
+        """
+        x1, y1 = point.get_xy()
 
-class Line(Geometry):
+        if np.abs(slope) < 1e-8:
+            # Slope = 0 ->
+            # Horizontal line ( y = -c)
+            a = 0
+            b = -1
+            c = y1
+        elif np.abs(slope) > 1e+8:
+            # Slope -> Inf
+            # Vertical line (x = -c/a)
+            a = 1
+            b = 0
+            c = -x1
+        else:
+            a = slope
+            b = -1
+            c = y1 - slope * x1
+
+        return a,b,c
+
+    def __contains__(self, point: Point):
+        value_check_x = np.abs(point.y - self.substitute(x=point.x)) <= np.finfo(np.float32).eps
+        value_check_y = np.abs(point.x - self.substitute(y=point.y)) <= np.finfo(np.float32).eps
+        value_check = value_check_x or value_check_y
+        return value_check
+
+    def __str__(self):
+        if self.a == 0:
+            return f"y = {-self.c / self.b}"
+        elif self.b == 0:
+            return f"x = {-self.c / self.a}"
+        else:
+            return f"{self.a}x + {self.b}y + {self.c} = 0"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.a}, {self.b}, {self.c})"
+
+
+class Ray(InfLine):
+    """
+    A line which has one starting point but extends into infinity.
+    """
+    def __init__(self, angle: float, origin: Point):
+        slope = np.tan(angle)
+        a, b, c = super()._convert_slope(slope, origin)
+
+        super().__init__(a, b, c)
+        self.origin = origin
+        self.angle = angle
+
+    def intersect(self, other: Union['Ray', 'InfLine', 'Line']) -> Union[Point, None]:
+        P = super().intersect(other)
+
+        if P is not None and P in self and P in other:
+            return P
+        else:
+            return None
+
+    def _is_in_same_quadrant(self, point: Point):
+        expected_quadrant = np.array(quadrant(self.angle))
+        actual_quadrant = np.sign((point - self.origin).get_xy())
+        return np.all(expected_quadrant == actual_quadrant)
+
+    def __contains__(self, point: Point):
+        range_check = self._is_in_same_quadrant(point)
+        value_check = super().__contains__(point)
+        check = range_check & value_check
+        return check
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.angle}, {self.origin})"
+
+    def __str__(self):
+        return f"{super().__str__()} at {self.origin}, {np.rad2deg(self.angle):.0f} degrees"
+
+
+class Line(InfLine):
 
     def __init__(self, point1: Point, point2: Point):
         self.point1 = point1
         self.point2 = point2
         self.end_points = (self.point1, self.point2)
         self.length = distance_point_to_point(point1, point2)
-        self.slope = slope_between_points(point1, point2)
-        self.intercept = self.point1.y - self.slope * self.point1.x
+        slope = slope_between_points(point1, point2)
+
+        a, b, c = super()._convert_slope(slope, point1)
+        super().__init__(a,b,c)
+        # self.intercept = self.point1.y - self.slope * self.point1.x
         self.angle = np.arctan(self.slope)
 
-    def substitute(self, x=None, y=None):
-        if x is None and y is None:
-            raise Exception("Both x and y cannot be missing.")
-        elif y is None:
-            y = self.slope * x + self.intercept
-            return y
-        elif x is None:
-            x = (y - self.intercept) / self.slope
-            return x
+    # def substitute(self, x=None, y=None):
+    #     if x is None and y is None:
+    #         raise Exception("Both x and y cannot be missing.")
+    #     elif y is None:
+    #         y = self.slope * x + self.intercept
+    #         return y
+    #     elif x is None:
+    #         x = (y - self.intercept) / self.slope
+    #         return x
 
     # def __contains__(self, item: Point):
     #     if self.point1.x <= item.x <= self.point2.x and \
@@ -164,11 +265,14 @@ class Line(Geometry):
         Checks if a point lies in this line segment.
         """
         # First check if the point algebraically lies on the line
-        lies_on_line = np.abs(point.y - self.substitute(x=point.x)) <= np.finfo(np.float32).eps
+        # lies_on_line = np.abs(point.y - self.substitute(x=point.x)) <= np.finfo(np.float32).eps
+        value_check = super().__contains__(point)
         # Then check if the point is within the same (x,y) range as the line segment
         inside_x = min(self.point1.x, self.point2.x) <= point.x <= max(self.point1.x, self.point2.x)
         inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
-        return lies_on_line and (inside_x and inside_y)
+        range_check = inside_x and inside_y
+        check = value_check & range_check
+        return check
 
     def draw_on(self, canvas: np.ndarray):
         xx, yy, val = draw.line_aa(
@@ -178,8 +282,8 @@ class Line(Geometry):
         canvas[xx, yy] = val
         return canvas
 
-    def __str__(self):
-        return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
+    # def __str__(self):
+    #     return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
 
     def __repr__(self):
         if self.point1.x <= self.point2.x:
@@ -337,8 +441,12 @@ def distance_point_to_point(point1: Point, point2: Point):
     return d
 
 def slope_between_points(point1: Point, point2: Point):
-    return (point2.y - point1.y) / (point2.x - point1.x)
-
+    delta_x = point2.x - point1.x
+    delta_y = point2.y - point1.y
+    try:
+        return delta_y / delta_x
+    except ZeroDivisionError:
+        return np.Inf
 
 def closest_point_on_line(point: Point, line: Line):
     # Find perpendicular line
@@ -362,6 +470,15 @@ def generate_random_line(canvas_shape: tuple[int, int], seed=None) -> Line:
     p2 = Point(np.random.randint(width), np.random.randint(height))
     line = Line(p1, p2)
     return line
+
+
+def quadrant(angle) -> tuple:
+    """
+    Return the (x,y) sign of the angle (radians), showing which quadrant the angle is in.
+    """
+    x = np.sign(round(np.cos(angle)))
+    y = np.sign(round(np.sin(angle)))
+    return x, y
 
 
 if __name__ == "__main__":
