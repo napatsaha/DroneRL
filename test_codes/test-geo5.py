@@ -1,15 +1,15 @@
 """
-Test __contains__ of Line class
+Test __contains__ of LineSegment class
 """
 
-from envs.geometry import Circle, Line, Point, Canvas, generate_random_line, closest_point_on_line
+from envs.geometry import Circle, LineSegment, Point, Canvas, generate_random_line, closest_point_on_line
 import numpy as np
 import matplotlib.pyplot as plt
 
 W = 100
 canvas = np.empty((W,W), dtype=np.int8)
 
-# line = Line(Point(1,1), Point(7,7))
+# line = LineSegment(Point(1,1), Point(7,7))
 line = generate_random_line((W/10,W/10))
 
 for i in range(W):

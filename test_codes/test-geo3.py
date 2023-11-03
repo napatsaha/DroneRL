@@ -2,7 +2,7 @@
 Test if circle can generate closest-circle touching line, with random line positioning
 """
 
-from envs.geometry import Point, Line, Circle, Canvas
+from envs.geometry import Point, LineSegment, Circle, Canvas
 import numpy as np
 import cv2
 
@@ -15,7 +15,7 @@ key = 0
 while key >=0 and key not in (27,):
 
     canvas.clear()
-    line = Line(*(Point(*np.random.randint(W, size=2)) for _ in range(2)))
+    line = LineSegment(*(Point(*np.random.randint(W, size=2)) for _ in range(2)))
     circle = Circle(Point(*np.random.randint(W, size=2)), radius)
 
     G = circle.closest_position_to_line(line)

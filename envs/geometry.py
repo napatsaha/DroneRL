@@ -3,7 +3,7 @@ Controls geometry elements.
 
 Include geometry classes such as:
 - Point
-- Line
+- LineSegment
 - Circle
 as well as
 - Canvas - for drawing objects on
@@ -17,7 +17,7 @@ inherits from Circle class.
 
 
 import math
-from typing import Union, List
+from typing import Union, List, Optional
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -116,10 +116,20 @@ class InfLine(Geometry):
             if x is None and y is None:
                 raise Exception("Both x and y cannot be missing.")
             elif y is None:
-                y = - (self.a * x + self.c) / self.b
+                if self.a == 0:
+                    return - self.c / self.b
+                elif self.b == 0:
+                    return np.nan
+                else:
+                    y = - (self.a * x + self.c) / self.b
                 return y
             elif x is None:
-                x = - (self.b * y + self.c) / self.a
+                if self.a == 0:
+                    return np.nan
+                elif self.b == 0:
+                    return - self.c / self.a
+                else:
+                    x = - (self.b * y + self.c) / self.a
                 return x
         except ZeroDivisionError:
             return np.nan
@@ -206,7 +216,23 @@ class Ray(InfLine):
         self.origin = origin
         self.angle = angle
 
-    def intersect(self, other: Union['Ray', 'InfLine', 'Line']) -> Union[Point, None]:
+    def raycast(self, object_list: List[Geometry]) -> Optional[float]:
+        """
+        Perform a raycasting of a ray to a list of obstacles (lines) and return the distance
+        to the nearest obstacle that intersects with the ray.
+        """
+        distances = []
+        for obj in object_list:
+            P = self.intersect(obj)
+            if P:  # If intersect
+                dist = distance_point_to_point(self.origin, P)
+                distances.append(dist)
+        if len(distances) > 0:
+            return min(distances)
+        else:
+            return None
+
+    def intersect(self, other: Union['Ray', 'InfLine', 'LineSegment']) -> Union[Point, None]:
         P = super().intersect(other)
 
         if P is not None and P in self and P in other:
@@ -221,12 +247,13 @@ class Ray(InfLine):
             if p:
                 end = p
                 break
-        segment = Line(self.origin, end)
+        segment = LineSegment(self.origin, end)
         return segment.draw_on(canvas)
 
     def _is_in_same_quadrant(self, point: Point):
         expected_quadrant = np.array(quadrant(self.angle))
-        actual_quadrant = np.sign((point - self.origin).get_xy())
+        actual_quadrant = np.sign(np.round((point - self.origin).get_xy(), 3))
+            # Needs rounding to prevent floating imprecision
         return np.all(expected_quadrant == actual_quadrant)
 
     def __contains__(self, point: Point):
@@ -242,7 +269,7 @@ class Ray(InfLine):
         return f"{super().__str__()} at {self.origin}, {np.rad2deg(self.angle):.0f} degrees"
 
 
-class Line(InfLine):
+class LineSegment(InfLine):
 
     def __init__(self, point1: Point, point2: Point):
         self.point1 = point1
@@ -299,9 +326,9 @@ class Line(InfLine):
 
     def __repr__(self):
         if self.point1.x <= self.point2.x:
-            return f"Line({self.point1}, {self.point2})"
+            return f"LineSegment({self.point1}, {self.point2})"
         else:
-            return f"Line({self.point2}, {self.point1})"
+            return f"LineSegment({self.point2}, {self.point1})"
 
 
 class Circle(Geometry):
@@ -324,7 +351,29 @@ class Circle(Geometry):
         canvas.canvas[xx,yy] = val
         return canvas.canvas
 
-    def detect_collision(self, line: Line):
+    def radial_raycast(self, obj_list: List[Geometry], canvas: 'Canvas', num_rays: Optional[int] = 8) -> List[float]:
+        """
+        Perform a series of raycasting measurements in a counterclockwise loop around the circle center.
+        Requires a list of obstacles (lines) and a canvas (for the boundaries), as well as an optional
+        control over the number of radial splits.
+        Returns a list of distances
+        """
+        center = Point(self.x, self.y)
+        rays = create_radial_rays(origin=center, num_splits=num_rays)
+
+        crossed_dist = []
+        for ray in rays:
+            # crossed_lines = []
+            distance = ray.raycast(obj_list)
+
+            if distance is None:
+                distance = ray.raycast(canvas.boundaries)
+
+            crossed_dist.append(distance)
+
+        return crossed_dist
+
+    def detect_collision(self, line: LineSegment):
         center = Point(self.x, self.y)
         # First check if passed line segment ends
         # if any([distance_point_to_point(center, end_point) > line.length for end_point in (line.point1, line.point2)]):
@@ -335,7 +384,7 @@ class Circle(Geometry):
             d = distance_line_point(line, center)
             return d <= self.radius
 
-    def direction_from(self, line: Line):
+    def direction_from(self, line: LineSegment):
         """
         Return (x, y) unit vector telling the direction of this object is in relation
         to another object (e.g. a line).
@@ -348,7 +397,7 @@ class Circle(Geometry):
 
         return sign_x, sign_y
 
-    def closest_position_to_line(self, line: Line) -> Union[Point, None]:
+    def closest_position_to_line(self, line: LineSegment) -> Union[Point, None]:
         """
         Returns the point closest to where the circle can safely touch the line without overlapping.
 
@@ -371,7 +420,7 @@ class Circle(Geometry):
 
         return G
 
-    def is_clear_of_line(self, line: Line):
+    def is_clear_of_line(self, line: LineSegment):
         """Check whether circle is in a position where the closest perpendicular point lies
         outside line segment."""
 
@@ -385,7 +434,7 @@ class Circle(Geometry):
         # is_clear = (dist) >= (line.length + self.radius)
         # return is_clear
 
-    def distance_to_line(self, line: Line) -> float:
+    def distance_to_line(self, line: LineSegment) -> float:
         """
         Closest distance to specified line, taking into account lines that are clear of sight,
         by returning Inf instead.
@@ -397,8 +446,11 @@ class Circle(Geometry):
 
 
 class Canvas:
+    """
+    Canvas for drawing objects using openCV
+    """
 
-    boundaries: list[Line]
+    boundaries: list[LineSegment]
 
     def __init__(self, width: int, height: int = None,
                  name: str = "environment"):
@@ -411,6 +463,7 @@ class Canvas:
         self.ymin = 0
 
         self.canvas = np.ones((self.height, self.width))
+        self.shape = self.canvas.shape
         self.name = name
 
         self._create_boundaries()
@@ -420,7 +473,7 @@ class Canvas:
         corners = [Point(0,0), Point(0, self.height), Point(self.width, self.height), Point(self.width, 0)]
         lagged  = corners[1:] + [corners[0]]
         for p1, p2 in zip(corners, lagged):
-            bound = Line(p1, p2)
+            bound = LineSegment(p1, p2)
             self.boundaries.append(bound)
 
     def draw(self, obj: Union[Geometry, List[Geometry]]):
@@ -448,7 +501,7 @@ class Canvas:
 
 # Add collisions
 
-def distance_line_point(line: Line, point: Point):
+def distance_line_point(line: LineSegment, point: Point):
     x0, y0 = point.get_xy()
     x1, y1 = line.point1.get_xy()
     x2, y2 = line.point2.get_xy()
@@ -459,8 +512,10 @@ def distance_line_point(line: Line, point: Point):
     d = numer / denom
     return d
 
-def distance_point_to_line(point: Point, line: Line):
+
+def distance_point_to_line(point: Point, line: LineSegment):
     return distance_line_point(line, point)
+
 
 def distance_point_to_point(point1: Point, point2: Point):
     """Euclidean distance between two points"""
@@ -470,6 +525,7 @@ def distance_point_to_point(point1: Point, point2: Point):
     d = math.sqrt((x2-x1)**2 + (y2-y1)**2)
     return d
 
+
 def slope_between_points(point1: Point, point2: Point):
     delta_x = point2.x - point1.x
     delta_y = point2.y - point1.y
@@ -478,7 +534,8 @@ def slope_between_points(point1: Point, point2: Point):
     except ZeroDivisionError:
         return np.Inf
 
-def closest_point_on_line(point: Point, line: Line):
+
+def closest_point_on_line(point: Point, line: LineSegment):
     # Find perpendicular line
     perpendicular_slope = -1/(line.slope)
     perpendicular_intercept = point.y - perpendicular_slope * point.x # y=mx+b -> b=y-mx
@@ -492,13 +549,13 @@ def closest_point_on_line(point: Point, line: Line):
     return Point(x, y)
 
 
-def generate_random_line(canvas_shape: tuple[int, int], seed=None) -> Line:
+def generate_random_line(canvas_shape: tuple[int, int], seed=None) -> LineSegment:
     width = canvas_shape[1]
     height = canvas_shape[0]
     np.random.seed(seed)
     p1 = Point(np.random.randint(width), np.random.randint(height))
     p2 = Point(np.random.randint(width), np.random.randint(height))
-    line = Line(p1, p2)
+    line = LineSegment(p1, p2)
     return line
 
 
@@ -511,13 +568,23 @@ def quadrant(angle) -> tuple:
     return x, y
 
 
+def create_radial_rays(origin: Point, num_splits: int) -> List[Ray]:
+    """
+    Create a list of Rays radiating from a single origin at constant angular intervals.
+    """
+    assert isinstance(num_splits, int) and num_splits > 0, "Number of radial splits cannot be non-positive integers"
+    angle = 2 * np.pi / num_splits
+    rays = [Ray(i * angle, origin) for i in range(8)]
+    return rays
+
+
 if __name__ == "__main__":
     point = Point(1, 1)
 
     W = 500
     canvas = Canvas(W, W)
 
-    line = Line(Point(0.3*W, 0.8*W), Point(0.7*W, 0.1*W))
+    line = LineSegment(Point(0.3 * W, 0.8 * W), Point(0.7 * W, 0.1 * W))
     # circle = Circle(Point(0.7*W, 0.9*W), 0.1*W)
     circle = Circle.from_coords(0.5*W, 0.5*W, 0.1*W)
 

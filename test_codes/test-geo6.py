@@ -1,11 +1,11 @@
 """
-Ray, InfLine, Line and intersections
+Ray, InfLine, LineSegment and intersections
 
 Test rays in a radial alignment from Point (0,0) to see if they intersect only
 with line segments that crosses only each line.
 """
 
-from envs.geometry import Point, InfLine, Ray, quadrant, Line, Canvas
+from envs.geometry import Point, InfLine, Ray, quadrant, LineSegment, Canvas
 import numpy as np
 
 # ray1 = Ray(np.pi/4, Point(0,0)) # y = x
@@ -28,16 +28,16 @@ b = W/10
 c = W/5
 
 # Axis parallel lines
-line1 = Line(Point(a,b) + origin, Point(a,-b) + origin)
-line2 = Line(Point(-b,a) + origin, Point(b,a) + origin)
-line3 = Line(Point(-a,b) + origin, Point(-a,-b) + origin)
-line4 = Line(Point(-b,-a) + origin, Point(b,-a) + origin)
+line1 = LineSegment(Point(a, b) + origin, Point(a, -b) + origin)
+line2 = LineSegment(Point(-b, a) + origin, Point(b, a) + origin)
+line3 = LineSegment(Point(-a, b) + origin, Point(-a, -b) + origin)
+line4 = LineSegment(Point(-b, -a) + origin, Point(b, -a) + origin)
 
 # Diagonal lines
-lineq1 = Line(Point(c,a) + origin, Point(a,c) + origin)
-lineq2 = Line(Point(-c,a) + origin, Point(-a,c) + origin)
-lineq3 = Line(Point(-c,-a) + origin, Point(-a,-c) + origin)
-lineq4 = Line(Point(c,-a) + origin, Point(a,-c) + origin)
+lineq1 = LineSegment(Point(c, a) + origin, Point(a, c) + origin)
+lineq2 = LineSegment(Point(-c, a) + origin, Point(-a, c) + origin)
+lineq3 = LineSegment(Point(-c, -a) + origin, Point(-a, -c) + origin)
+lineq4 = LineSegment(Point(c, -a) + origin, Point(a, -c) + origin)
 
 lines = [
     line1, lineq1,

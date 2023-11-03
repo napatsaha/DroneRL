@@ -11,7 +11,7 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-from .geometry import Circle, Point, Line
+from .geometry import Circle, Point, LineSegment, Canvas
 
 
 class Mover(Circle):
@@ -74,7 +74,7 @@ class Mover(Circle):
 
         self.clamp_position()
 
-    def clamp_position_by_obstacle(self, obstacle: Line):
+    def clamp_position_by_obstacle(self, obstacle: LineSegment):
         """Clamps position of circle with an obstable (line), to prevent
         passing through obstacle when moving."""
         G = self.closest_position_to_line(obstacle)
@@ -116,19 +116,19 @@ class Mover(Circle):
     def randomise_position(self):
         pass
 
-    def add_obstacle(self, obstacle: Union[list, Line]):
+    def add_obstacle(self, obstacle: Union[list, LineSegment]):
         if isinstance(obstacle, list):
             self.obstacle_list.extend(obstacle)
         else:
             self.obstacle_list.append(obstacle)
 
-    def draw_on(self, canvas):
+    def draw_on(self, canvas: Canvas):
         shapeX, shapeY = self.icon.shape
-        canvas[
+        canvas.canvas[
             round(self.x - 0.5*shapeX):round(self.x + 0.5*shapeX),
             round(self.y - 0.5*shapeY):round(self.y + 0.5*shapeY)
                ] = self.icon
-        return canvas
+        return canvas.canvas
 
 
 class Predator(Mover):

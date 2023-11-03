@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from envs.display import Predator, AngularPrey, Mover, CardinalPrey
-from envs.geometry import Canvas, Line, Point
+from envs.geometry import Canvas, LineSegment, Point
 
 
 class DroneCatch(Env):
@@ -128,10 +128,10 @@ class DroneCatch(Env):
             self.min_distance = float(min_distance) / resolution
 
         # Obstacles
-        line = Line(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
-                    Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
-        line2 = Line(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
-                    Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
+        line = LineSegment(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
+                           Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
+        line2 = LineSegment(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
+                            Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
         self.obstacle_list = [line, line2]
 
 
@@ -438,12 +438,14 @@ class DroneCatch(Env):
             obs = self.canvas
             return obs
         else:
-            pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
-            prey_pos = self.prey.get_position() / np.array(self.canvas_shape)
-            
-            dist = np.linalg.norm(pred_pos - prey_pos)
-            
-            obs = np.r_[pred_pos, prey_pos, dist]
+            obs = self.predator.radial_raycast(self.predator.obstacle_list, self.canvas)
+
+            # pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
+            # prey_pos = self.prey.get_position() / np.array(self.canvas_shape)
+            #
+            # dist = np.linalg.norm(pred_pos - prey_pos)
+            #
+            # obs = np.r_[pred_pos, prey_pos, dist]
             
             return obs
 
