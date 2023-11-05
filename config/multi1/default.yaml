@@ -6,7 +6,7 @@ environment:
   reward_mult: 10.0
   obs_image: false
   cardinal_prey: true
-  reward_distance_strategy: global-minimum
+  reward_distance_strategy: none
   observation_distance_strategy: individual-all
   use_relative_position: true
   include_own_position: true

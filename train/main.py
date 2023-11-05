@@ -7,7 +7,7 @@ import datetime
 
 from train import train
 from envs import DualLateral, MultiDrone
-from algorithm import DualAgent, MultiAgent
+from algorithm import ALG_DICT
 from utils import extract_config, expand_dict
 
 if __name__ == "__main__":
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Training Details
     parent_dir = "multi1"
     run_name = "DoublePredator"
-    experiment_file = None
+    experiment_file = "config/multi1/experiment12-13.yaml"
     config_file = "config/multi1/default.yaml"
     num_reps = 10
     verbose = 1
@@ -29,8 +29,8 @@ if __name__ == "__main__":
         for config in experiment_list:
             print(datetime.datetime.now())
             train(
-                MultiAgent,
-                MultiDrone,
+                None,
+                None,
                 config_file=config_file,
                 parent_dir=parent_dir,
                 run_name=run_name,
@@ -46,8 +46,8 @@ if __name__ == "__main__":
     else:
         print(datetime.datetime.now())
         train(
-            MultiAgent,
-            MultiDrone,
+            None,
+            None,
             config_file=config_file,
             parent_dir=parent_dir,
             run_name=run_name,

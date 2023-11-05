@@ -1,0 +1,5 @@
+environment:
+  reward_distance_strategy:
+  - global-minimum
+  - none
+  observation_distance_strategy: none

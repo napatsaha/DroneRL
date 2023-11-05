@@ -11,7 +11,9 @@ from stable_baselines3.common.utils import get_latest_run_id
 import gymnasium as gym
 import numpy as np
 
+from algorithm import ALG_DICT
 from algorithm.agent import DualAgent, DQNAgent
+from envs import ENV_DICT
 from utils.config import extract_config
 from envs.dual import DualDrone
 from utils import update_nested_dict
@@ -124,6 +126,11 @@ def train(
     new_config_file = os.path.join("config", parent_dir, f"{current_dir}.yaml")
     with open(new_config_file, "w") as file:
         yaml.dump(config, file)
+
+    if AgentClass is None:
+        AgentClass = ALG_DICT[config["agent_class"]]
+    if EnvironmentClass is None:
+        EnvironmentClass = ENV_DICT[config["environment_class"]]
 
     # Enables continued training in same directory
     for rep in range(num_reps):
