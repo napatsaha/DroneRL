@@ -16,29 +16,58 @@ def q1(a):
 def q3(a):
     return np.quantile(a, q=0.75)
 
+def extract_labels(changing_var, run_names):
+    variable = extract_config(parent_dir=parent_dir, run_name=run_names[0],
+                              name="environment")
+    variable = next(filter(lambda x: x.startswith(changing_var), variable.keys()))
+    labels = [extract_config(parent_dir=parent_dir, run_name=run,
+                              name=["environment", variable]) for run in run_names]
+    return labels
+
+def zip_together(listlist):
+    """
+    Zip together list of lists into element-by-element tuples.
+    e.g.
+    ```
+    x = [[1, 2, 3], [10, 20, 30]]
+    zip_together(x)
+    -> [(1, 10), (2, 20), (3, 30)]
+    ```
+    """
+    return [(args) for args in zip(*listlist)]
+
 
 parent_dir = "multi1"
 run_base_name = "DoublePredator"
-run_ids = [2,3]
-changing_var = "reward_distance_strategy"
-agent_names = ["predator1","predator2","prey1"]
+run_ids = [13,5,12,11,6,7,10,9,8]
+changing_var = ["observation_distance_strategy","reward_distance_strategy"]
+agent_names = ["prey1", "predator1"]
 save = False
+
+# Y-axis
+scalars = ["loss"]
 
 run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
 
 # Extra labels for plotting
-variable = extract_config(parent_dir=parent_dir, run_name=run_names[0],
-                          name="environment")
-variable = next(filter(lambda x: x.startswith(changing_var), variable.keys()))
-labels = [extract_config(parent_dir=parent_dir, run_name=run,
-                          name=["environment", variable]) for run in run_names]
-# Sort again based on ascending values of variable
-run_ids = np.array(run_ids)[np.argsort(labels)]
-run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
-labels = sorted(labels)
+if isinstance(changing_var, list):
+    listofconfig = [extract_labels(var, run_names) for var in changing_var]
+    config_pairs = zip_together(listofconfig)
+    variable = tuple(changing_var)
+    labels = config_pairs
+else:
+    variable = extract_config(parent_dir=parent_dir, run_name=run_names[0],
+                              name="environment")
+    variable = next(filter(lambda x: x.startswith(changing_var), variable.keys()))
+    labels = [extract_config(parent_dir=parent_dir, run_name=run,
+                              name=["environment", variable]) for run in run_names]
 
-# Y-axis
-scalars = ["ep_len_mean", "ep_rew_mean", "loss"]
+    # Sort again based on ascending values of variable
+    run_ids = np.array(run_ids)[np.argsort(labels)]
+    run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
+    labels = sorted(labels)
+
+
 # scalars = ["loss"]
 
 # X-Axis
