@@ -42,6 +42,8 @@ class DroneCatch(Env):
                  dist_mult: float=0.1,
                  reward_mult: float=1.0,
                  trunc_limit: int=100,
+                 show_rays: bool=False,
+                 num_rays: int=8,
                  frame_delay: int=50,
                  render_mode: str="human",
                  manual_control: bool=False):
@@ -82,6 +84,9 @@ class DroneCatch(Env):
         
         # Build a canvas
 
+        self.num_rays = num_rays
+        self.rays = []
+        self.show_rays = show_rays
         self.cardinal_prey = cardinal_prey
         self.verbose = verbose
         self.resolution = resolution if isinstance(resolution, int) else resolution[0]
@@ -202,11 +207,12 @@ class DroneCatch(Env):
         # Randomise if necessary
         self.reset_position()
 
+        # Get observations and Rays from radial raycasting if necessary
+        obs = self.get_observation()
+
         # Imprints new positions onto environment canvas
         self.draw_canvas()
-        
-        obs = self.get_observation()
-            
+
         self.timesteps = 0
         
         return obs, {}
@@ -274,15 +280,15 @@ class DroneCatch(Env):
         # Move Predator
         self.predator.move(action)
         
-        # Updates canvas
-        self.draw_canvas()
-        
         # Calculate reward
         reward = self.dist_mult * self.calculate_reward()
         
         # Observation before termination
         obs = self.get_observation()
-        
+
+        # Updates canvas
+        self.draw_canvas()
+
         ## Reset episode if termination conditions met
         # Check for collision
         if self.detect_collision():
@@ -329,6 +335,9 @@ class DroneCatch(Env):
         # Draw icons
         for icon in self.agents:
             self.canvas.draw(icon)
+
+        if self.show_rays:
+            self.canvas.draw(self.rays)
             
     def convert_action(self, action):
         """
@@ -438,7 +447,18 @@ class DroneCatch(Env):
             obs = self.canvas
             return obs
         else:
-            obs = self.predator.radial_raycast(self.predator.obstacle_list, self.canvas)
+            # Update position of opposite agent in obstacle
+            # self.predator.update_obstacle(len(self.obstacle_list), self.prey)
+
+            # Radial raycasting to obtain distances and points of contact
+            obs, rays = self.predator.radial_raycast(
+                [*self.predator.obstacle_list, self.prey], self.canvas,
+                return_rays=self.show_rays,
+                num_rays=self.num_rays
+            )
+
+            if self.show_rays:
+                self.rays = rays
 
             # pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
             # prey_pos = self.prey.get_position() / np.array(self.canvas_shape)

@@ -17,7 +17,7 @@ inherits from Circle class.
 
 
 import math
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Tuple, Sequence
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -157,7 +157,14 @@ class InfLine(Geometry):
         return Point(x, y)
 
     def draw_on(self, canvas):
-        pass
+        ends = []
+        for bound in canvas.boundaries:
+            p = self.intersect(bound)
+            if p:
+                ends.append(p)
+
+        segment = LineSegment(ends[0], ends[1])
+        return segment.draw_on(canvas)
 
     @classmethod
     def _convert_slope(self, slope: float, point: Point) -> tuple:
@@ -216,29 +223,60 @@ class Ray(InfLine):
         self.origin = origin
         self.angle = angle
 
-    def raycast(self, object_list: List[Geometry]) -> Optional[float]:
+    def raycast(self, object_list: List[Geometry],
+                return_ray: Optional[bool] = False) -> \
+            Tuple[Optional[float], Optional['LineSegment']]:
         """
         Perform a raycasting of a ray to a list of obstacles (lines) and return the distance
         to the nearest obstacle that intersects with the ray.
         """
         distances = []
+        # Store points if returning rays
+        points = []
         for obj in object_list:
             P = self.intersect(obj)
             if P:  # If intersect
                 dist = distance_point_to_point(self.origin, P)
                 distances.append(dist)
-        if len(distances) > 0:
-            return min(distances)
-        else:
-            return None
+                if return_ray:
+                    points.append(P)
+        collided = len(distances) > 0
 
-    def intersect(self, other: Union['Ray', 'InfLine', 'LineSegment']) -> Union[Point, None]:
-        P = super().intersect(other)
-
-        if P is not None and P in self and P in other:
-            return P
+        if collided:
+            dist = min(distances)
         else:
-            return None
+            dist = None
+
+        if return_ray and collided:
+            idx = np.argmin(distances)
+            P = points[idx]
+            line = LineSegment(self.origin, P)
+            return (dist, line)
+        else:
+            return (dist, None)
+
+    def intersect(self, other: Union[Geometry]) -> Union[Point, None]:
+        if isinstance(other, InfLine):
+            P = super().intersect(other)
+
+            if P is not None and P in self and P in other:
+                return P
+            else:
+                return None
+        elif isinstance(other, Circle):
+            P = other.intersect(self)
+
+            if P is not None:
+                if isinstance(P, tuple):
+                    dists = [distance_point_to_point(self.origin, point) for point in P]
+                    P = P[np.argmin(dists)]
+
+                if P in self:
+                    return P
+                else:
+                    return None
+            else:
+                return None
 
     def draw_on(self, canvas: 'Canvas'):
         end = Point()
@@ -252,7 +290,7 @@ class Ray(InfLine):
 
     def _is_in_same_quadrant(self, point: Point):
         expected_quadrant = np.array(quadrant(self.angle))
-        actual_quadrant = np.sign(np.round((point - self.origin).get_xy(), 3))
+        actual_quadrant = np.sign(np.round((point - self.origin).get_xy(), 8))
             # Needs rounding to prevent floating imprecision
         return np.all(expected_quadrant == actual_quadrant)
 
@@ -348,10 +386,13 @@ class Circle(Geometry):
             int(self.x), int(self.y), int(self.radius),
         shape=canvas.canvas.shape)
 
-        canvas.canvas[xx,yy] = val
+        canvas.canvas[xx,yy] = 1 - val
         return canvas.canvas
 
-    def radial_raycast(self, obj_list: List[Geometry], canvas: 'Canvas', num_rays: Optional[int] = 8) -> List[float]:
+    def radial_raycast(self,
+                       obj_list: List[Geometry],
+                       canvas: 'Canvas', num_rays: Optional[int] = 8,
+                       return_rays: Optional[bool] = False) -> Tuple[List[float], Optional[List[LineSegment]]]:
         """
         Perform a series of raycasting measurements in a counterclockwise loop around the circle center.
         Requires a list of obstacles (lines) and a canvas (for the boundaries), as well as an optional
@@ -362,16 +403,67 @@ class Circle(Geometry):
         rays = create_radial_rays(origin=center, num_splits=num_rays)
 
         crossed_dist = []
+        crossed_rays = []
         for ray in rays:
             # crossed_lines = []
-            distance = ray.raycast(obj_list)
+            distance, line = ray.raycast(obj_list, return_ray=return_rays)
 
             if distance is None:
-                distance = ray.raycast(canvas.boundaries)
+                distance, line = ray.raycast(canvas.boundaries, return_ray=return_rays)
 
             crossed_dist.append(distance)
+            if return_rays:
+                crossed_rays.append(line)
 
-        return crossed_dist
+        return crossed_dist, crossed_rays
+
+    def intersect(self, other: 'InfLine') -> Union[None, Point, Tuple[Point]]:
+        """
+        Detect intersection of a circle with a line.
+        Algorithm from
+        https://math.stackexchange.com/questions/228841/how-do-i-calculate-the-intersections-of-a-straight-line-and-a-circle
+        """
+        # Vertical line
+        if other.b == 0:
+            # Solve quadratic equations where both circle and linie are true
+            a = other.a ** 2 + other.b ** 2
+            b = 2 * other.b * other.c + 2 * other.a * other.b * self.x - 2 * other.a ** 2 * self.y
+            c = other.c ** 2 + 2 * other.a * other.c * self.x - \
+                other.a ** 2 * (self.radius ** 2 - self.x ** 2 - self.y ** 2)
+
+            discriminant = b ** 2 - 4 * a * c
+
+            if discriminant < 0:
+                return None
+            elif discriminant == 0:
+                y = - b / (2 * a)
+                x = other.substitute(y=y)
+                return Point(x, y)
+            else:
+                y = [- (b + sign * np.sqrt(discriminant)) / (2 * a) for sign in (-1, 1)]
+                x = [other.substitute(y=val) for val in y]
+                return tuple(Point(xx, yy) for xx, yy in zip(x, y))
+        else:
+            # Solve quadratic equations where both circle and linie are true
+            a = other.a**2 + other.b**2
+            b = 2 * other.a * other.c + 2 * other.a * other.b * self.y - 2 * other.b **2 * self.x
+            c = other.c **2 + 2 * other.b * other.c * self.y - \
+                other.b **2 * (self.radius**2 - self.x **2 - self.y **2)
+
+            discriminant = b**2 - 4 * a * c
+
+            if discriminant < 0:
+                return None
+            elif discriminant == 0:
+                x = - b / (2 * a)
+                y = other.substitute(x)
+                return Point(x,y)
+            else:
+                x = [- (b + sign * np.sqrt(discriminant)) / (2 * a) for sign in (-1, 1)]
+                y = [other.substitute(x=val) for val in x]
+                return tuple(Point(xx,yy) for xx, yy in zip(x, y))
+
+        return None
 
     def detect_collision(self, line: LineSegment):
         center = Point(self.x, self.y)
@@ -563,8 +655,8 @@ def quadrant(angle) -> tuple:
     """
     Return the (x,y) sign of the angle (radians), showing which quadrant the angle is in.
     """
-    x = np.sign(round(np.cos(angle)))
-    y = np.sign(round(np.sin(angle)))
+    x = np.sign(np.round(np.cos(angle), 8))
+    y = np.sign(np.round(np.sin(angle), 8))
     return x, y
 
 
@@ -574,7 +666,7 @@ def create_radial_rays(origin: Point, num_splits: int) -> List[Ray]:
     """
     assert isinstance(num_splits, int) and num_splits > 0, "Number of radial splits cannot be non-positive integers"
     angle = 2 * np.pi / num_splits
-    rays = [Ray(i * angle, origin) for i in range(8)]
+    rays = [Ray(i * angle, origin) for i in range(num_splits)]
     return rays
 
 

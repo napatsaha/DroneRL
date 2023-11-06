@@ -11,7 +11,7 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-from .geometry import Circle, Point, LineSegment, Canvas
+from .geometry import Circle, Point, LineSegment, Canvas, Geometry
 
 
 class Mover(Circle):
@@ -116,11 +116,18 @@ class Mover(Circle):
     def randomise_position(self):
         pass
 
-    def add_obstacle(self, obstacle: Union[list, LineSegment]):
+    def add_obstacle(self, obstacle: Union[List[Geometry], Geometry]):
         if isinstance(obstacle, list):
             self.obstacle_list.extend(obstacle)
         else:
             self.obstacle_list.append(obstacle)
+
+    def update_obstacle(self, index: int, new: Geometry):
+        assert index >= 0, "Invalid Index entry"
+        if 0 <= index <= (len(self.obstacle_list) - 1):
+            self.obstacle_list[index] = new
+        else:
+            self.obstacle_list.append(new)
 
     def draw_on(self, canvas: Canvas):
         shapeX, shapeY = self.icon.shape
