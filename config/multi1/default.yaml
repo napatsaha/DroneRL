@@ -7,7 +7,7 @@ environment:
   obs_image: false
   cardinal_prey: true
   reward_distance_strategy: none
-  observation_distance_strategy: individual-all
+  observation_distance_strategy: none
   use_relative_position: true
   include_own_position: true
   predator_move_speed: 2
