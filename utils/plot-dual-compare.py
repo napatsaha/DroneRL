@@ -24,6 +24,7 @@ def extract_labels(changing_var, run_names):
                               name=["environment", variable]) for run in run_names]
     return labels
 
+
 def zip_together(listlist):
     """
     Zip together list of lists into element-by-element tuples.
@@ -39,15 +40,19 @@ def zip_together(listlist):
 
 parent_dir = "multi1"
 run_base_name = "DoublePredator"
-run_ids = [13,5,12,11,6,7,10,9,8]
+run_ids = [15,5,14,11,6,7,10,9,8]
 changing_var = ["observation_distance_strategy","reward_distance_strategy"]
 agent_names = ["prey1", "predator1"]
-save = False
+save = True
+plot_name = "obs-rew_dist_strategies"
 
 # Y-axis
-scalars = ["loss"]
+scalars = ["loss", "ep_rew_mean"]
 
 run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
+
+if plot_name is None:
+    plot_name = f"{run_base_name}_{'-'.join(map(str, run_ids))}"
 
 # Extra labels for plotting
 if isinstance(changing_var, list):
@@ -115,8 +120,9 @@ for agent in agent_names:
 # Plot
 # cmap = mpl.colormaps["viridis"]
 # colors = cmap.colors[:len(run_names)]
-cmap = mpl.colormaps.get_cmap("Set1")
+cmap = mpl.colormaps.get_cmap("tab10")
 colors = cmap(np.linspace(0,1,num=len(run_names)))
+# colors = [col for i, col in enumerate(cmap.colors) if (i+1) % 4 != 0][:9]
 
 for agent in agent_names:
     for scalar in scalars:
@@ -131,12 +137,12 @@ for agent in agent_names:
         plt.ylabel(scalar.replace("_", " ").title())
         plt.title(f"""
         {scalar.replace("_"," ").title()}
-        Effect of changing {variable}
         {run_base_name}   Agent: {agent.capitalize()}
                   """)
         if save:
             if not os.path.exists(os.path.join("plot", parent_dir)):
                 os.mkdir(os.path.join("plot", parent_dir))
 
-            plt.savefig(os.path.join("plot", parent_dir, f"{variable.replace('_','-')}_{run_base_name}_{'-'.join(map(str, run_ids))}_{agent}_{scalar.replace('_','-')}"))
+            file_name = f"{plot_name}_{agent}_{scalar.replace('_','-')}"
+            plt.savefig(os.path.join("plot", parent_dir, file_name))
         plt.show()
