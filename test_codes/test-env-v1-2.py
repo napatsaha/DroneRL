@@ -8,7 +8,7 @@ env = DroneCatch(manual_control=True, icon_scale=0.05,
                  prey_move_speed=2,
                  predator_move_speed=2,
                  show_rays=True,
-                 num_rays=6)
+                 num_rays=32)
 
 for ep in range(5):
     state, info = env.reset()

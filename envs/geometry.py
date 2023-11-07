@@ -154,6 +154,9 @@ class InfLine(Geometry):
         x = a/c
         y = b/c
 
+        # x = np.float32(x)
+        # y = np.float32(y)
+
         return Point(x, y)
 
     def draw_on(self, canvas):
@@ -225,7 +228,7 @@ class Ray(InfLine):
 
     def raycast(self, object_list: List[Geometry],
                 return_ray: Optional[bool] = False) -> \
-            Tuple[Optional[float], Optional['LineSegment']]:
+            Tuple[Optional[float], Optional[Union['LineSegment', 'Ray']]]:
         """
         Perform a raycasting of a ray to a list of obstacles (lines) and return the distance
         to the nearest obstacle that intersects with the ray.
@@ -252,6 +255,8 @@ class Ray(InfLine):
             P = points[idx]
             line = LineSegment(self.origin, P)
             return (dist, line)
+        elif return_ray and not collided:
+            return (dist, self)
         else:
             return (dist, None)
 
@@ -290,7 +295,7 @@ class Ray(InfLine):
 
     def _is_in_same_quadrant(self, point: Point):
         expected_quadrant = np.array(quadrant(self.angle))
-        actual_quadrant = np.sign(np.round((point - self.origin).get_xy(), 8))
+        actual_quadrant = np.sign(safe_round((point - self.origin).get_xy()))
             # Needs rounding to prevent floating imprecision
         return np.all(expected_quadrant == actual_quadrant)
 
@@ -392,7 +397,7 @@ class Circle(Geometry):
     def radial_raycast(self,
                        obj_list: List[Geometry],
                        canvas: 'Canvas', num_rays: Optional[int] = 8,
-                       return_rays: Optional[bool] = False) -> Tuple[List[float], Optional[List[LineSegment]]]:
+                       return_rays: Optional[bool] = False) -> Tuple[np.ndarray[float], Optional[List[LineSegment]]]:
         """
         Perform a series of raycasting measurements in a counterclockwise loop around the circle center.
         Requires a list of obstacles (lines) and a canvas (for the boundaries), as well as an optional
@@ -411,9 +416,14 @@ class Circle(Geometry):
             if distance is None:
                 distance, line = ray.raycast(canvas.boundaries, return_ray=return_rays)
 
+            if distance is None:
+                distance = np.nan
+
             crossed_dist.append(distance)
             if return_rays:
                 crossed_rays.append(line)
+
+        crossed_dist = np.array(crossed_dist)
 
         return crossed_dist, crossed_rays
 
@@ -655,10 +665,23 @@ def quadrant(angle) -> tuple:
     """
     Return the (x,y) sign of the angle (radians), showing which quadrant the angle is in.
     """
-    x = np.sign(np.round(np.cos(angle), 8))
-    y = np.sign(np.round(np.sin(angle), 8))
+    # x = np.sign(np.round(np.cos(angle), 8))
+    # y = np.sign(np.round(np.sin(angle), 8))
+    x = np.sign(safe_round(np.cos(angle)))
+    y = np.sign(safe_round(np.sin(angle)))
     return x, y
 
+
+def safe_round(value: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    if isinstance(value, float):
+        precision = np.finfo(value).precision
+    elif isinstance(value, tuple):
+        precision = np.finfo(np.array(value).dtype).precision
+    elif isinstance(value, np.ndarray):
+        precision = np.finfo(value.dtype).precision
+    else:
+        precision = np.finfo(np.float32).precision
+    return np.round(value, precision)
 
 def create_radial_rays(origin: Point, num_splits: int) -> List[Ray]:
     """

@@ -92,6 +92,7 @@ class DroneCatch(Env):
         self.resolution = resolution if isinstance(resolution, int) else resolution[0]
         self.canvas_shape = (resolution, resolution) if isinstance(resolution, int) else resolution
         self.canvas_width = self.resolution
+        self.max_width = np.sqrt(self.canvas_shape[0]**2 + self.canvas_shape[1]**2) # For normalising
         self.canvas = Canvas(*self.canvas_shape)
         
         # Icon and Move speed
@@ -456,6 +457,9 @@ class DroneCatch(Env):
                 return_rays=self.show_rays,
                 num_rays=self.num_rays
             )
+
+            # Normalising values
+            obs = obs / self.max_width
 
             if self.show_rays:
                 self.rays = rays
