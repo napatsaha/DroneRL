@@ -48,6 +48,16 @@ class Point(Geometry):
     def draw_on(self, canvas):
         pass
 
+    def move_point(self, angle: float, distance: float, inplace: bool=False) -> Optional['Point']:
+        x = distance * np.cos(angle)
+        y = distance * np.sin(angle)
+        if not inplace:
+            return Point(self.x + x, self.y + y)
+        else:
+            self.x += x
+            self.y += y
+            return None
+
     def __str__(self):
         return "({}, {})".format(round(self.x, 2), round(self.y, 2))
 
@@ -374,6 +384,20 @@ class LineSegment(InfLine):
             return f"LineSegment({self.point2}, {self.point1})"
 
 
+class Rectangle(LineSegment):
+    """
+    A collection of four line segments that form an enclosing rectangle.
+    """
+
+    def __init__(self, angle: float, center: Point, width: float, height: float):
+        pass
+
+    @classmethod
+    def from_segment(cls, line: LineSegment, thickness: float):
+        return cls
+
+
+
 class Circle(Geometry):
     def __init__(self, x: float, y: float, radius: float):
         self.x = x
@@ -691,6 +715,39 @@ def create_radial_rays(origin: Point, num_splits: int) -> List[Ray]:
     angle = 2 * np.pi / num_splits
     rays = [Ray(i * angle, origin) for i in range(num_splits)]
     return rays
+
+
+def create_perpendicular_line(point: Point,
+                              angle: Optional[float],
+                              line: Optional[InfLine],
+                              length: Optional[float]) -> Union[Ray, LineSegment]:
+    pass
+
+
+# def create_box(point1: Point, point2: Point, point3: Point, point4: Point) -> List[LineSegment]:
+def create_polygon(*args: Point) -> List[LineSegment]:
+    corners = [*args]
+    lagged = corners[1:] + [corners[0]]
+    borders = [LineSegment(p1, p2) for p1,p2 in zip(corners, lagged)]
+    return borders
+
+
+def convert_line_to_box(line: LineSegment, width: float):
+    w = width
+    l = line.length
+    angle = line.angle
+    if line.point1.x <= line.point2.x:
+        p1 = line.point1
+        p2 = line.point2
+    else:
+        p1 = line.point2
+        p2 = line.point1
+    angle -= np.pi / 2
+    p3 = p2.move_point(angle, w)
+    angle -= np.pi / 2
+    p4 = p3.move_point(angle, l)
+    box = create_polygon(p1, p2, p3, p4)
+    return box
 
 
 if __name__ == "__main__":
