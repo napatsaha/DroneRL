@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from envs.display import Predator, AngularPrey, Mover, CardinalPrey
-from envs.geometry import Canvas, LineSegment, Point
+from envs.geometry import Canvas, LineSegment, Point, convert_line_to_box
 
 
 class DroneCatch(Env):
@@ -81,14 +81,15 @@ class DroneCatch(Env):
 
         """
         super(DroneCatch, self).__init__()
-        
-        # Build a canvas
 
+        # Fields
         self.num_rays = num_rays
         self.rays = []
         self.show_rays = show_rays
         self.cardinal_prey = cardinal_prey
         self.verbose = verbose
+
+        # Build a canvas
         self.resolution = resolution if isinstance(resolution, int) else resolution[0]
         self.canvas_shape = (resolution, resolution) if isinstance(resolution, int) else resolution
         self.canvas_width = self.resolution
@@ -134,12 +135,8 @@ class DroneCatch(Env):
             self.min_distance = float(min_distance) / resolution
 
         # Obstacles
-        line = LineSegment(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
-                           Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
-        line2 = LineSegment(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
-                            Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
-        self.obstacle_list = [line, line2]
-
+        self.obstacle_list = []
+        self._populate_obstacles()
 
         # Initialises Predator and AngularPrey classes
         if self.cardinal_prey:
@@ -166,8 +163,7 @@ class DroneCatch(Env):
         #                          icon_size=(self.icon_size, self.icon_size))
         self.agents = [self.prey, self.predator]
 
-        for agent in self.agents:
-            agent.add_obstacle(self.obstacle_list)
+        self._update_obstacles()
         
         # Episode Control variables
         self.trunc_limit = trunc_limit
@@ -198,7 +194,23 @@ class DroneCatch(Env):
         
         # # Define observation space (xy for prey and predator and distance)
         # self.observation_space = spaces.Box(low = np.zeros())
-        
+
+    def _update_obstacles(self):
+        for agent in self.agents:
+            # Add obstacles
+            agent.add_obstacle(self.obstacle_list)
+            # Add other agents
+            agent.add_obstacle([ag for ag in self.agents if ag != agent])
+
+    def _populate_obstacles(self):
+        line = LineSegment(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
+                           Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
+        line2 = LineSegment(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
+                            Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
+        for obs in (line, line2):
+            boxed_obs = convert_line_to_box(obs, self.canvas_width * 0.01)
+            self.obstacle_list.extend(boxed_obs)
+
     def reset(self, seed=None):
         
         # Reset Positions for Predator and AngularPrey
@@ -445,21 +457,29 @@ class DroneCatch(Env):
 
         """
         if self.obs_image:
-            obs = self.canvas
+            obs = self.canvas.canvas
             return obs
         else:
             # Update position of opposite agent in obstacle
             # self.predator.update_obstacle(len(self.obstacle_list), self.prey)
 
             # Radial raycasting to obtain distances and points of contact
-            obs, rays = self.predator.radial_raycast(
+            obs, rays, obj_types = self.predator.radial_raycast(
                 [*self.predator.obstacle_list, self.prey], self.canvas,
                 return_rays=self.show_rays,
                 num_rays=self.num_rays
             )
 
-            # Normalising values
+            collision_dict = {
+                "obstacle": 0,
+                "prey": 1,
+                "predator": -1
+            }
+
+            # Convert and Normalise values
             obs = obs / self.max_width
+            obj_types = np.vectorize(collision_dict.get)(obj_types)
+            obs = np.r_[obs, obj_types]
 
             if self.show_rays:
                 self.rays = rays

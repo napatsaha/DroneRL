@@ -82,6 +82,8 @@ class InfLine(Geometry):
     - closest object
     """
 
+    name = "obstacle"
+
     def __init__(self, a, b, c):
         """
         ax + by + c = 0
@@ -238,37 +240,46 @@ class Ray(InfLine):
 
     def raycast(self, object_list: List[Geometry],
                 return_ray: Optional[bool] = False) -> \
-            Tuple[Optional[float], Optional[Union['LineSegment', 'Ray']]]:
+            Tuple[Optional[float], Optional[Union['LineSegment', 'Ray']], Optional[str]]:
         """
         Perform a raycasting of a ray to a list of obstacles (lines) and return the distance
         to the nearest obstacle that intersects with the ray.
         """
+        dist, ray, obj_type = None, None, None
         distances = []
         # Store points if returning rays
         points = []
+        collided_objects = []
         for obj in object_list:
             P = self.intersect(obj)
             if P:  # If intersect
                 dist = distance_point_to_point(self.origin, P)
                 distances.append(dist)
+                collided_objects.append(obj)
                 if return_ray:
                     points.append(P)
         collided = len(distances) > 0
 
         if collided:
             dist = min(distances)
-        else:
-            dist = None
+            idx = np.argmin(distances)
+            obj_type = collided_objects[idx].name
+        # else:
+        #     dist = None
 
         if return_ray and collided:
             idx = np.argmin(distances)
             P = points[idx]
-            line = LineSegment(self.origin, P)
-            return (dist, line)
+            ray = LineSegment(self.origin, P)
+            # return (dist, line)
         elif return_ray and not collided:
-            return (dist, self)
-        else:
-            return (dist, None)
+            ray = self
+            # return (dist, self)
+        # else:
+        #     return (dist, None)
+        #
+        return (dist, ray, obj_type)
+
 
     def intersect(self, other: Union[Geometry]) -> Union[Point, None]:
         if isinstance(other, InfLine):
@@ -421,7 +432,12 @@ class Circle(Geometry):
     def radial_raycast(self,
                        obj_list: List[Geometry],
                        canvas: 'Canvas', num_rays: Optional[int] = 8,
-                       return_rays: Optional[bool] = False) -> Tuple[np.ndarray[float], Optional[List[LineSegment]]]:
+                       return_rays: Optional[bool] = False) -> \
+            Tuple[
+                np.ndarray[float],
+                Optional[List[LineSegment]],
+                Optional[List[str]]
+            ]:
         """
         Perform a series of raycasting measurements in a counterclockwise loop around the circle center.
         Requires a list of obstacles (lines) and a canvas (for the boundaries), as well as an optional
@@ -433,12 +449,13 @@ class Circle(Geometry):
 
         crossed_dist = []
         crossed_rays = []
+        crossed_obj = []
         for ray in rays:
             # crossed_lines = []
-            distance, line = ray.raycast(obj_list, return_ray=return_rays)
+            distance, line, obj_type = ray.raycast(obj_list, return_ray=return_rays)
 
             if distance is None:
-                distance, line = ray.raycast(canvas.boundaries, return_ray=return_rays)
+                distance, line, obj_type = ray.raycast(canvas.boundaries, return_ray=return_rays)
 
             if distance is None:
                 distance = np.nan
@@ -446,10 +463,11 @@ class Circle(Geometry):
             crossed_dist.append(distance)
             if return_rays:
                 crossed_rays.append(line)
+            crossed_obj.append(obj_type)
 
         crossed_dist = np.array(crossed_dist)
 
-        return crossed_dist, crossed_rays
+        return crossed_dist, crossed_rays, crossed_obj
 
     def intersect(self, other: 'InfLine') -> Union[None, Point, Tuple[Point]]:
         """
@@ -618,6 +636,9 @@ class Canvas:
         else:
             key = cv2.waitKey(frame_delay)
         return key
+
+    def _force_clear(self):
+        self.canvas = np.ones((self.height, self.width))
 
     def clear(self):
         self.canvas = np.ones((self.height, self.width))

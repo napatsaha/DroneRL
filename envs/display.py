@@ -94,7 +94,7 @@ class Mover(Circle):
         # Clamp by obstacle
         if len(self.obstacle_list) > 0:
             # Find nearest in-sight obstacle
-            dist_list = [self.distance_to_line(obs) for obs in self.obstacle_list]
+            dist_list = [self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"]
             idx = np.argmin(dist_list)
             obstacle = self.obstacle_list[idx]
             # Clamp only to nearest effective obstacle
