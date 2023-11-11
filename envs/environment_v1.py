@@ -25,6 +25,7 @@ class DroneCatch(Env):
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
     agents = List[Mover]
+    version = "v1"
     
     def __init__(self,
                  obs_image: bool=False,
@@ -83,6 +84,7 @@ class DroneCatch(Env):
         super(DroneCatch, self).__init__()
 
         # Fields
+
         self.num_rays = num_rays
         self.rays = []
         self.show_rays = show_rays
@@ -113,8 +115,8 @@ class DroneCatch(Env):
                 dtype=np.float64)
         else:
             self.observation_space = spaces.Box(
-                low = np.zeros(5),
-                high = np.ones(5),
+                low = np.zeros(2*self.num_rays),
+                high = np.ones(2*self.num_rays),
                 dtype = np.float64)
         
         # Predator/AngularPrey configurations

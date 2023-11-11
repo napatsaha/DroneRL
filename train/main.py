@@ -13,11 +13,11 @@ from utils import extract_config, expand_dict
 if __name__ == "__main__":
     ##########
     # Training Details
-    parent_dir = "multi1"
-    run_name = "DoublePredator"
+    parent_dir = "colli1"
+    run_name = "PredRay"
     experiment_file = None
-    config_file = "config/multi1/default.yaml"
-    num_reps = 10
+    config_file = "config/default2.yaml"
+    num_reps = 1
     verbose = 1
     continue_run = False
     run_id = None
@@ -29,8 +29,8 @@ if __name__ == "__main__":
         for config in experiment_list:
             print(datetime.datetime.now())
             train(
-                MultiAgent,
-                MultiDrone,
+                None,
+                None,
                 config_file=config_file,
                 parent_dir=parent_dir,
                 run_name=run_name,
@@ -46,8 +46,8 @@ if __name__ == "__main__":
     else:
         print(datetime.datetime.now())
         train(
-            MultiAgent,
-            MultiDrone,
+            None,
+            None,
             config_file=config_file,
             parent_dir=parent_dir,
             run_name=run_name,

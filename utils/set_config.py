@@ -10,8 +10,9 @@ Useful to update default parameter when environment class is modified.
 """
 
 import yaml, os
-from envs.environment_v0 import DroneCatch
+from envs.environment_v1 import DroneCatch
 from stable_baselines3 import DQN
+from algorithm import DQNAgent, DQNPolicy
 
 # param_list = ['resolution', 'icon_scale', 'prey_move_angle', 'predator_move_speed', 'dist_mult', 'reward_mult', 
 #               'trunc_limit', 'frame_delay', 'render_mode', 'radius', 'obs_image']
@@ -24,11 +25,27 @@ def pull_default_params(object_class):
     dct = {key: val for key, val in zip(param_names, param_defaults)}
     return dct
 
-if __name__ == "__main__":
-    dct = {"environment": pull_default_params(DroneCatch),
-           "algorithm": "dqn",
-           "learn": {"total_timesteps": 2.0e+5},
-           "model": pull_default_params(DQN)}
+def pull_default_params_func(func):
+    param_defaults = func.__defaults__
+    param_names = func.__code__.co_varnames[-len(param_defaults):]
+    dct = {key: val for key, val in zip(param_names, param_defaults)}
+    return dct
 
-    with open(os.path.join("config","default.yaml"), "w") as file:
+if __name__ == "__main__":
+    env = DroneCatch
+    agent = DQNAgent
+    policy = DQNPolicy
+    output = "default2.yaml"
+
+    alg_dict = pull_default_params(policy)
+    alg_dict.update(pull_default_params(agent))
+    dct = {
+        "environment_class": f"{env.__name__}-{env.version}",
+        "environment": pull_default_params(env),
+        "learn": pull_default_params_func(agent.learn),
+        "agent_class": agent.__name__,
+        "agent": alg_dict,
+           }
+
+    with open(os.path.join("config", output), "w") as file:
         yaml.dump(dct, file)
