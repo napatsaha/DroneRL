@@ -57,6 +57,7 @@ class DQNPolicy:
             total_timesteps: int = 100000,
             target_update_interval: int = 10,
             log_interval: int = 4,
+            probabilistic: bool = False,
             exploration_fraction: float = 0.1,
             exploration_initial_eps: float = 1.0,
             exploration_final_eps: float = 0.05,
@@ -86,6 +87,7 @@ class DQNPolicy:
         self.max_grad_norm = max_grad_norm
         self.gradient_steps = gradient_steps
         
+        self.probabilistic = probabilistic
         self.exploration_rate = 0.0
         self.exploration_schedule = get_linear_fn(
             exploration_initial_eps, 
@@ -257,7 +259,13 @@ class DQNPolicy:
             Chosen action.
 
         """
-        if not deterministic and np.random.rand() < self.exploration_rate:
+        if self.probabilistic:
+            with th.no_grad():
+                obs = obs_as_tensor(np.array(obs), self.device)
+                action = self.q_net.predict(obs, deterministic=False)
+                if len(action) == 1:
+                    action = action.item()
+        elif not deterministic and np.random.rand() < self.exploration_rate:
             action = self.action_space.sample()
         else:
             with th.no_grad():

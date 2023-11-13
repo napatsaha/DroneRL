@@ -597,7 +597,7 @@ class Canvas:
     boundaries: list[LineSegment]
 
     def __init__(self, width: int, height: int = None,
-                 name: str = "environment"):
+                 name: str = "Environment"):
         if height is None:
             height = width
 
@@ -644,7 +644,7 @@ class Canvas:
         self.canvas = np.ones((self.height, self.width))
 
     def close(self):
-        cv2.destroyWindow(self.name)
+        cv2.destroyAllWindows()
 
 # Add collisions
 

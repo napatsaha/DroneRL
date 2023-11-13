@@ -60,5 +60,7 @@ class QNetwork(nn.Module):
         if deterministic:
             # Greedy action
             action = q_values.argmax(dim=-1).reshape(-1)
+        else:
+            action = th.multinomial(th.softmax(q_values, dim=-1), 1)
         return action
     

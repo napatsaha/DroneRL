@@ -81,12 +81,43 @@ class DQNAgent:
     def save(self, dir_path, run_name):
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
+        model_path = os.path.join(dir_path, f"{run_name}.pt")
+        print(f"Saving model to {model_path}")
         th.save(self.policy.q_net.state_dict(),
-                os.path.join(dir_path, f"{run_name}.pt"))
+                model_path)
 
-    def load(self, path):
-        state_dict = th.load(path)
+    def load(self, dir_path, run_name):
+        file = next(filter(lambda x: x.endswith(f"{run_name}.pt"), os.listdir(dir_path)))
+        file_path = os.path.join(dir_path, file)
+        print(f"Loading model from {file_path}")
+        state_dict = th.load(file_path)
         self.policy.q_net.load_state_dict(state_dict)
+
+    def evaluate(self, num_eps: int = 20, render: bool = True,
+                 frame_delay: int = 20):
+
+        if render:
+            self.env.set_frame_delay(frame_delay)
+
+        for episode in range(num_eps):
+            state, _ = self.env.reset()
+            done = False
+            truncated = False
+            while not (done or truncated):
+                action = self._predict_action(state)
+
+                nextstate, reward, done, truncated, info = self.env.step(action)
+
+                if render:
+                    self.env.render()
+
+                state = nextstate
+
+        self.env.close()
+
+    def _predict_action(self, state):
+        action = self.policy.predict(state, deterministic=True)
+        return action
 
 
 class DualAgent:
