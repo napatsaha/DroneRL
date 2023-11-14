@@ -17,10 +17,10 @@ if __name__ == "__main__":
     run_name = "PredRay"
     experiment_file = None
     config_file = "config/default2.yaml"
-    num_reps = 1
+    num_reps = 8
     verbose = 1
-    continue_run = False
-    run_id = None
+    continue_run = False # False
+    run_id = None # None
     ##########
 
     if experiment_file is not None:

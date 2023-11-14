@@ -35,7 +35,6 @@ environment:
   render_mode: human
   resolution: 800
   reward_mult: 10.0
-#  show_rays: false
   trunc_limit: 300
 environment_class: DroneCatch-v1
 learn:
