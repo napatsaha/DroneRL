@@ -24,8 +24,10 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
     AgentClass = ALG_DICT[config["agent_class"]]
     EnvironmentClass = ENV_DICT[config["environment_class"]]
 
+    config["environment"].update(kwargs)
+
     # config["environment"]["min_distance"] = 0.5
-    env = EnvironmentClass(**config["environment"], **kwargs)
+    env = EnvironmentClass(**config["environment"])
     # env.trunc_limit = 300
 
     agent = AgentClass(env, **config["agent"])
@@ -41,9 +43,10 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 if __name__ == "__main__":
     parent_dir = "colli1"
     run_base_name = "PredRay"
-    run_id = 4
+    run_id = 7
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,
-         frame_delay=10,
-         show_rays=True, probabilistic=False)
+         frame_delay=10, num_eps=10, #min_distance = 0.2,
+         # probabilistic=True,
+         show_rays=True)

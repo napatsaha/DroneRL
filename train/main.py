@@ -16,8 +16,8 @@ if __name__ == "__main__":
     parent_dir = "colli1"
     run_name = "PredRay"
     experiment_file = None
-    config_file = "config/default2.yaml"
-    num_reps = 8
+    config_file = "config/colli1/default.yaml"
+    num_reps = 10
     verbose = 1
     continue_run = False # False
     run_id = None # None

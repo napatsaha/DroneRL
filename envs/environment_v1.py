@@ -212,6 +212,7 @@ class DroneCatch(Env):
         for obs in (line, line2):
             boxed_obs = convert_line_to_box(obs, self.canvas_width * 0.01)
             self.obstacle_list.extend(boxed_obs)
+        # pass
 
     def reset(self, seed=None):
         

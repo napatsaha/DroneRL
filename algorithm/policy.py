@@ -8,7 +8,7 @@ Created on Tue Sep  5 11:05:46 2023
 @author: napat
 """
 import time, sys
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, Tuple, Union
 
 import os
 import numpy as np
@@ -57,7 +57,7 @@ class DQNPolicy:
             total_timesteps: int = 100000,
             target_update_interval: int = 10,
             log_interval: int = 4,
-            probabilistic: bool = False,
+            probabilistic: Union[bool, Tuple[bool], List[bool]] = False,
             exploration_fraction: float = 0.1,
             exploration_initial_eps: float = 1.0,
             exploration_final_eps: float = 0.05,
@@ -86,8 +86,15 @@ class DQNPolicy:
         self.tau = tau
         self.max_grad_norm = max_grad_norm
         self.gradient_steps = gradient_steps
-        
-        self.probabilistic = probabilistic
+
+        # Epsilon-softmax combination
+        if isinstance(probabilistic, (list, tuple)):
+            self._probabilistic_greedy = probabilistic[1] # When 1 - epsilon
+            self._probabilistic_random = probabilistic[0] # When epsilon
+        else:
+            self._probabilistic_greedy = probabilistic
+            self._probabilistic_random = probabilistic
+
         self.exploration_rate = 0.0
         self.exploration_schedule = get_linear_fn(
             exploration_initial_eps, 
@@ -259,15 +266,21 @@ class DQNPolicy:
             Chosen action.
 
         """
-        if self.probabilistic:
+        explore = np.random.rand() < self.exploration_rate
+        if not deterministic and explore and not self._probabilistic_random:
+            # Uniform random choice
+            action = self.action_space.sample()
+        elif not deterministic and \
+                ((not explore and self._probabilistic_greedy) or
+                 (explore and self._probabilistic_random)):
+            # Softmax probabilistic choice
             with th.no_grad():
                 obs = obs_as_tensor(np.array(obs), self.device)
                 action = self.q_net.predict(obs, deterministic=False)
                 if len(action) == 1:
                     action = action.item()
-        elif not deterministic and np.random.rand() < self.exploration_rate:
-            action = self.action_space.sample()
         else:
+            # Greedy deterministic choice
             with th.no_grad():
                 obs = obs_as_tensor(np.array(obs), self.device)
                 action = self.q_net.predict(obs)

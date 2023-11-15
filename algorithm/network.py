@@ -61,6 +61,7 @@ class QNetwork(nn.Module):
             # Greedy action
             action = q_values.argmax(dim=-1).reshape(-1)
         else:
+            # Softmax probabilistic
             action = th.multinomial(th.softmax(q_values, dim=-1), 1)
         return action
     

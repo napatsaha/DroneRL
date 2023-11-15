@@ -24,7 +24,7 @@ from abc import ABC, abstractmethod
 from skimage import draw
 import cv2
 
-from utils import clamp
+# from utils import clamp
 
 
 # from envs.display import Predator
