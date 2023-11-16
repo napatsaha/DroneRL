@@ -19,24 +19,51 @@ def q3(a):
 
 parent_dir = "colli1"
 run_base_name = "PredRay"
-run_ids = [4,5]
-changing_var = "probabilistic"
-agent_names = [""]
+run_ids = [4,5,6,7]
+# changing_var = ("agent", "probabilistic")
+changing_var = None
+sort = False
+agent_names = ["predator"]
 save = False
 
-run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
+plot_title = None
+legend_title = None
 
-# Extra labels for plotting
-# variable = extract_config(parent_dir=parent_dir, run_name=run_names[0],
-#                           name="environment")
-# variable = next(filter(lambda x: x.startswith(changing_var), variable.keys()))
-variable = changing_var
-labels = [extract_config(parent_dir=parent_dir, run_name=run,
-                          name=["environment", variable]) for run in run_names]
-# Sort again based on ascending values of variable
-run_ids = np.array(run_ids)[np.argsort(labels)]
 run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
-labels = sorted(labels)
+collated_run_names = f"{run_base_name}_{'-'.join(map(str, run_ids))}"
+
+# Future
+# agent_names = extract_config(parent_dir=parent_dir, run_name=run_names[0],
+#                              name="agent_names")
+
+if changing_var is not None:
+    variable = None
+    if isinstance(changing_var, str):
+        variable = changing_var.title()
+    elif isinstance(changing_var, (list, tuple)):
+        variable = '/'.join(changing_var).title()
+
+    if legend_title is None:
+        legend_title = variable
+
+    if plot_title is None:
+        plot_title = f"Effect of changing {variable}"
+
+    labels = [extract_config(parent_dir=parent_dir, run_name=run,
+                             name=changing_var) for run in run_names]
+    # Sort again based on ascending values of variable
+    if sort:
+        run_ids = np.array(run_ids)[np.argsort(labels)]
+        run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
+        labels = sorted(labels)
+else:
+    labels = run_names
+    plot_title = parent_dir
+    legend_title = run_base_name
+
+
+# variable = changing_var
+
 
 # Y-axis
 scalars = ["ep_len_mean", "ep_rew_mean"]
@@ -86,9 +113,10 @@ for agent in agent_names:
 
 # Plot
 # cmap = mpl.colormaps["viridis"]
-# colors = cmap.colors[:len(run_names)]
-cmap = mpl.colormaps.get_cmap("Set1")
-colors = cmap(np.linspace(0,1,num=len(run_names)))
+cmap = mpl.colormaps.get_cmap("Set2")
+# colors = cmap(np.linspace(0,1,num=len(run_names)))
+colors = cmap.colors[:len(run_names)]
+
 
 for agent in agent_names:
     for scalar in scalars:
@@ -98,17 +126,19 @@ for agent in agent_names:
             ax.fill_between(z.index, z['min'], z['max'], color=mpl.colors.to_rgba(c, 0.05))
             ax.fill_between(z.index, z['q1'], z['q3'], color=mpl.colors.to_rgba(c, 0.1))
             ax.plot(z.index, z['median'], color=c, label=lab)
-        plt.legend(loc="upper left", title=variable)
+        plt.legend(loc="upper left", title=legend_title)
         plt.xlabel(z.index.name.replace("_", " ").title())
         plt.ylabel(scalar.replace("_", " ").title())
         plt.title(f"""
-        {scalar.replace("_"," ").title()}
-        Effect of changing {variable}
-        {run_base_name}   Agent: {agent.capitalize()}
-                  """)
+        {plot_title}
+        {scalar.replace("_"," ").title()} | {collated_run_names} | {agent.capitalize()}
+                  """.replace("\t",""))
+        # Save figure
         if save:
             if not os.path.exists(os.path.join("plot", parent_dir)):
                 os.mkdir(os.path.join("plot", parent_dir))
 
-            plt.savefig(os.path.join("plot", parent_dir, f"{variable.replace('_','-')}_{run_base_name}_{'-'.join(map(str, run_ids))}_{agent}_{scalar.replace('_','-')}"))
+            file_name = f"{collated_run_names}_{scalar.replace('_','-')}_{agent}"
+            plt.savefig(os.path.join("plot", parent_dir, file_name))
+
         plt.show()

@@ -14,7 +14,7 @@ def extract_config(path=None,
     if name is not None:
         if isinstance(name, str) or len(name) == 1:
             return config[name]
-        elif isinstance(name, list) and len(name) > 1:
+        elif isinstance(name, (list, tuple)) and len(name) > 1:
             dct = config
             for key in name:
                 dct = dct[key]

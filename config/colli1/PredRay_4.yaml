@@ -13,6 +13,7 @@ agent:
     net_arch:
     - 64
     - 64
+  probabilistic: false
   stats_window_size: 100
   target_update_interval: 600
   tau: 1.0
