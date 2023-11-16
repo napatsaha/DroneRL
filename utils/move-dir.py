@@ -19,7 +19,9 @@ def restructure_log_dir(parent_dir, agent_names: Union[str, List[str]] = ("preda
     for dirpath, dirnames, filenames in walk:
         # if there is a csv file in here
         csv_files = [*filter(lambda x: x.endswith("csv"), filenames)]
-        if len(csv_files) > 0:
+
+        current_dir = os.path.split(dirpath)[-1]
+        if len(csv_files) > 0 and current_dir not in agent_names:
             for file, agent in zip(csv_files, agent_names):
                 # Prepare new directory
                 new_dir = os.path.join(dirpath, agent)

@@ -17,7 +17,7 @@ if __name__ == "__main__":
     run_name = "PredRay"
     experiment_file = None
     config_file = "config/colli1/default.yaml"
-    num_reps = 10
+    num_reps = 3
     verbose = 1
     continue_run = False # False
     run_id = None # None

@@ -19,7 +19,7 @@ def q3(a):
 
 parent_dir = "colli1"
 run_base_name = "PredRay"
-run_ids = [4,5,6,7]
+run_ids = [4,6,7,8]
 # changing_var = ("agent", "probabilistic")
 changing_var = None
 sort = False
