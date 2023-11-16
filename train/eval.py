@@ -43,10 +43,10 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 if __name__ == "__main__":
     parent_dir = "colli1"
     run_base_name = "PredRay"
-    run_id = 5
+    run_id = 6
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,
-         frame_delay=10, num_eps=2, #min_distance = 0.2,
+         frame_delay=10, num_eps=5, #min_distance = 0.2,
          # probabilistic=True,
          show_rays=True)
