@@ -24,10 +24,19 @@ class DroneCatch(Env):
     """
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
-    agents = List[Mover]
     version = "v1"
-    
+
+    agents: List[Mover]
+    active_agents: List[Mover]
+    nonactive_agents: List[Mover]
+    observation_space = Union[Space, List[Space]]
+    action_space = Union[Space, List[Space]]
+    prey = Union[Mover, List[Mover]]
+    predator = Union[Mover, List[Mover]]
+
     def __init__(self,
+                 num_preys: int = 0,
+                 num_predators: int = 1,
                  obs_image: bool=False,
                  resolution: int=800,
                  icon_scale: float=0.1,
@@ -85,10 +94,14 @@ class DroneCatch(Env):
 
         # Fields
 
+        self.obs_image = obs_image
+        self.num_predators = num_predators
+        self.num_preys = num_preys
+
+        # Raycasting
         self.num_rays = num_rays
         self.rays = []
         self.show_rays = show_rays
-        self.cardinal_prey = cardinal_prey
         self.verbose = verbose
 
         # Build a canvas
@@ -102,70 +115,94 @@ class DroneCatch(Env):
         self.icon_scale = icon_scale
         self.icon_size = round(icon_scale * self.canvas_width)
         self.move_speed = round(predator_move_speed * 0.01 * self.canvas_width)
-        
-        # Define action space (4 directions + stationary)
-        self.action_space = spaces.Discrete(5,)
-        
-        # Define observation space (xy for prey and predator and distance)
-        self.obs_image = obs_image
-        if self.obs_image:
-            self.observation_space = spaces.Box(
-                np.zeros(self.canvas_shape), 
-                np.ones(self.canvas_shape),
-                dtype=np.float64)
-        else:
-            self.observation_space = spaces.Box(
-                low = np.zeros(2*self.num_rays),
-                high = np.ones(2*self.num_rays),
-                dtype = np.float64)
-        
+
+
+
+        ##############
+        # Prey, Predator and observation, action spaces
+        self.prey = []
+        self.predator = []
+        self.action_space = []
+        self.observation_space = []
+        self.agents = []
+        self.active_agents = []
+        self.nonactive_agents = []
+        self.agent_list = []
+
         # Predator/AngularPrey configurations
         self.predator_move_speed = predator_move_speed
         self.prey_move_speed = prey_move_speed
+        self.cardinal_prey = cardinal_prey
         # For non cardinal movement
         self.prey_move_angle = prey_move_angle
         self.radius = radius
 
+        if self.obs_image:
+            obs_space = spaces.Box(
+                low = np.zeros(self.canvas_shape),
+                high= np.ones(self.canvas_shape),
+                dtype=np.float64
+            )
+        else:
+            obs_space = spaces.Box(
+                low=np.zeros(2 * self.num_rays),
+                high=np.ones(2 * self.num_rays),
+                dtype=np.float64)
+
+        # Initialises Predator and AngularPrey classes
+        for i in range(max(1, self.num_preys)):
+            if self.cardinal_prey:
+                agent = CardinalPrey(
+                    canvas_size=self.canvas_shape,
+                    icon_size=(self.icon_size, self.icon_size),
+                    speed=self.prey_move_speed)
+            else:
+                agent = AngularPrey(
+                    self.canvas_shape,
+                    angle_delta=self.prey_move_angle,
+                    radius=round(self.radius * self.canvas_width / 2),
+                    icon_size=(self.icon_size, self.icon_size)
+                )
+
+            self.prey.append(agent)
+            self.agents.append(agent)
+            if self.num_preys > 0:
+                self.active_agents.append(agent)
+                self.action_space.append(agent.action_space)
+                self.observation_space.append(obs_space)
+                self.agent_list.append(f"{agent.name}{i + 1}")
+            else:
+                self.nonactive_agents.append(agent)
+
+        for i in range(max(1, self.num_predators)):
+            agent = Predator(canvas_size=self.canvas_shape,
+                             icon_size=(self.icon_size, self.icon_size),
+                             speed=self.predator_move_speed)
+            self.predator.append(agent)
+            self.agents.append(agent)
+            if self.num_predators > 0:
+                self.active_agents.append(agent)
+                self.action_space.append(agent.action_space)
+                self.observation_space.append(obs_space)
+                self.agent_list.append(f"{agent.name}{i + 1}")
+            else:
+                self.nonactive_agents.append(agent)
+        
+
+
         # Parameters related to spawning
         self.random_prey = random_prey
         self.random_predator = random_predator
-        if min_distance <= 1:
-            assert min_distance >= 0, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
-            self.min_distance = min_distance
-        else:
-            assert min_distance < resolution, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
-            self.min_distance = float(min_distance) / resolution
+        self._verify_min_distance(min_distance, resolution)
 
+
+
+
+        ###########
         # Obstacles
         self.obstacle_list = []
         self._populate_obstacles()
-
-        # Initialises Predator and AngularPrey classes
-        if self.cardinal_prey:
-            self.prey = CardinalPrey(
-                canvas_size=self.canvas_shape,
-                icon_size=(self.icon_size, self.icon_size),
-                speed=self.prey_move_speed)
-        else:
-            self.prey = AngularPrey(
-                self.canvas_shape,
-                angle_delta=self.prey_move_angle,
-                radius=round(self.radius * self.canvas_width / 2),
-                icon_size=(self.icon_size, self.icon_size)
-            )
-
-        self.predator = Predator(canvas_size=self.canvas_shape,
-                         icon_size=(self.icon_size, self.icon_size),
-                         speed=self.predator_move_speed)
-        # self.prey = AngularPrey(self.canvas_shape,
-        #                         angle_delta=prey_move_angle,
-        #                         radius=round(self.radius * self.canvas_width/2),
-        #                         icon_size=(self.icon_size, self.icon_size))
-        # self.predator = Predator(self.canvas_shape,
-        #                          icon_size=(self.icon_size, self.icon_size))
-        self.agents = [self.prey, self.predator]
-
-        self._update_obstacles()
+        self._update_obstacles() # Updates on each agent
         
         # Episode Control variables
         self.trunc_limit = trunc_limit
@@ -187,15 +224,13 @@ class DroneCatch(Env):
             2555904: 4, # Right Arrow
             }
 
-        # # Build a canvas
-        # self.canvas_shape = resolution
-        # self.canvas = np.ones(self.canvas_shape)
-        
-        # # Define action space (4 directions + stationary)
-        # self.action_space = spaces.Discrete(5,)
-        
-        # # Define observation space (xy for prey and predator and distance)
-        # self.observation_space = spaces.Box(low = np.zeros())
+    def _verify_min_distance(self, min_distance, resolution):
+        if min_distance <= 1:
+            assert min_distance >= 0, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
+            self.min_distance = min_distance
+        else:
+            assert min_distance < resolution, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
+            self.min_distance = float(min_distance) / resolution
 
     def _update_obstacles(self):
         for agent in self.agents:
@@ -244,22 +279,18 @@ class DroneCatch(Env):
                     object.randomise_position()
                 else:
                     object.reset_position()
-            # if self.random_prey:
-            #     self.randomise_prey_position()
-            # if self.random_predator:
-            #     self.randomise_predator_position()
 
             distance = self.calculate_distance(normalise=True)
 
             if not self.detect_collision() and distance > self.min_distance:
-                if self.verbose == 3:
-                    print(f"{distance:.3f}")
-                elif self.verbose == 4:
-                    distance = self.calculate_distance(normalise=False)
-                    print(f"{distance:.1f}")
+                # if self.verbose == 3:
+                #     print(f"{distance:.3f}")
+                # elif self.verbose == 4:
+                #     distance = self.calculate_distance(normalise=False)
+                #     print(f"{distance:.1f}")
                 break
 
-    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action: Union[List[int], int]) -> tuple[np.ndarray, float, bool, bool, dict]:
         """
         Take an action and transition the environment to the next step.
         
@@ -289,13 +320,9 @@ class DroneCatch(Env):
         reward = 0.0
         done, truncated = False, False
         info = {}
-        
-        # Move prey
-        self.prey.move(self.prey.sample_action())
-        
-        # Move Predator
-        self.predator.move(action)
-        
+
+        self._move_agents(action)
+
         # Calculate reward
         reward = self.dist_mult * self.calculate_reward()
         
@@ -321,7 +348,21 @@ class DroneCatch(Env):
             info["is_success"] = False
     
         return obs, reward, done, truncated, info
-    
+
+    def _move_agents(self, actions: Union[int, List[int]]):
+        if not isinstance(actions, (list, tuple, np.ndarray)):
+            actions = [actions]
+
+        assert len(self.active_agents) == len(actions), \
+            "Number of received actions and active agents in" \
+            "the environment do not match."
+
+        for agent, action in zip(self.active_agents, actions):
+            agent.move(action)
+
+        for agent in self.nonactive_agents:
+            agent.move(agent.sample_action())
+
     def render(self) -> Union[int, np.ndarray, None]:
         
         if self.render_mode == "human":
@@ -354,40 +395,28 @@ class DroneCatch(Env):
 
         if self.show_rays:
             self.canvas.draw(self.rays)
-            
-    def convert_action(self, action):
-        """
-        Converts scalar action into (x,y) directional movement.
-        
-        0: (0, 0)
-        1: (0, 1) # Up
-        2: (-1, 0) # left
-        3: (0, -1) # Down
-        4: (1, 0) # Right
 
-        Parameters
-        ----------
-        action : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        x : TYPE
-            DESCRIPTION.
-        y : TYPE
-            DESCRIPTION.
-
+    def sample_action(self) -> List[int]:
         """
-        if action > 0:
-            x = np.cos(action * np.pi/2).astype('int')
-            y = np.sin(action * np.pi/2).astype('int')
-        else:
-            x,y = 0,0
-        return x,y
-    
-    def detect_collision(self, object1: Mover=None, object2: Mover=None) -> bool:
+        Sample a random action from each of the active agents.
         """
-        Detect whether the Predator and AngularPrey drone are in contact with each other (overlapping).
+        actions = []
+        for agent in self.active_agents:
+            a = agent.sample_action()
+            actions.append(a)
+        return actions
+
+    def detect_collision(self) -> bool:
+        for prey in self.prey:
+            for predator in self.predator:
+                has_collided = self._detect_collision_between_objects(prey, predator)
+                if has_collided:
+                    return True
+        return False
+
+    def _detect_collision_between_objects(self, object1: Mover, object2: Mover) -> bool:
+        """
+        Detect whether two drones are in contact with each other (overlapping).
 
         Returns
         -------
@@ -395,38 +424,29 @@ class DroneCatch(Env):
             Collided or not.
 
         """
-        if object1 is None:
-            object1 = self.predator
-        if object2 is None:
-            object2 = self.prey
-
         x_collided = np.abs(object1.x - object2.x) <= (object1.icon_w/2 + object2.icon_w/2)
         y_collided = np.abs(object1.y - object2.y) <= (object1.icon_h/2 + object2.icon_h/2)
         
         return x_collided & y_collided
-    
-    def calculate_distance(self,
-                           object1: Mover=None, object2: Mover=None,
-                           normalise: bool=False) -> float:
+
+    def calculate_distance(self, normalise: bool = True) -> float:
         """
-        Calculate current distance between Predator and AngularPrey.
-
-        Parameters
-        ----------
-        normalise : bool, optional
-            Whether to scale the position between 0 and 1 by the canvas shape. The default is False.
-
-        Returns
-        -------
-        float
-            Euclidean Distance between Predator and AngularPrey.
-
+        Calculate globally-shortest distance between predators and preys.
         """
-        if object1 is None:
-            object1 = self.predator
-        if object2 is None:
-            object2 = self.prey
+        distances = []
+        for i, prey in enumerate(self.prey):
+            for j, predator in enumerate(self.predator):
+                dist = self._distance_between_objects(prey, predator, normalise=normalise)
+                distances.append(dist)
 
+        return min(distances)
+
+    def _distance_between_objects(self,
+                                  object1: Mover, object2: Mover,
+                                  normalise: bool = False) -> float:
+        """
+        Calculate Euclidean distance between two Mover objects.
+        """
         scale = np.array(self.canvas_shape) if normalise else 1.0
         pos1 = object1.get_position() / scale
         pos2 = object2.get_position() / scale
@@ -449,7 +469,7 @@ class DroneCatch(Env):
         
         return intermediate_reward
     
-    def get_observation(self) -> np.ndarray:
+    def get_observation(self) -> List[np.ndarray]:
         """
         Obtain observation at current time step.
 
@@ -459,42 +479,39 @@ class DroneCatch(Env):
             2D Array if obs_image, else (5,) 1D array.
 
         """
-        if self.obs_image:
-            obs = self.canvas.canvas
-            return obs
-        else:
-            # Update position of opposite agent in obstacle
-            # self.predator.update_obstacle(len(self.obstacle_list), self.prey)
+        if self.show_rays:
+            self.rays = []
+        observation = []
+        for agent in self.active_agents:
+            if self.obs_image:
+                obs = self.canvas.canvas
+                observation.append(obs)
+            else:
+                # Radial raycasting to obtain distances and points of contact
+                obs, rays, obj_types = agent.radial_raycast(
+                    agent.obstacle_list, self.canvas,
+                    return_rays=self.show_rays,
+                    num_rays=self.num_rays
+                )
 
-            # Radial raycasting to obtain distances and points of contact
-            obs, rays, obj_types = self.predator.radial_raycast(
-                [*self.predator.obstacle_list, self.prey], self.canvas,
-                return_rays=self.show_rays,
-                num_rays=self.num_rays
-            )
+                # print(rays)
 
-            collision_dict = {
-                "obstacle": 0,
-                "prey": 1,
-                "predator": -1
-            }
+                collision_dict = {
+                    "obstacle": 0,
+                    "prey": 1,
+                    "predator": -1
+                }
 
-            # Convert and Normalise values
-            obs = obs / self.max_width
-            obj_types = np.vectorize(collision_dict.get)(obj_types)
-            obs = np.r_[obs, obj_types]
+                # Convert and Normalise values
+                obs = obs / self.max_width
+                obj_types = np.vectorize(collision_dict.get)(obj_types)
+                obs = np.r_[obs, obj_types]
+                observation.append(obs)
 
-            if self.show_rays:
-                self.rays = rays
-
-            # pred_pos = self.predator.get_position() / np.array(self.canvas_shape)
-            # prey_pos = self.prey.get_position() / np.array(self.canvas_shape)
-            #
-            # dist = np.linalg.norm(pred_pos - prey_pos)
-            #
-            # obs = np.r_[pred_pos, prey_pos, dist]
+                if self.show_rays:
+                    self.rays.extend(rays)
             
-            return obs
+        return observation
 
     def set_frame_delay(self, frame_delay):
         self.frame_delay = frame_delay

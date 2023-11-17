@@ -116,6 +116,12 @@ class Mover(Circle):
     def randomise_position(self):
         pass
 
+    def move(self, action: int):
+        pass
+
+    def sample_action(self) -> int:
+        pass
+
     def add_obstacle(self, obstacle: Union[List[Geometry], Geometry]):
         if isinstance(obstacle, list):
             self.obstacle_list.extend(obstacle)
