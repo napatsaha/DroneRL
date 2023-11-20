@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 
 from envs.display import Predator, AngularPrey, Mover, CardinalPrey
 from envs.geometry import Canvas, LineSegment, Point, convert_line_to_box
+from utils.tools import safe_simplify
 
 
 class DroneCatch(Env):
@@ -188,7 +189,8 @@ class DroneCatch(Env):
             else:
                 self.nonactive_agents.append(agent)
         
-
+        self.observation_space = safe_simplify(self.observation_space)
+        self.action_space = safe_simplify(self.action_space)
 
         # Parameters related to spawning
         self.random_prey = random_prey
@@ -290,7 +292,14 @@ class DroneCatch(Env):
                 #     print(f"{distance:.1f}")
                 break
 
-    def step(self, action: Union[List[int], int]) -> tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action: Union[List[int], int]) -> \
+            tuple[
+                Union[np.ndarray, List[np.ndarray]],
+                Union[float, List[float]],
+                bool,
+                bool,
+                dict
+            ]:
         """
         Take an action and transition the environment to the next step.
         
@@ -324,7 +333,7 @@ class DroneCatch(Env):
         self._move_agents(action)
 
         # Calculate reward
-        reward = self.dist_mult * self.calculate_reward()
+        reward = self.get_reward(terminal=False)
         
         # Observation before termination
         obs = self.get_observation()
@@ -336,7 +345,7 @@ class DroneCatch(Env):
         # Check for collision
         if self.detect_collision():
             # self.reset()
-            reward = 1.0 * self.reward_mult
+            reward = self.get_reward(terminal=True)
             done = True
             info["is_success"] = True
         
@@ -348,6 +357,24 @@ class DroneCatch(Env):
             info["is_success"] = False
     
         return obs, reward, done, truncated, info
+
+    def get_reward(self, terminal: bool=False):
+        if terminal:
+            # reward = 1.0 * self.reward_mult
+            terminal_reward = [1.0 if ag.name == "predator" else -1.0 for ag in self.active_agents]
+            reward = self.reward_mult * np.array(terminal_reward)
+        else:
+            # reward = self.dist_mult * self.calculate_reward()
+            reward = []
+            for ag in self.active_agents:
+                if ag.name == "predator":
+                    reward.append(- self.calculate_distance(normalise=True))
+                else:
+                    reward.append(self.calculate_distance(normalise=True))
+
+            reward = self.dist_mult * np.array(reward)
+
+        return safe_simplify(reward)
 
     def _move_agents(self, actions: Union[int, List[int]]):
         if not isinstance(actions, (list, tuple, np.ndarray)):
@@ -413,6 +440,7 @@ class DroneCatch(Env):
                 if has_collided:
                     return True
         return False
+
 
     def _detect_collision_between_objects(self, object1: Mover, object2: Mover) -> bool:
         """
@@ -511,7 +539,7 @@ class DroneCatch(Env):
                 if self.show_rays:
                     self.rays.extend(rays)
             
-        return observation
+        return safe_simplify(observation)
 
     def set_frame_delay(self, frame_delay):
         self.frame_delay = frame_delay

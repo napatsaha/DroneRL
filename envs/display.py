@@ -74,21 +74,7 @@ class Mover(Circle):
 
         self.clamp_position()
 
-    def clamp_position_by_obstacle(self, obstacle: LineSegment):
-        """Clamps position of circle with an obstable (line), to prevent
-        passing through obstacle when moving."""
-        G = self.closest_position_to_line(obstacle)
 
-        if G is None:
-            return
-        else:
-            sign_x, sign_y = self.direction_from(obstacle)
-
-            clamp_x = min if sign_x < 0 else max
-            clamp_y = min if sign_y < 0 else max
-
-            self.x = clamp_x(self.x, G.x)
-            self.y = clamp_y(self.y, G.y)
         
     def clamp_position(self):
         # Clamp by obstacle
@@ -106,7 +92,23 @@ class Mover(Circle):
         # Clamp by canvas edge
         self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
         self.y = self.clamp(self.y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
-        
+
+    def clamp_position_by_obstacle(self, obstacle: LineSegment):
+        """Clamps position of circle with an obstable (line), to prevent
+        passing through obstacle when moving."""
+        G = self.closest_position_to_line(obstacle)
+
+        if G is None:
+            return
+        else:
+            sign_x, sign_y = self.direction_from(obstacle)
+
+            clamp_x = min if sign_x < 0 else max
+            clamp_y = min if sign_y < 0 else max
+
+            self.x = clamp_x(self.x, G.x)
+            self.y = clamp_y(self.y, G.y)
+
     def clamp(self, n, minn, maxn):
         return max(min(maxn, n), minn)
 

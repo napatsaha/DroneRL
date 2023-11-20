@@ -42,8 +42,8 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 
 if __name__ == "__main__":
     parent_dir = "colli1"
-    run_base_name = "PredRay"
-    run_id = 6
+    run_base_name = "PredPrey"
+    run_id = 3
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,

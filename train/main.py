@@ -14,10 +14,10 @@ if __name__ == "__main__":
     ##########
     # Training Details
     parent_dir = "colli1"
-    run_name = "PredRay"
+    run_name = "PredPrey"
     experiment_file = None
-    config_file = "config/colli1/default.yaml"
-    num_reps = 3
+    config_file = "config/colli1/default2.yaml"
+    num_reps = 4
     verbose = 1
     continue_run = False # False
     run_id = None # None
