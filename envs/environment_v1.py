@@ -5,7 +5,7 @@ Created on Thu Jul 27 14:52:20 2023
 @author: napat
 """
 
-from typing import List, Union
+from typing import List, Union, Optional
 
 import gymnasium as gym
 from gymnasium import Env, Space, spaces
@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from envs.display import Predator, AngularPrey, Mover, CardinalPrey
-from envs.geometry import Canvas, LineSegment, Point, convert_line_to_box
+from envs.geometry import Canvas, LineSegment, Point, convert_line_to_box, read_obstacle_config
 from utils.tools import safe_simplify
 
 
@@ -55,6 +55,7 @@ class DroneCatch(Env):
                  trunc_limit: int=100,
                  show_rays: bool=False,
                  num_rays: int=8,
+                 obstacle_file: str=None,
                  frame_delay: int=50,
                  render_mode: str="human",
                  manual_control: bool=False):
@@ -203,7 +204,7 @@ class DroneCatch(Env):
         ###########
         # Obstacles
         self.obstacle_list = []
-        self._populate_obstacles()
+        self._populate_obstacles(obstacle_file)
         self._update_obstacles() # Updates on each agent
         
         # Episode Control variables
@@ -241,14 +242,17 @@ class DroneCatch(Env):
             # Add other agents
             agent.add_obstacle([ag for ag in self.agents if ag != agent])
 
-    def _populate_obstacles(self):
-        line = LineSegment(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
-                           Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
-        line2 = LineSegment(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
-                            Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
-        for obs in (line, line2):
-            boxed_obs = convert_line_to_box(obs, self.canvas_width * 0.01)
-            self.obstacle_list.extend(boxed_obs)
+    def _populate_obstacles(self, file: Optional[str]):
+        # line = LineSegment(Point(0.3 * self.canvas_width, 0.6 * self.canvas_width),
+        #                    Point(0.7 * self.canvas_width, 0.2 * self.canvas_width))
+        # line2 = LineSegment(Point(0.5 * self.canvas_width, 0.5 * self.canvas_width),
+        #                     Point(0.8 * self.canvas_width, 0.8 * self.canvas_width))
+        # for obs in (line, line2):
+        #     boxed_obs = convert_line_to_box(obs, self.canvas_width * 0.01)
+        #     self.obstacle_list.extend(boxed_obs)
+        if file is not None:
+            obstacles = read_obstacle_config(file, self.canvas)
+            self.obstacle_list.extend(obstacles)
         # pass
 
     def reset(self, seed=None):

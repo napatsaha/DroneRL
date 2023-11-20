@@ -771,6 +771,17 @@ def convert_line_to_box(line: LineSegment, width: float):
     return box
 
 
+def read_obstacle_config(file: str, canvas: Canvas) -> List[LineSegment]:
+    data = np.genfromtxt(file, delimiter=",")
+    obstacles = []
+    for x1, y1, x2, y2, width in data:
+        line = LineSegment(Point(x1 * canvas.width, y1 * canvas.height),
+                           Point(x2 * canvas.width, y2 * canvas.height))
+        lines = convert_line_to_box(line, width * canvas.width)
+        obstacles.extend(lines)
+    return obstacles
+
+
 if __name__ == "__main__":
     point = Point(1, 1)
 

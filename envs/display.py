@@ -93,7 +93,7 @@ class Mover(Circle):
         self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
         self.y = self.clamp(self.y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
 
-    def clamp_position_by_obstacle(self, obstacle: LineSegment):
+    def clamp_position_by_obstacle(self, obstacle: Union[LineSegment, Circle]):
         """Clamps position of circle with an obstable (line), to prevent
         passing through obstacle when moving."""
         G = self.closest_position_to_line(obstacle)

@@ -5,7 +5,7 @@ from envs.environment_v1 import DroneCatch
 
 
 env = DroneCatch(
-    num_preys=2,
+    num_preys=1,
     num_predators=1,
     manual_control=True,
     icon_scale=0.05,
@@ -13,8 +13,9 @@ env = DroneCatch(
     prey_move_speed=2,
     predator_move_speed=2,
     show_rays=True,
-    num_rays=8,
-    frame_delay=10
+    num_rays=16,
+    frame_delay=10,
+    obstacle_file="test_codes/obstacle.csv"
 )
 
 for ep in range(5):
@@ -27,7 +28,7 @@ for ep in range(5):
     while not done:
         action = env.sample_action()
         if env.manual_control:
-            action[0] = custom
+            action[1] = custom
 
         state, reward, terminated, truncated, info = env.step(action)
         # print(state)
