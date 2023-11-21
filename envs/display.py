@@ -11,7 +11,7 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
-from .geometry import Circle, Point, LineSegment, Canvas, Geometry
+from .geometry import Circle, Point, LineSegment, Canvas, Geometry, closest_point_on_line
 
 
 class Mover(Circle):
@@ -101,10 +101,15 @@ class Mover(Circle):
         if G is None:
             return
         else:
-            sign_x, sign_y = self.direction_from(obstacle)
+            P = closest_point_on_line(Point(self.x, self.y), obstacle)
+            sign_x, sign_y = self.direction_from(P)
 
-            clamp_x = min if sign_x < 0 else max
-            clamp_y = min if sign_y < 0 else max
+            clamp_x = min if sign_x <= 0 else max
+            clamp_y = min if sign_y <= 0 else max
+
+            # if self.name == "predator":
+            #     print("x", sign_x, clamp_x.__name__, self.x, G.x)
+            #     print("y", sign_y, clamp_y.__name__, self.y, G.y)
 
             self.x = clamp_x(self.x, G.x)
             self.y = clamp_y(self.y, G.y)

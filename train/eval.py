@@ -42,11 +42,11 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 
 if __name__ == "__main__":
     parent_dir = "colli1"
-    run_base_name = "PredRay"
-    run_id = 4
+    run_base_name = "PredPrey"
+    run_id = 3
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,
-         frame_delay=10, num_eps=5, #min_distance = 0.2,
-         obstacle_file="test_codes/obstacle-null.csv",
+         frame_delay=5, num_eps=5, #min_distance = 0.2,
+         obstacle_file="test_codes/obstacle.csv",
          show_rays=True)

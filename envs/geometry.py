@@ -313,10 +313,12 @@ class Ray(InfLine):
         if isinstance(other, InfLine):
             P = super().intersect(other)
 
-            if P is not None and P in self and P in other:
-                return P
-            else:
-                return None
+            if P is not None:
+                in_self = P in self
+                in_other = P in other
+                if in_self and in_other:
+                    return P
+            return None
         elif isinstance(other, Circle):
             P = other.intersect(self)
 
@@ -397,11 +399,26 @@ class LineSegment(InfLine):
         # lies_on_line = np.abs(point.y - self.substitute(x=point.x)) <= np.finfo(np.float32).eps
         value_check = super().__contains__(point)
         # Then check if the point is within the same (x,y) range as the line segment
-        inside_x = min(self.point1.x, self.point2.x) <= point.x <= max(self.point1.x, self.point2.x)
-        inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
+        inside_x, inside_y = self._check_point_in_range(point)
         range_check = inside_x and inside_y
         check = value_check & range_check
         return check
+
+    def _check_point_in_range(self, point):
+        # Horizontal line
+        if self.a == 0:
+            inside_x = min(self.point1.x, self.point2.x) <= point.x <= max(self.point1.x, self.point2.x)
+            inside_y = np.abs(point.y - self.point1.y) < 1e-7
+
+        # Vertical line
+        elif self.b == 0:
+            inside_x = np.abs(point.x - self.point1.x) < 1e-7
+            inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
+
+        else:
+            inside_x = min(self.point1.x, self.point2.x) <= point.x <= max(self.point1.x, self.point2.x)
+            inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
+        return inside_x, inside_y
 
     def draw_on(self, canvas: 'Canvas'):
         xx, yy = draw.line(
@@ -556,7 +573,7 @@ class Circle(Geometry):
             d = distance_line_point(line, center)
             return d <= self.radius
 
-    def direction_from(self, line: LineSegment):
+    def direction_from(self, point: Point):
         """
         Return (x, y) unit vector telling the direction of this object is in relation
         to another object (e.g. a line).
@@ -564,10 +581,10 @@ class Circle(Geometry):
         For example, if this circle is below and right of a line, this method will return
         (+1.0, -1.0).
         """
-        sign_y = np.sign(self.y - line.substitute(x=self.x))
-        sign_x = np.sign(self.x - line.substitute(y=self.y))
-        # sign_y = np.sign(self.y - point.y)
-        # sign_x = np.sign(self.x - point.x)
+        # sign_y = np.sign(self.y - line.substitute(x=self.x))
+        # sign_x = np.sign(self.x - line.substitute(y=self.y))
+        sign_y = np.sign(self.y - point.y)
+        sign_x = np.sign(self.x - point.x)
 
         return sign_x, sign_y
 
@@ -583,7 +600,7 @@ class Circle(Geometry):
         P = closest_point_on_line(Point(self.x, self.y), line)
 
         # Determines whether circle is above or underneath the line
-        sign_x, sign_y = self.direction_from(line)
+        sign_x, sign_y = self.direction_from(P)
 
         # Deviation from P to safe point G
         x = sign_x * self.radius * np.sin(np.abs(line.angle))
