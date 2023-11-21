@@ -7,15 +7,15 @@ from envs.environment_v1 import DroneCatch
 env = DroneCatch(
     num_preys=0,
     num_predators=1,
-    manual_control=False,
+    manual_control=True,
     icon_scale=0.05,
     min_distance=0.1,
     prey_move_speed=2,
-    predator_move_speed=2,
+    predator_move_speed=4,
     show_rays=True,
-    num_rays=64,
+    num_rays=16,
     frame_delay=10,
-    obstacle_file="test_codes/obstacle-null.csv"
+    obstacle_file="test_codes/obstacle-2.csv"
 )
 
 for ep in range(5):

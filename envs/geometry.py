@@ -723,9 +723,9 @@ def distance_point_to_point(point1: Point, point2: Point):
 def slope_between_points(point1: Point, point2: Point):
     delta_x = point2.x - point1.x
     delta_y = point2.y - point1.y
-    try:
+    if delta_x != 0:
         return delta_y / delta_x
-    except ZeroDivisionError:
+    else:
         return np.Inf
 
 
