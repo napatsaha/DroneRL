@@ -439,6 +439,9 @@ class LineSegment(InfLine):
         else:
             return f"LineSegment({self.point2}, {self.point1})"
 
+    def __str__(self):
+        return repr(self)
+
 
 class Rectangle(LineSegment):
     """

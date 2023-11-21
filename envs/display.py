@@ -11,6 +11,7 @@ import numpy as np
 from gymnasium import spaces
 import matplotlib.pyplot as plt
 
+from utils.tools import identity
 from .geometry import Circle, Point, LineSegment, Canvas, Geometry, closest_point_on_line
 
 
@@ -59,24 +60,22 @@ class Mover(Circle):
         super().__init__(self.x_max/2, self.y_max/2, radius)
         
     def set_position(self, x, y):
-        self.x = x
-        self.y = y
+        # self.x = x
+        # self.y = y
         
-        self.clamp_position()
+        self.x, self.y = self.clamp_position(x, y)
         
     def get_position(self, normalise=False):
         scale = self.x_max if normalise else 1.0
         return np.array((self.x, self.y)) / scale
         
     def move_to_position(self, x, y):
-        self.x += x
-        self.y += y
+        x = self.x + x
+        y = self.y + y
 
-        self.clamp_position()
-
-
+        self.x, self.y = self.clamp_position(x, y)
         
-    def clamp_position(self):
+    def clamp_position(self, x, y):
         # Clamp by obstacle
         if len(self.obstacle_list) > 0:
             # Find nearest in-sight obstacle
@@ -84,35 +83,40 @@ class Mover(Circle):
             idx = np.argmin(dist_list)
             obstacle = self.obstacle_list[idx]
             # Clamp only to nearest effective obstacle
-            self.clamp_position_by_obstacle(obstacle)
+            x, y = self.clamp_position_by_obstacle(x, y, obstacle)
 
         # for obs in self.obstacle_list:
         #     self.clamp_position_by_obstacle(obs)
 
         # Clamp by canvas edge
-        self.x = self.clamp(self.x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
-        self.y = self.clamp(self.y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
+        x = self.clamp(x, round(self.x_min + self.icon_w/2), round(self.x_max - self.icon_w/2))
+        y = self.clamp(y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
 
-    def clamp_position_by_obstacle(self, obstacle: Union[LineSegment, Circle]):
-        """Clamps position of circle with an obstable (line), to prevent
+        return x, y
+
+    def clamp_position_by_obstacle(self, x, y, obstacle: Union[LineSegment, Circle]):
+        """Clamps position of circle with an obstacle (line), to prevent
         passing through obstacle when moving."""
         G = self.closest_position_to_line(obstacle)
 
         if G is None:
-            return
+            return x, y
         else:
             P = closest_point_on_line(Point(self.x, self.y), obstacle)
             sign_x, sign_y = self.direction_from(P)
 
-            clamp_x = min if sign_x <= 0 else max
-            clamp_y = min if sign_y <= 0 else max
+            clamp_x = identity if sign_x == 0 else min if sign_x < 0 else max
+            clamp_y = identity if sign_y == 0 else min if sign_y < 0 else max
 
-            # if self.name == "predator":
-            #     print("x", sign_x, clamp_x.__name__, self.x, G.x)
-            #     print("y", sign_y, clamp_y.__name__, self.y, G.y)
+            if self.name == "predator":
+                print(obstacle)
+                print("x", sign_x, clamp_x.__name__, x, G.x)
+                print("y", sign_y, clamp_y.__name__, y, G.y)
 
-            self.x = clamp_x(self.x, G.x)
-            self.y = clamp_y(self.y, G.y)
+            x = clamp_x(x, G.x)
+            y = clamp_y(y, G.y)
+
+        return x, y
 
     def clamp(self, n, minn, maxn):
         return max(min(maxn, n), minn)

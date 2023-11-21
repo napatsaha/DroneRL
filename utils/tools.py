@@ -12,3 +12,11 @@ def safe_simplify(item):
         if len(item) == 1:
             return item[0]
     return item
+
+
+def identity(a, b):
+    """
+    Returns the first of the two arguments no matter what.
+    Useful as a counterpart to min() and max().
+    """
+    return a
