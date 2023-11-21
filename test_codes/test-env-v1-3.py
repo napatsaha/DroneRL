@@ -15,7 +15,7 @@ env = DroneCatch(
     show_rays=True,
     num_rays=16,
     frame_delay=10,
-    obstacle_file="test_codes/obstacle.csv"
+    obstacle_file="test_codes/obstacle-null.csv"
 )
 
 for ep in range(5):

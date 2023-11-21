@@ -92,15 +92,28 @@ class InfLine(Geometry):
         self.b = b
         self.a = a
 
-        try:
-            self.slope = - self.a / self.b
-        except ZeroDivisionError:
-            self.slope = np.nan
+        self._create_meta_values()
 
-        try:
+    def _create_meta_values(self):
+        """
+        Automatic generation of slopes, intercepts and angles
+        """
+        # Horizontal lines
+        if self.a == 0:
+            self.slope = 0
+            self.angle = 0
             self.intercept = - self.c / self.b
-        except ZeroDivisionError:
+        # Vertical lines
+        elif self.b == 0:
+            self.slope = np.Inf
+            self.angle = np.pi / 2
             self.intercept = np.nan
+        # Any other cases
+        else:
+            self.slope = - self.a / self.b
+            self.angle = np.arctan(self.slope)
+            self.intercept = - self.c / self.b
+
 
     @classmethod
     def from_slope(cls, slope: float, point: Point):
@@ -181,6 +194,18 @@ class InfLine(Geometry):
         segment = LineSegment(ends[0], ends[1])
         return segment.draw_on(canvas)
 
+    def find_perpendicular(self, point: Point) -> 'InfLine':
+        """
+        Return a line perpendicular to this line which passes through a certain point.
+        """
+        # line ax + by + c = 0, and point (u, v)
+        # perpendicular to bx - ay + av - bu = 0
+        a = self.b
+        b = - self.a
+        c = self.a * point.y - self.b * point.x
+
+        return InfLine(a, b, c)
+
     @classmethod
     def _convert_slope(self, slope: float, point: Point) -> tuple:
         """
@@ -224,6 +249,9 @@ class InfLine(Geometry):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.a}, {self.b}, {self.c})"
+
+    def __eq__(self, other: 'InfLine'):
+        return self.a == other.a and self.b == other.b and self.c == other.c
 
 
 class Ray(InfLine):
@@ -538,6 +566,8 @@ class Circle(Geometry):
         """
         sign_y = np.sign(self.y - line.substitute(x=self.x))
         sign_x = np.sign(self.x - line.substitute(y=self.y))
+        # sign_y = np.sign(self.y - point.y)
+        # sign_x = np.sign(self.x - point.x)
 
         return sign_x, sign_y
 
@@ -549,11 +579,11 @@ class Circle(Geometry):
         if self.is_clear_of_line(line):
             return None
 
-        # Determines whether circle is above or underneath the line
-        sign_x, sign_y = self.direction_from(line)
-
         # Closest point ON the line
         P = closest_point_on_line(Point(self.x, self.y), line)
+
+        # Determines whether circle is above or underneath the line
+        sign_x, sign_y = self.direction_from(line)
 
         # Deviation from P to safe point G
         x = sign_x * self.radius * np.sin(np.abs(line.angle))
@@ -683,17 +713,22 @@ def slope_between_points(point1: Point, point2: Point):
 
 
 def closest_point_on_line(point: Point, line: LineSegment):
-    # Find perpendicular line
-    perpendicular_slope = -1/(line.slope)
-    perpendicular_intercept = point.y - perpendicular_slope * point.x # y=mx+b -> b=y-mx
+    # # Find perpendicular line
+    # perpendicular_slope = -1/(line.slope)
+    # perpendicular_intercept = point.y - perpendicular_slope * point.x # y=mx+b -> b=y-mx
+    #
+    # # Find intersecting point
+    # x = (perpendicular_intercept - line.intercept) / (line.slope - perpendicular_slope)
+    #     # a1x + b1 = a2x + b2
+    #     # x = (b2-b1) / (a1-a2)
+    # y = line.substitute(x=x)
+    # return Point(x, y)
 
-    # Find intersecting point
-    x = (perpendicular_intercept - line.intercept) / (line.slope - perpendicular_slope)
-        # a1x + b1 = a2x + b2
-        # x = (b2-b1) / (a1-a2)
-    y = line.substitute(x=x)
 
-    return Point(x, y)
+    perpendicular = line.find_perpendicular(point)
+    intersect_point = perpendicular.intersect(line)
+    return intersect_point
+
 
 
 def generate_random_line(canvas_shape: tuple[int, int], seed=None) -> LineSegment:
@@ -773,6 +808,7 @@ def convert_line_to_box(line: LineSegment, width: float):
 
 def read_obstacle_config(file: str, canvas: Canvas) -> List[LineSegment]:
     data = np.genfromtxt(file, delimiter=",")
+    data = data.reshape(-1, 5)
     obstacles = []
     for x1, y1, x2, y2, width in data:
         line = LineSegment(Point(x1 * canvas.width, y1 * canvas.height),
