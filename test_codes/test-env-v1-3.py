@@ -8,6 +8,7 @@ env = DroneCatch(
     num_preys=0,
     num_predators=1,
     manual_control=True,
+    diagnostic=False,
     icon_scale=0.05,
     min_distance=0.1,
     prey_move_speed=2,

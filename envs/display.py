@@ -4,7 +4,7 @@ Created on Fri Jul 28 12:51:49 2023
 
 @author: napat
 """
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import cv2
 import numpy as np
@@ -27,13 +27,16 @@ class Mover(Circle):
     name: str
 
     def __init__(self,
-                 canvas_size: List[int],
+                 canvas_size: Tuple[int, int],
                  icon_shape = (32,32),
                  image = None,
                  obstacle_list = None):
 
         # self.x = 0
         # self.y = 0
+        self.active = False
+        self._diagnostic = False
+        self._closest_point = None
 
         if obstacle_list is None:
             self.obstacle_list = []
@@ -58,7 +61,13 @@ class Mover(Circle):
         self.y_max = canvas_size[0]
 
         super().__init__(self.x_max/2, self.y_max/2, radius)
-        
+
+    def set_active(self, active: bool = True):
+        self.active = active
+
+    def set_diagnostic(self, value: bool = True):
+        self._diagnostic = value
+
     def set_position(self, x, y):
         # self.x = x
         # self.y = y
@@ -81,9 +90,9 @@ class Mover(Circle):
             # Find nearest in-sight obstacle
             dist_list = [self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"]
             idx = np.argmin(dist_list)
-            obstacle = self.obstacle_list[idx]
+            closest_obstacle = self.obstacle_list[idx]
             # Clamp only to nearest effective obstacle
-            x, y = self.clamp_position_by_obstacle(x, y, obstacle)
+            x, y = self.clamp_position_by_obstacle(x, y, closest_obstacle)
 
         # for obs in self.obstacle_list:
         #     self.clamp_position_by_obstacle(obs)
@@ -99,6 +108,11 @@ class Mover(Circle):
         passing through obstacle when moving."""
         G = self.closest_position_to_line(obstacle)
 
+        if self.active and G is not None:
+            self._closest_point = Circle(G, self.radius)
+        else:
+            self._closest_point = None
+
         if G is None:
             return x, y
         else:
@@ -108,10 +122,10 @@ class Mover(Circle):
             clamp_x = identity if sign_x == 0 else min if sign_x < 0 else max
             clamp_y = identity if sign_y == 0 else min if sign_y < 0 else max
 
-            if self.name == "predator":
-                print(obstacle)
-                print("x", sign_x, clamp_x.__name__, x, G.x)
-                print("y", sign_y, clamp_y.__name__, y, G.y)
+            # if self.name == "predator":
+            #     print(obstacle)
+            #     print("x", sign_x, clamp_x.__name__, x, G.x)
+            #     print("y", sign_y, clamp_y.__name__, y, G.y)
 
             x = clamp_x(x, G.x)
             y = clamp_y(y, G.y)
@@ -152,7 +166,21 @@ class Mover(Circle):
             round(self.x - 0.5*shapeX):round(self.x + 0.5*shapeX),
             round(self.y - 0.5*shapeY):round(self.y + 0.5*shapeY)
                ] = self.icon
+
+        if self._diagnostic:
+            self._draw_buffer_point(canvas)
+
         return canvas.canvas
+
+    def _draw_buffer_point(self, canvas: Canvas):
+        dist_list = np.array([self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"])
+        # Find nearest in-sight obstacle
+        idx = np.argmin(dist_list)
+        closest_obstacle = self.obstacle_list[idx]
+        G = self.closest_position_to_line(closest_obstacle) # Buffer point
+        if G is not None:
+            buffer = Circle(G, self.radius)
+            canvas.draw(buffer)
 
 
 class Predator(Mover):

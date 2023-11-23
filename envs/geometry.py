@@ -458,10 +458,17 @@ class Rectangle(LineSegment):
 
 
 class Circle(Geometry):
-    def __init__(self, x: float, y: float, radius: float):
-        self.x = x
-        self.y = y
-        self.radius = radius
+    def __init__(self, x: Union[float, Point], y: float, radius: Optional[float]=None):
+        # Two arguments passed in (Point, radius)
+        if isinstance(x, Point):
+            self.x = x.x
+            self.y = x.y
+            self.radius = y
+        # Three arguments: (x, y, radius)
+        else:
+            self.x = x
+            self.y = y
+            self.radius = radius
 
     # @classmethod
     # def from_coords(cls, x, y, radius):

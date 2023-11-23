@@ -23,7 +23,7 @@ class DroneCatch(Env):
     Predator-AngularPrey Drone gym environment for reinforcement learning.
     
     """
-    
+
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
     version = "v1"
 
@@ -58,7 +58,8 @@ class DroneCatch(Env):
                  obstacle_file: str=None,
                  frame_delay: int=50,
                  render_mode: str="human",
-                 manual_control: bool=False):
+                 manual_control: bool=False,
+                 diagnostic: bool=False):
         """
         Create the environment.
 
@@ -104,6 +105,7 @@ class DroneCatch(Env):
         self.num_rays = num_rays
         self.rays = []
         self.show_rays = show_rays
+        self.diagnostic = diagnostic
         self.verbose = verbose
 
         # Build a canvas
@@ -112,7 +114,7 @@ class DroneCatch(Env):
         self.canvas_width = self.resolution
         self.max_width = np.sqrt(self.canvas_shape[0]**2 + self.canvas_shape[1]**2) # For normalising
         self.canvas = Canvas(*self.canvas_shape)
-        
+
         # Icon and Move speed
         self.icon_scale = icon_scale
         self.icon_size = round(icon_scale * self.canvas_width)
@@ -169,6 +171,8 @@ class DroneCatch(Env):
             self.prey.append(agent)
             self.agents.append(agent)
             if self.num_preys > 0:
+                agent.set_active()
+                agent.set_diagnostic(self.diagnostic)
                 self.active_agents.append(agent)
                 self.action_space.append(agent.action_space)
                 self.observation_space.append(obs_space)
@@ -183,13 +187,15 @@ class DroneCatch(Env):
             self.predator.append(agent)
             self.agents.append(agent)
             if self.num_predators > 0:
+                agent.set_active()
+                agent.set_diagnostic(self.diagnostic)
                 self.active_agents.append(agent)
                 self.action_space.append(agent.action_space)
                 self.observation_space.append(obs_space)
                 self.agent_list.append(f"{agent.name}{i + 1}")
             else:
                 self.nonactive_agents.append(agent)
-        
+
         self.observation_space = safe_simplify(self.observation_space)
         self.action_space = safe_simplify(self.action_space)
 
@@ -206,17 +212,17 @@ class DroneCatch(Env):
         self.obstacle_list = []
         self._populate_obstacles(obstacle_file)
         self._update_obstacles() # Updates on each agent
-        
+
         # Episode Control variables
         self.trunc_limit = trunc_limit
         self.timesteps = 0
-        
+
         # Learning/Rewards Variables
         self.dist_mult = dist_mult
         self.reward_mult = reward_mult
 
         # Render Mode
-        self.frame_delay = frame_delay        
+        self.frame_delay = frame_delay
         self.render_mode = render_mode
         self.manual_control = manual_control
         self.key_dict = {
@@ -225,7 +231,7 @@ class DroneCatch(Env):
             2424832: 2, # Left Arrow
             2621440: 3, # Down Arrow
             2555904: 4, # Right Arrow
-            }
+        }
 
     def _verify_min_distance(self, min_distance, resolution):
         if min_distance <= 1:
@@ -255,8 +261,8 @@ class DroneCatch(Env):
             self.obstacle_list.extend(obstacles)
         # pass
 
-    def reset(self, seed=None):
-        
+    def reset(self):
+
         # Reset Positions for Predator and AngularPrey
         # for elem in self.agents:
         #     elem.reset_position()
@@ -271,7 +277,7 @@ class DroneCatch(Env):
         self.draw_canvas()
 
         self.timesteps = 0
-        
+
         return obs, {}
 
     def reset_position(self):
@@ -338,7 +344,7 @@ class DroneCatch(Env):
 
         # Calculate reward
         reward = self.get_reward(terminal=False)
-        
+
         # Observation before termination
         obs = self.get_observation()
 
@@ -352,17 +358,18 @@ class DroneCatch(Env):
             reward = self.get_reward(terminal=True)
             done = True
             info["is_success"] = True
-        
+
         # Check if Number of Steps exceed Truncation Limit
         self.timesteps += 1
         if self.timesteps >= self.trunc_limit:
             # self.reset()
             truncated = True
             info["is_success"] = False
-    
+
         return obs, reward, done, truncated, info
 
     def get_reward(self, terminal: bool=False):
+
         if terminal:
             # reward = 1.0 * self.reward_mult
             terminal_reward = [1.0 if ag.name == "predator" else -1.0 for ag in self.active_agents]
@@ -395,7 +402,7 @@ class DroneCatch(Env):
             agent.move(agent.sample_action())
 
     def render(self) -> Union[int, np.ndarray, None]:
-        
+
         if self.render_mode == "human":
             key = self.canvas.show(frame_delay=self.frame_delay, manual=self.manual_control)
             if self.manual_control:
@@ -405,10 +412,10 @@ class DroneCatch(Env):
                 return None
         elif self.render_mode == "rgb_array":
             return self.canvas.canvas
-    
+
     def close(self):
         self.canvas.close()
-    
+
     def draw_canvas(self):
         """
         Draw a frame of canvas based on active elements.
@@ -458,7 +465,7 @@ class DroneCatch(Env):
         """
         x_collided = np.abs(object1.x - object2.x) <= (object1.icon_w/2 + object2.icon_w/2)
         y_collided = np.abs(object1.y - object2.y) <= (object1.icon_h/2 + object2.icon_h/2)
-        
+
         return x_collided & y_collided
 
     def calculate_distance(self, normalise: bool = True) -> float:
@@ -482,11 +489,11 @@ class DroneCatch(Env):
         scale = np.array(self.canvas_shape) if normalise else 1.0
         pos1 = object1.get_position() / scale
         pos2 = object2.get_position() / scale
-        
+
         dist = np.linalg.norm(pos1 - pos2)
-        
+
         return dist
-    
+
     def calculate_reward(self) -> float:
         """
         Calculate current intermediate (non-terminal) reward for the agent.
@@ -498,9 +505,9 @@ class DroneCatch(Env):
 
         """
         intermediate_reward = - self.calculate_distance() / self.canvas_width
-        
+
         return intermediate_reward
-    
+
     def get_observation(self) -> List[np.ndarray]:
         """
         Obtain observation at current time step.
@@ -542,7 +549,7 @@ class DroneCatch(Env):
 
                 if self.show_rays:
                     self.rays.extend(rays)
-            
+
         return safe_simplify(observation)
 
     def set_frame_delay(self, frame_delay):
