@@ -87,12 +87,11 @@ class Mover(Circle):
     def clamp_position(self, x, y):
         # Clamp by obstacle
         if len(self.obstacle_list) > 0:
-            # Find nearest in-sight obstacle
-            dist_list = [self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"]
-            idx = np.argmin(dist_list)
-            closest_obstacle = self.obstacle_list[idx]
-            # Clamp only to nearest effective obstacle
-            x, y = self.clamp_position_by_obstacle(x, y, closest_obstacle)
+            # Find nearest in-sight obstacles
+            closest_obstacle = self.get_closest_obstacle(num_closest=2)
+            for obs in closest_obstacle:
+                # Clamp only to nearest effective obstacle
+                x, y = self.clamp_position_by_obstacle(x, y, obs)
 
         # for obs in self.obstacle_list:
         #     self.clamp_position_by_obstacle(obs)
@@ -102,6 +101,26 @@ class Mover(Circle):
         y = self.clamp(y, round(self.y_min + self.icon_h/2), round(self.y_max - self.icon_h/2))
 
         return x, y
+
+    def get_closest_obstacle(self, num_closest: int = 1) -> np.ndarray[LineSegment]:
+        """
+        Get n number of obstacles that are within line of sight of the Mover.
+
+        Being in line of sight mean the Mover's horizontal/vertical axes drawn from the Mover's center
+         intersect with the LineSegment obstacle.
+
+        :param num_closest: number of closest obstacles to return
+        :return: List of obstacles
+        """
+        # List of distances
+        dist_list = np.array([self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"])
+        # Number of obstacles within line of sight
+        num_available = int(np.sum(dist_list != np.Inf))
+        # Ensure no obstacle is chosen when there's no obstacles in line of sight
+        num_chosen = min(num_closest, num_available)
+        idx = np.argsort(dist_list)[:num_chosen]
+        closest_obstacle = np.array(self.obstacle_list)[idx]
+        return closest_obstacle
 
     def clamp_position_by_obstacle(self, x, y, obstacle: Union[LineSegment, Circle]):
         """Clamps position of circle with an obstacle (line), to prevent
@@ -173,14 +192,12 @@ class Mover(Circle):
         return canvas.canvas
 
     def _draw_buffer_point(self, canvas: Canvas):
-        dist_list = np.array([self.distance_to_line(obs) for obs in self.obstacle_list if obs.name == "obstacle"])
-        # Find nearest in-sight obstacle
-        idx = np.argmin(dist_list)
-        closest_obstacle = self.obstacle_list[idx]
-        G = self.closest_position_to_line(closest_obstacle) # Buffer point
-        if G is not None:
-            buffer = Circle(G, self.radius)
-            canvas.draw(buffer)
+        closest_obstacles = self.get_closest_obstacle(num_closest=2)
+        for obstacle in closest_obstacles:
+            G = self.closest_position_to_line(obstacle) # Buffer point
+            if G is not None:
+                buffer = Circle(G, self.radius)
+                canvas.draw(buffer)
 
 
 class Predator(Mover):

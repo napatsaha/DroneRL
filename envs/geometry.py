@@ -621,7 +621,7 @@ class Circle(Geometry):
 
         return G
 
-    def is_clear_of_line(self, line: LineSegment):
+    def is_clear_of_line(self, line: LineSegment) -> bool:
         """Check whether circle is in a position where the closest perpendicular point lies
         outside line segment."""
 
@@ -815,7 +815,9 @@ def create_polygon(*args: Point) -> List[LineSegment]:
     return borders
 
 
-def convert_line_to_box(line: LineSegment, width: float):
+def convert_line_to_box(line: LineSegment, width: float) -> List[LineSegment]:
+    if width <= 0:
+        return [line]
     w = width
     l = line.length
     angle = line.angle
