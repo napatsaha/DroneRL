@@ -1,0 +1,1398 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>envs package &#8212; DroneRL 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to DroneRL’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="envs-package">
+<h1>envs package<a class="headerlink" href="#envs-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-envs.display">
+<span id="envs-display-module"></span><h2>envs.display module<a class="headerlink" href="#module-envs.display" title="Permalink to this heading">¶</a></h2>
+<p>Created on Fri Jul 28 12:51:49 2023</p>
+<p>&#64;author: napat</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.display.AngularPrey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.display.</span></span><span class="sig-name descname"><span class="pre">AngularPrey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(32,</span> <span class="pre">32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drone.png'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey.move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.move_in_circle">
+<span class="sig-name descname"><span class="pre">move_in_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey.move_in_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move position counter-clockwise by angle_delta each step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.randomise_position">
+<span class="sig-name descname"><span class="pre">randomise_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey.randomise_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset angle of AngularPrey on the circumference. Optionally, an angle can be specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default_angle</strong> (<em>int</em><em>, </em><em>optional</em>) – Starting angle for the prey to spawn in. The default is 0.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#envs.display.AngularPrey.sample_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.AngularPrey.update_position">
+<span class="sig-name descname"><span class="pre">update_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.AngularPrey.update_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts current angle to x, y positions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.display.CardinalPrey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.display.</span></span><span class="sig-name descname"><span class="pre">CardinalPrey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.CardinalPrey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.display.Predator" title="envs.display.Predator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Predator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.CardinalPrey.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#envs.display.CardinalPrey.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset position of Predator. Optionally, (x,y) coordinates can be specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.display.Mover">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.display.</span></span><span class="sig-name descname"><span class="pre">Mover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(32,</span> <span class="pre">32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obstacle_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.Circle" title="envs.geometry.Circle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circle</span></code></a></p>
+<p>A Movable object, used to subclass Predator and Prey.</p>
+<p>Inherited from Circle object for its colliding properties, but
+the display is a rectangle.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.add_obstacle">
+<span class="sig-name descname"><span class="pre">add_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obstacle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.add_obstacle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.clamp">
+<span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.clamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.clamp_position">
+<span class="sig-name descname"><span class="pre">clamp_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.clamp_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.clamp_position_by_obstacle">
+<span class="sig-name descname"><span class="pre">clamp_position_by_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obstacle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.Circle" title="envs.geometry.Circle"><span class="pre">Circle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.clamp_position_by_obstacle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clamps position of circle with an obstacle (line), to prevent
+passing through obstacle when moving.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.get_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.display.Mover.icon">
+<span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#envs.display.Mover.icon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.move_to_position">
+<span class="sig-name descname"><span class="pre">move_to_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.move_to_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.display.Mover.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#envs.display.Mover.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.randomise_position">
+<span class="sig-name descname"><span class="pre">randomise_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.randomise_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#envs.display.Mover.sample_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.set_active">
+<span class="sig-name descname"><span class="pre">set_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.set_active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.set_diagnostic">
+<span class="sig-name descname"><span class="pre">set_diagnostic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.set_diagnostic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.set_position">
+<span class="sig-name descname"><span class="pre">set_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.set_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Mover.update_obstacle">
+<span class="sig-name descname"><span class="pre">update_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Mover.update_obstacle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.display.Predator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.display.</span></span><span class="sig-name descname"><span class="pre">Predator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(32,</span> <span class="pre">32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drone2.png'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Predator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Predator.convert_action">
+<span class="sig-name descname"><span class="pre">convert_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Predator.convert_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts scalar action into (x,y) directional movement.</p>
+<p>0: (0, 0)
+1: (0, 1) # Up
+2: (-1, 0) # left
+3: (0, -1) # Down
+4: (1, 0) # Right</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>TYPE</em>) – DESCRIPTION.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x</strong> (<em>TYPE</em>) – DESCRIPTION.</p></li>
+<li><p><strong>y</strong> (<em>TYPE</em>) – DESCRIPTION.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Predator.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Predator.move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Predator.randomise_position">
+<span class="sig-name descname"><span class="pre">randomise_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.display.Predator.randomise_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Predator.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#envs.display.Predator.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset position of Predator. Optionally, (x,y) coordinates can be specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.display.Predator.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#envs.display.Predator.sample_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-envs.dual">
+<span id="envs-dual-module"></span><h2>envs.dual module<a class="headerlink" href="#module-envs.dual" title="Permalink to this heading">¶</a></h2>
+<p>Created on Thu Jul 27 14:52:20 2023</p>
+<p>&#64;author: napat</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.dual.DualDrone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.dual.</span></span><span class="sig-name descname"><span class="pre">DualDrone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.dual.DualDrone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.environment_v0.DroneCatch" title="envs.environment_v0.DroneCatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">DroneCatch</span></code></a></p>
+<p>DroneCatch environment where both Predator and AngularPrey are able to learn simultaneously.</p>
+<dl class="simple">
+<dt>Observations and Rewards returned will have an extra dimension:</dt><dd><p>[predator, prey]</p>
+</dd>
+<dt>Similarly, actions passed to step() must also have an extra dimension:</dt><dd><p>[predator, prey]</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.dual.DualDrone.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#envs.dual.DualDrone.action_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.dual.DualDrone.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.dual.DualDrone.get_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain observation at current time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obs</strong> – 2D Array if obs_image, else (5,) 1D array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.dual.DualDrone.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#envs.dual.DualDrone.observation_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.dual.DualDrone.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.dual.DualDrone.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take an action and transition the environment to the next step.</p>
+<p>Predator moves by the provided action; AngularPrey moves in a constant trajectory
+around a circle counter-clockwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>int</em>) – Direction to move_to_position the Predator (range [0,4]).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obs</strong> (<em>np.ndarray</em>) – Observation.</p></li>
+<li><p><strong>reward</strong> (<em>float</em>) – reward.</p></li>
+<li><p><strong>done</strong> (<em>bool</em>) – Whether the environment terminates normally.</p></li>
+<li><p><strong>truncated</strong> (<em>bool</em>) – Whether the maximum number of steps is reached.</p></li>
+<li><p><strong>info</strong> (<em>dict</em>) – Contains information about whether predator was successful in this
+episode (“is_success”). Only available on terminal step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.dual.DualLateral">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.dual.</span></span><span class="sig-name descname"><span class="pre">DualLateral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prey_move_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.dual.DualLateral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.dual.DualDrone" title="envs.dual.DualDrone"><code class="xref py py-class docutils literal notranslate"><span class="pre">DualDrone</span></code></a></p>
+<p>Allows prey to move_to_position into cardinal directions instead of circularly.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.dual.DualLateral.randomise_prey_position">
+<span class="sig-name descname"><span class="pre">randomise_prey_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.dual.DualLateral.randomise_prey_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-envs.environment_v0">
+<span id="envs-environment-v0-module"></span><h2>envs.environment_v0 module<a class="headerlink" href="#module-envs.environment_v0" title="Permalink to this heading">¶</a></h2>
+<p>Created on Thu Jul 27 14:52:20 2023</p>
+<p>&#64;author: napat</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.environment_v0.</span></span><span class="sig-name descname"><span class="pre">DroneCatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predator_move_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prey_move_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prey_move_angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_prey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_predator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trunc_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Env</span></code></p>
+<p>Predator-AngularPrey Drone gym environment for reinforcement learning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.agents">
+<span class="sig-name descname"><span class="pre">agents</span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.calculate_distance">
+<span class="sig-name descname"><span class="pre">calculate_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.calculate_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate current distance between Predator and AngularPrey.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>normalise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to scale the position between 0 and 1 by the canvas shape. The default is False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Euclidean Distance between Predator and AngularPrey.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.calculate_reward">
+<span class="sig-name descname"><span class="pre">calculate_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.calculate_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate current intermediate (non-terminal) reward for the agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Intermediate reward.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>After the user has finished using the environment, close contains the code necessary to “clean up” the environment.</p>
+<p>This is critical for closing rendering windows, database or HTTP connections.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.convert_action">
+<span class="sig-name descname"><span class="pre">convert_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.convert_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts scalar action into (x,y) directional movement.</p>
+<p>0: (0, 0)
+1: (0, 1) # Up
+2: (-1, 0) # left
+3: (0, -1) # Down
+4: (1, 0) # Right</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>TYPE</em>) – DESCRIPTION.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x</strong> (<em>TYPE</em>) – DESCRIPTION.</p></li>
+<li><p><strong>y</strong> (<em>TYPE</em>) – DESCRIPTION.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.detect_collision">
+<span class="sig-name descname"><span class="pre">detect_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect whether the Predator and AngularPrey drone are in contact with each other (overlapping).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collided or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.draw_canvas">
+<span class="sig-name descname"><span class="pre">draw_canvas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.draw_canvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a frame of canvas based on active elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.draw_icon">
+<span class="sig-name descname"><span class="pre">draw_icon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.draw_icon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.get_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain observation at current time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obs</strong> – 2D Array if obs_image, else (5,) 1D array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'render_fps':</span> <span class="pre">30,</span> <span class="pre">'render_modes':</span> <span class="pre">['human',</span> <span class="pre">'rgb_array']}</span></em><a class="headerlink" href="#envs.environment_v0.DroneCatch.metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.randomise_predator_position">
+<span class="sig-name descname"><span class="pre">randomise_predator_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.randomise_predator_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.randomise_prey_position">
+<span class="sig-name descname"><span class="pre">randomise_prey_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.randomise_prey_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the render frames as specified by <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> during the initialization of the environment.</p>
+<p>The environment’s <a class="reference internal" href="#envs.environment_v0.DroneCatch.metadata" title="envs.environment_v0.DroneCatch.metadata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code></a> render modes (<cite>env.metadata[“render_modes”]</cite>) should contain the possible
+ways to implement the render modes. In addition, list versions for most render modes is achieved through
+<cite>gymnasium.make</cite> which automatically applies a wrapper to collect rendered frames.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As the <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> is known during <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, the objects used to render the environment state
+should be initialised in <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p>
+</div>
+<p>By convention, if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> is:</p>
+<ul class="simple">
+<li><p>None (default): no render is computed.</p></li>
+<li><p>“human”: The environment is continuously rendered in the current display or terminal, usually for human consumption.
+This rendering should occur during <a class="reference internal" href="#envs.environment_v0.DroneCatch.step" title="envs.environment_v0.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a> and <a class="reference internal" href="#envs.environment_v0.DroneCatch.render" title="envs.environment_v0.DroneCatch.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> doesn’t need to be called. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>“rgb_array”: Return a single frame representing the current state of the environment.
+A frame is a <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> with shape <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">3)</span></code> representing RGB values for an x-by-y pixel image.</p></li>
+<li><p>“ansi”: Return a strings (<code class="docutils literal notranslate"><span class="pre">str</span></code>) or <code class="docutils literal notranslate"><span class="pre">StringIO.StringIO</span></code> containing a terminal-style text representation
+for each time step. The text can include newlines and ANSI escape sequences (e.g. for colors).</p></li>
+<li><p>“rgb_array_list” and “ansi_list”: List based version of render modes are possible (except Human) through the
+wrapper, <code class="xref py py-class docutils literal notranslate"><span class="pre">gymnasium.wrappers.RenderCollection</span></code> that is automatically applied during <code class="docutils literal notranslate"><span class="pre">gymnasium.make(...,</span> <span class="pre">render_mode=&quot;rgb_array_list&quot;)</span></code>.
+The frames collected are popped after <a class="reference internal" href="#envs.environment_v0.DroneCatch.render" title="envs.environment_v0.DroneCatch.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> is called or <a class="reference internal" href="#envs.environment_v0.DroneCatch.reset" title="envs.environment_v0.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure that your class’s <a class="reference internal" href="#envs.environment_v0.DroneCatch.metadata" title="envs.environment_v0.DroneCatch.metadata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code></a> <code class="docutils literal notranslate"><span class="pre">&quot;render_modes&quot;</span></code> key includes the list of supported modes.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.25.0: </span>The render function was changed to no longer accept parameters, rather these parameters should be specified
+in the environment initialised, i.e., <code class="docutils literal notranslate"><span class="pre">gymnasium.make(&quot;CartPole-v1&quot;,</span> <span class="pre">render_mode=&quot;human&quot;)</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the environment to an initial internal state, returning an initial observation and info.</p>
+<p>This method generates a new starting state often with some randomness to ensure that the agent explores the
+state space and learns a generalised policy about the environment. This randomness can be controlled
+with the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter otherwise if the environment already has a random number generator and
+<a class="reference internal" href="#envs.environment_v0.DroneCatch.reset" title="envs.environment_v0.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> is called with <code class="docutils literal notranslate"><span class="pre">seed=None</span></code>, the RNG is not reset.</p>
+<p>Therefore, <a class="reference internal" href="#envs.environment_v0.DroneCatch.reset" title="envs.environment_v0.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> should (in the typical use case) be called with a seed right after initialization and then never again.</p>
+<p>For Custom environments, the first line of <a class="reference internal" href="#envs.environment_v0.DroneCatch.reset" title="envs.environment_v0.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> should be <code class="docutils literal notranslate"><span class="pre">super().reset(seed=seed)</span></code> which implements
+the seeding correctly.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version v0.25: </span>The <code class="docutils literal notranslate"><span class="pre">return_info</span></code> parameter was removed and now info is expected to be returned.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>optional int</em>) – The seed that is used to initialize the environment’s PRNG (<cite>np_random</cite>).
+If the environment does not already have a PRNG and <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> (the default option) is passed,
+a seed will be chosen from some source of entropy (e.g. timestamp or /dev/urandom).
+However, if the environment already has a PRNG and <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> is passed, the PRNG will <em>not</em> be reset.
+If you pass an integer, the PRNG will be reset even if it already exists.
+Usually, you want to pass an integer <em>right after the environment has been initialized and then never again</em>.
+Please refer to the minimal example above to see this paradigm in action.</p></li>
+<li><p><strong>options</strong> (<em>optional dict</em>) – Additional information to specify how the environment is reset (optional,
+depending on the specific environment)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Observation of the initial state. This will be an element of <code class="xref py py-attr docutils literal notranslate"><span class="pre">observation_space</span></code></dt><dd><p>(typically a numpy array) and is analogous to the observation returned by <a class="reference internal" href="#envs.environment_v0.DroneCatch.step" title="envs.environment_v0.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a>.</p>
+</dd>
+<dt>info (dictionary):  This dictionary contains auxiliary information complementing <code class="docutils literal notranslate"><span class="pre">observation</span></code>. It should be analogous to</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">info</span></code> returned by <a class="reference internal" href="#envs.environment_v0.DroneCatch.step" title="envs.environment_v0.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>observation (ObsType)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.set_frame_delay">
+<span class="sig-name descname"><span class="pre">set_frame_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_delay</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v0.DroneCatch.set_frame_delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v0.DroneCatch.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.environment_v0.DroneCatch.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take an action and transition the environment to the next step.</p>
+<p>Predator moves by the provided action; AngularPrey moves in a constant trajectory
+around a circle counter-clockwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>int</em>) – Direction to move_to_position the Predator (range [0,4]).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obs</strong> (<em>np.ndarray</em>) – Observation.</p></li>
+<li><p><strong>reward</strong> (<em>float</em>) – reward.</p></li>
+<li><p><strong>done</strong> (<em>bool</em>) – Whether the environment terminates normally.</p></li>
+<li><p><strong>truncated</strong> (<em>bool</em>) – Whether the maximum number of steps is reached.</p></li>
+<li><p><strong>info</strong> (<em>dict</em>) – Contains information about whether predator was successful in this
+episode (“is_success”). Only available on terminal step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-envs.environment_v1">
+<span id="envs-environment-v1-module"></span><h2>envs.environment_v1 module<a class="headerlink" href="#module-envs.environment_v1" title="Permalink to this heading">¶</a></h2>
+<p>Created on Thu Jul 27 14:52:20 2023</p>
+<p>&#64;author: napat</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.environment_v1.</span></span><span class="sig-name descname"><span class="pre">DroneCatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_preys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_predators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cardinal_prey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predator_move_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prey_move_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prey_move_angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_prey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_predator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trunc_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_rays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obstacle_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagnostic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Env</span></code></p>
+<p>Predator-AngularPrey Drone gym environment for reinforcement learning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.action_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.active_agents">
+<span class="sig-name descname"><span class="pre">active_agents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#envs.environment_v1.DroneCatch.active_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.agents">
+<span class="sig-name descname"><span class="pre">agents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#envs.environment_v1.DroneCatch.agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.calculate_distance">
+<span class="sig-name descname"><span class="pre">calculate_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.calculate_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate globally-shortest distance between predators and preys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.calculate_reward">
+<span class="sig-name descname"><span class="pre">calculate_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.calculate_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate current intermediate (non-terminal) reward for the agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Intermediate reward.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>After the user has finished using the environment, close contains the code necessary to “clean up” the environment.</p>
+<p>This is critical for closing rendering windows, database or HTTP connections.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.detect_collision">
+<span class="sig-name descname"><span class="pre">detect_collision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.draw_canvas">
+<span class="sig-name descname"><span class="pre">draw_canvas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.draw_canvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a frame of canvas based on active elements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.get_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain observation at current time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obs</strong> – 2D Array if obs_image, else (5,) 1D array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.get_reward">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">terminal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.get_reward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'render_fps':</span> <span class="pre">30,</span> <span class="pre">'render_modes':</span> <span class="pre">['human',</span> <span class="pre">'rgb_array']}</span></em><a class="headerlink" href="#envs.environment_v1.DroneCatch.metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.nonactive_agents">
+<span class="sig-name descname"><span class="pre">nonactive_agents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><span class="pre">Mover</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#envs.environment_v1.DroneCatch.nonactive_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.observation_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.predator">
+<span class="sig-name descname"><span class="pre">predator</span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.predator" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.prey">
+<span class="sig-name descname"><span class="pre">prey</span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.prey" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>]]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the render frames as specified by <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> during the initialization of the environment.</p>
+<p>The environment’s <a class="reference internal" href="#envs.environment_v1.DroneCatch.metadata" title="envs.environment_v1.DroneCatch.metadata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code></a> render modes (<cite>env.metadata[“render_modes”]</cite>) should contain the possible
+ways to implement the render modes. In addition, list versions for most render modes is achieved through
+<cite>gymnasium.make</cite> which automatically applies a wrapper to collect rendered frames.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As the <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> is known during <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, the objects used to render the environment state
+should be initialised in <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p>
+</div>
+<p>By convention, if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">render_mode</span></code> is:</p>
+<ul class="simple">
+<li><p>None (default): no render is computed.</p></li>
+<li><p>“human”: The environment is continuously rendered in the current display or terminal, usually for human consumption.
+This rendering should occur during <a class="reference internal" href="#envs.environment_v1.DroneCatch.step" title="envs.environment_v1.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a> and <a class="reference internal" href="#envs.environment_v1.DroneCatch.render" title="envs.environment_v1.DroneCatch.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> doesn’t need to be called. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>“rgb_array”: Return a single frame representing the current state of the environment.
+A frame is a <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> with shape <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">3)</span></code> representing RGB values for an x-by-y pixel image.</p></li>
+<li><p>“ansi”: Return a strings (<code class="docutils literal notranslate"><span class="pre">str</span></code>) or <code class="docutils literal notranslate"><span class="pre">StringIO.StringIO</span></code> containing a terminal-style text representation
+for each time step. The text can include newlines and ANSI escape sequences (e.g. for colors).</p></li>
+<li><p>“rgb_array_list” and “ansi_list”: List based version of render modes are possible (except Human) through the
+wrapper, <code class="xref py py-class docutils literal notranslate"><span class="pre">gymnasium.wrappers.RenderCollection</span></code> that is automatically applied during <code class="docutils literal notranslate"><span class="pre">gymnasium.make(...,</span> <span class="pre">render_mode=&quot;rgb_array_list&quot;)</span></code>.
+The frames collected are popped after <a class="reference internal" href="#envs.environment_v1.DroneCatch.render" title="envs.environment_v1.DroneCatch.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> is called or <a class="reference internal" href="#envs.environment_v1.DroneCatch.reset" title="envs.environment_v1.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure that your class’s <a class="reference internal" href="#envs.environment_v1.DroneCatch.metadata" title="envs.environment_v1.DroneCatch.metadata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code></a> <code class="docutils literal notranslate"><span class="pre">&quot;render_modes&quot;</span></code> key includes the list of supported modes.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.25.0: </span>The render function was changed to no longer accept parameters, rather these parameters should be specified
+in the environment initialised, i.e., <code class="docutils literal notranslate"><span class="pre">gymnasium.make(&quot;CartPole-v1&quot;,</span> <span class="pre">render_mode=&quot;human&quot;)</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the environment to an initial internal state, returning an initial observation and info.</p>
+<p>This method generates a new starting state often with some randomness to ensure that the agent explores the
+state space and learns a generalised policy about the environment. This randomness can be controlled
+with the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter otherwise if the environment already has a random number generator and
+<a class="reference internal" href="#envs.environment_v1.DroneCatch.reset" title="envs.environment_v1.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> is called with <code class="docutils literal notranslate"><span class="pre">seed=None</span></code>, the RNG is not reset.</p>
+<p>Therefore, <a class="reference internal" href="#envs.environment_v1.DroneCatch.reset" title="envs.environment_v1.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> should (in the typical use case) be called with a seed right after initialization and then never again.</p>
+<p>For Custom environments, the first line of <a class="reference internal" href="#envs.environment_v1.DroneCatch.reset" title="envs.environment_v1.DroneCatch.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> should be <code class="docutils literal notranslate"><span class="pre">super().reset(seed=seed)</span></code> which implements
+the seeding correctly.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version v0.25: </span>The <code class="docutils literal notranslate"><span class="pre">return_info</span></code> parameter was removed and now info is expected to be returned.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>optional int</em>) – The seed that is used to initialize the environment’s PRNG (<cite>np_random</cite>).
+If the environment does not already have a PRNG and <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> (the default option) is passed,
+a seed will be chosen from some source of entropy (e.g. timestamp or /dev/urandom).
+However, if the environment already has a PRNG and <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> is passed, the PRNG will <em>not</em> be reset.
+If you pass an integer, the PRNG will be reset even if it already exists.
+Usually, you want to pass an integer <em>right after the environment has been initialized and then never again</em>.
+Please refer to the minimal example above to see this paradigm in action.</p></li>
+<li><p><strong>options</strong> (<em>optional dict</em>) – Additional information to specify how the environment is reset (optional,
+depending on the specific environment)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Observation of the initial state. This will be an element of <a class="reference internal" href="#envs.environment_v1.DroneCatch.observation_space" title="envs.environment_v1.DroneCatch.observation_space"><code class="xref py py-attr docutils literal notranslate"><span class="pre">observation_space</span></code></a></dt><dd><p>(typically a numpy array) and is analogous to the observation returned by <a class="reference internal" href="#envs.environment_v1.DroneCatch.step" title="envs.environment_v1.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a>.</p>
+</dd>
+<dt>info (dictionary):  This dictionary contains auxiliary information complementing <code class="docutils literal notranslate"><span class="pre">observation</span></code>. It should be analogous to</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">info</span></code> returned by <a class="reference internal" href="#envs.environment_v1.DroneCatch.step" title="envs.environment_v1.DroneCatch.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>observation (ObsType)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.sample_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample a random action from each of the active agents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.set_frame_delay">
+<span class="sig-name descname"><span class="pre">set_frame_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_delay</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.environment_v1.DroneCatch.set_frame_delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.environment_v1.DroneCatch.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take an action and transition the environment to the next step.</p>
+<p>Predator moves by the provided action; AngularPrey moves in a constant trajectory
+around a circle counter-clockwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>int</em>) – Direction to move_to_position the Predator (range [0,4]).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obs</strong> (<em>np.ndarray</em>) – Observation.</p></li>
+<li><p><strong>reward</strong> (<em>float</em>) – reward.</p></li>
+<li><p><strong>done</strong> (<em>bool</em>) – Whether the environment terminates normally.</p></li>
+<li><p><strong>truncated</strong> (<em>bool</em>) – Whether the maximum number of steps is reached.</p></li>
+<li><p><strong>info</strong> (<em>dict</em>) – Contains information about whether predator was successful in this
+episode (“is_success”). Only available on terminal step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.environment_v1.DroneCatch.version">
+<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'v1'</span></em><a class="headerlink" href="#envs.environment_v1.DroneCatch.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-envs.geometry">
+<span id="envs-geometry-module"></span><h2>envs.geometry module<a class="headerlink" href="#module-envs.geometry" title="Permalink to this heading">¶</a></h2>
+<p>Controls geometry elements.</p>
+<p>Include geometry classes such as:
+- Point
+- LineSegment
+- Circle
+as well as
+- Canvas - for drawing objects on</p>
+<p>Also handles distance calculations, collision detection, and
+closest position for collision prevention between circle and line.</p>
+<p>Mover class from display.py which controls Predator and Prey
+inherits from Circle class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Canvas">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Canvas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Environment'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Canvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Canvas for drawing objects using openCV</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.geometry.Canvas.boundaries">
+<span class="sig-name descname"><span class="pre">boundaries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">envs.geometry.LineSegment</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#envs.geometry.Canvas.boundaries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Canvas.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Canvas.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Canvas.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Canvas.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Canvas.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Canvas.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Canvas.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Canvas.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Circle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.closest_position_to_line">
+<span class="sig-name descname"><span class="pre">closest_position_to_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Circle.closest_position_to_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the point closest to where the circle can safely touch the line without overlapping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.detect_collision">
+<span class="sig-name descname"><span class="pre">detect_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Circle.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.direction_from">
+<span class="sig-name descname"><span class="pre">direction_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Circle.direction_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return (x, y) unit vector telling the direction of this object is in relation
+to another object (e.g. a line).</p>
+<p>For example, if this circle is below and right of a line, this method will return
+(+1.0, -1.0).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.distance_to_line">
+<span class="sig-name descname"><span class="pre">distance_to_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.geometry.Circle.distance_to_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closest distance to specified line, taking into account lines that are clear of sight,
+by returning Inf instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Circle.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><span class="pre">InfLine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Circle.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect intersection of a circle with a line.
+Algorithm from
+<a class="reference external" href="https://math.stackexchange.com/questions/228841/how-do-i-calculate-the-intersections-of-a-straight-line-and-a-circle">https://math.stackexchange.com/questions/228841/how-do-i-calculate-the-intersections-of-a-straight-line-and-a-circle</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.is_clear_of_line">
+<span class="sig-name descname"><span class="pre">is_clear_of_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Circle.is_clear_of_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether circle is in a position where the closest perpendicular point lies
+outside line segment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Circle.radial_raycast">
+<span class="sig-name descname"><span class="pre">radial_raycast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_rays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Circle.radial_raycast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a series of raycasting measurements in a counterclockwise loop around the circle center.
+Requires a list of obstacles (lines) and a canvas (for the boundaries), as well as an optional
+control over the number of radial splits.
+Returns a list of distances</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Geometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Geometry</span></span><a class="headerlink" href="#envs.geometry.Geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Geometry.draw_on">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Geometry.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.InfLine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">InfLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.InfLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a></p>
+<p>Infinite line defined algebraically by ax + by + c = 0</p>
+<p>Contains methods such as:
+- substitute(x or y)
+- intersect
+- closest point on a line
+- closest object</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.InfLine.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.find_perpendicular">
+<span class="sig-name descname"><span class="pre">find_perpendicular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><span class="pre">InfLine</span></a></span></span><a class="headerlink" href="#envs.geometry.InfLine.find_perpendicular" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a line perpendicular to this line which passes through a certain point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.from_angle">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.InfLine.from_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an infinite line from an angle in radians, and a point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.from_slope">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.InfLine.from_slope" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.get_coefs">
+<span class="sig-name descname"><span class="pre">get_coefs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.InfLine.get_coefs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><span class="pre">InfLine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></span><a class="headerlink" href="#envs.geometry.InfLine.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an intersection point between two lines.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'obstacle'</span></em><a class="headerlink" href="#envs.geometry.InfLine.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.InfLine.substitute">
+<span class="sig-name descname"><span class="pre">substitute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.InfLine.substitute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.LineSegment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">LineSegment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.LineSegment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfLine</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.LineSegment.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.LineSegment.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Point">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Point.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Point.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Point.get_xy">
+<span class="sig-name descname"><span class="pre">get_xy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Point.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Point.move_point">
+<span class="sig-name descname"><span class="pre">move_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Point.move_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Ray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Ray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfLine</span></code></a></p>
+<p>A line which has one starting point but extends into infinity.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Ray.draw_on">
+<span class="sig-name descname"><span class="pre">draw_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Ray.draw_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Ray.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Ray.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an intersection point between two lines.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Ray.raycast">
+<span class="sig-name descname"><span class="pre">raycast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Geometry" title="envs.geometry.Geometry"><span class="pre">Geometry</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.Ray" title="envs.geometry.Ray"><span class="pre">Ray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.Ray.raycast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a raycasting of a ray to a list of obstacles (lines) and return the distance
+to the nearest obstacle that intersects with the ray.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.geometry.Rectangle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">Rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Rectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineSegment</span></code></a></p>
+<p>A collection of four line segments that form an enclosing rectangle.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.geometry.Rectangle.from_segment">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.Rectangle.from_segment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.closest_point_on_line">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">closest_point_on_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.closest_point_on_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.convert_line_to_box">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">convert_line_to_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.convert_line_to_box" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.create_perpendicular_line">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">create_perpendicular_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.InfLine" title="envs.geometry.InfLine"><span class="pre">InfLine</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Ray" title="envs.geometry.Ray"><span class="pre">Ray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.create_perpendicular_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.create_polygon">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">create_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.create_polygon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.create_radial_rays">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">create_radial_rays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_splits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.Ray" title="envs.geometry.Ray"><span class="pre">Ray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.create_radial_rays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of Rays radiating from a single origin at constant angular intervals.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.distance_line_point">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">distance_line_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.distance_line_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.distance_point_to_line">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">distance_point_to_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.distance_point_to_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.distance_point_to_point">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">distance_point_to_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.distance_point_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euclidean distance between two points</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.generate_random_line">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">generate_random_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a></span></span><a class="headerlink" href="#envs.geometry.generate_random_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.quadrant">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">quadrant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#envs.geometry.quadrant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the (x,y) sign of the angle (radians), showing which quadrant the angle is in.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.read_obstacle_config">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">read_obstacle_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Canvas" title="envs.geometry.Canvas"><span class="pre">Canvas</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#envs.geometry.LineSegment" title="envs.geometry.LineSegment"><span class="pre">LineSegment</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.read_obstacle_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.safe_round">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">safe_round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.geometry.safe_round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="envs.geometry.slope_between_points">
+<span class="sig-prename descclassname"><span class="pre">envs.geometry.</span></span><span class="sig-name descname"><span class="pre">slope_between_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#envs.geometry.Point" title="envs.geometry.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.geometry.slope_between_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="envs-manual-module">
+<h2>envs.manual module<a class="headerlink" href="#envs-manual-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-envs.mountain_car">
+<span id="envs-mountain-car-module"></span><h2>envs.mountain_car module<a class="headerlink" href="#module-envs.mountain_car" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.mountain_car.MountainCarWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.mountain_car.</span></span><span class="sig-name descname"><span class="pre">MountainCarWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.mountain_car.MountainCarWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObservationWrapper</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.mountain_car.MountainCarWrapper.height">
+<span class="sig-name descname"><span class="pre">height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.mountain_car.MountainCarWrapper.height" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.mountain_car.MountainCarWrapper.observation">
+<span class="sig-name descname"><span class="pre">observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ObsType</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">WrapperObsType</span></span></span><a class="headerlink" href="#envs.mountain_car.MountainCarWrapper.observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a modified observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>observation</strong> – The <code class="xref py py-attr docutils literal notranslate"><span class="pre">env</span></code> observation</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified observation</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-envs.multi">
+<span id="envs-multi-module"></span><h2>envs.multi module<a class="headerlink" href="#module-envs.multi" title="Permalink to this heading">¶</a></h2>
+<p>DroneCatch environment with multiple active predators and/or preys agents.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">envs.multi.</span></span><span class="sig-name descname"><span class="pre">MultiDrone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_predators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_preys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cardinal_prey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_own_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_distance_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'individual-minimum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation_distance_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envs.environment_v0.DroneCatch" title="envs.environment_v0.DroneCatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">DroneCatch</span></code></a></p>
+<p>Custom Drone environment where an arbitrary number of active learning
+preys and predators agents can be specified.</p>
+<p>Observations, actions, (and their corresponding spaces) and rewards will be in the form
+of a list, with preys coming first then predators.</p>
+<p>Strategies for dealing with distances in intermediate rewards and observations can
+be specified in reward_distance_strategy and observation_distance_strategy, respectively.
+Strategy should be specified as strings in the form “{filter}-{aggregation}”,
+where filter (global, individual) dictates which pairs of predator-prey to include
+distances, and aggregation (closest, mean, sum, all) dictates how those distances
+are to be collated.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#envs.multi.MultiDrone.action_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.calculate_distance">
+<span class="sig-name descname"><span class="pre">calculate_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#envs.multi.MultiDrone.calculate_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate distance for an agent according to a specific strategy:</p>
+<ul>
+<li><p><cite>none</cite>: disregard distance calculations entirely (would return a constant 1.0)</p></li>
+<li><p>a composite strategy name of the form “{filter}-{aggregation}”:</p></li>
+<li><p><cite>{filter}</cite> controls which pairs of objects are considered:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>global</cite>: considers all pairs of predator-preys</p></li>
+<li><p><cite>individual</cite>: only considers distance between current agent and its opposite agent type.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><cite>{aggregation}</cite> controls how the included distance pairs will be aggregated:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>minimum</cite>/<cite>closest</cite>: only return the shortest distances of the pairs.</p></li>
+<li><p><cite>average</cite>/<cite>mean</cite>: return the arithmetic mean of the pairs.</p></li>
+<li><p><cite>sum</cite>: return the sum of all distance pairs. (not useful)</p></li>
+<li><p><cite>all</cite>: returns all distance pairs as a list</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.calculate_each_reward">
+<span class="sig-name descname"><span class="pre">calculate_each_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#envs.multi.MultiDrone.calculate_each_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate individual reward for a specific agent name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_name</strong> (<em>str</em>) – Numbered name of an agent, e.g. prey1, predator2</p></li>
+<li><p><strong>done</strong> (<em>bool</em>) – Whether the episode has terminated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.detect_collision">
+<span class="sig-name descname"><span class="pre">detect_collision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#envs.multi.MultiDrone.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether a collision occurs between a prey and a predator, i.e.
+checks if episode has terminated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.get_agent">
+<span class="sig-name descname"><span class="pre">get_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.get_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get agent object from agent_name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.get_each_observation">
+<span class="sig-name descname"><span class="pre">get_each_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#envs.multi.MultiDrone.get_each_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array of observation values for a certain agent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent_name</strong> (<em>str</em>) – Name of agent, e.g. prey1, predator2</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#envs.multi.MultiDrone.get_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of observation for each agent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.get_reward">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.get_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of reward for each agent of the environment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#envs.multi.MultiDrone.observation_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Space</span></code>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.precalculate_distance">
+<span class="sig-name descname"><span class="pre">precalculate_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.precalculate_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and store distances between each pair of predator-prey into a
+dictionary <cite>distances</cite> with keys such as (prey1, predator1)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.predator">
+<span class="sig-name descname"><span class="pre">predator</span></span><a class="headerlink" href="#envs.multi.MultiDrone.predator" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.prey">
+<span class="sig-name descname"><span class="pre">prey</span></span><a class="headerlink" href="#envs.multi.MultiDrone.prey" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#envs.display.Mover" title="envs.display.Mover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mover</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.reset_position">
+<span class="sig-name descname"><span class="pre">reset_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.reset_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset positions of all agents in the environment. Randomising if necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.sample_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample a set of actions that can be passed to step().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="envs.multi.MultiDrone.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#envs.multi.MultiDrone.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress the environment forward based on received actions for each agent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="envs-test-env-module">
+<h2>envs.test_env module<a class="headerlink" href="#envs-test-env-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="envs-test-env2-module">
+<h2>envs.test_env2 module<a class="headerlink" href="#envs-test-env2-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-envs">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-envs" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">DroneRL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">envs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.display">envs.display module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.dual">envs.dual module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.environment_v0">envs.environment_v0 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.environment_v1">envs.environment_v1 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.geometry">envs.geometry module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#envs-manual-module">envs.manual module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.mountain_car">envs.mountain_car module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs.multi">envs.multi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#envs-test-env-module">envs.test_env module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#envs-test-env2-module">envs.test_env2 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-envs">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to DroneRL’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Napat Sahapat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/envs.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
