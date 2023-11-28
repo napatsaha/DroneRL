@@ -70,6 +70,12 @@ class Point(Geometry):
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
 
+    def __lt__(self, other):
+        if self.x != other.x:
+            return self.x < other.x
+        else:
+            return self.y < other.y
+
 
 class InfLine(Geometry):
     """
@@ -375,7 +381,7 @@ class LineSegment(InfLine):
         a, b, c = super()._convert_slope(slope, point1)
         super().__init__(a,b,c)
         # self.intercept = self.point1.y - self.slope * self.point1.x
-        self.angle = np.arctan(self.slope)
+        # self.angle = np.arctan(self.slope)
 
     # def substitute(self, x=None, y=None):
     #     if x is None and y is None:
@@ -420,6 +426,16 @@ class LineSegment(InfLine):
             inside_y = min(self.point1.y, self.point2.y) <= point.y <= max(self.point1.y, self.point2.y)
         return inside_x, inside_y
 
+    def extends(self, length: float) -> 'LineSegment':
+        if self.point1 > self.point2:
+            p1 = self.point1.move_point(self.angle, length)
+            p2 = self.point2.move_point(self.angle + np.pi, length)
+        else:
+            p2 = self.point2.move_point(self.angle, length)
+            p1 = self.point1.move_point(self.angle + np.pi, length)
+        return LineSegment(p1, p2)
+
+
     def draw_on(self, canvas: 'Canvas'):
         xx, yy = draw.line(
             int(self.point1.x), int(self.point1.y),
@@ -429,6 +445,7 @@ class LineSegment(InfLine):
         np.clip(yy, canvas.ymin, canvas.height - 1, out=yy)
         canvas.canvas[xx, yy] = 0
         return canvas.canvas
+
 
     # def __str__(self):
     #     return "y = {m}x + {b}".format(m=self.slope, b=self.intercept)
@@ -604,10 +621,15 @@ class Circle(Geometry):
 
         """
         if self.is_clear_of_line(line):
-            return None
+            # return None
+            center = Point(self.x, self.y)
+            end_points = (line.point1, line.point2)
+            dist = [distance_point_to_point(center, end_point) for end_point in end_points]
+            P = end_points[int(np.argmin(dist))]
 
-        # Closest point ON the line
-        P = closest_point_on_line(Point(self.x, self.y), line)
+        else:
+            # Closest point ON the line
+            P = closest_point_on_line(Point(self.x, self.y), line)
 
         # Determines whether circle is above or underneath the line
         sign_x, sign_y = self.direction_from(P)
@@ -627,7 +649,9 @@ class Circle(Geometry):
 
         center = Point(self.x, self.y)
         P = closest_point_on_line(center, line)
-        return P not in line
+        # line = line.extends(self.radius)
+        is_outside = P not in line
+        return is_outside
 
         # # Previous implementation
         # center = Point(self.x, self.y)
@@ -642,6 +666,11 @@ class Circle(Geometry):
         """
         if self.is_clear_of_line(line):
             return np.Inf
+            # center = Point(self.x, self.y)
+            # end_points = (line.point1, line.point2)
+            # dist = [distance_point_to_point(center, end_point) for end_point in end_points]
+            # return min(dist)
+
         else:
             return distance_point_to_line(Point(self.x, self.y), line)
 

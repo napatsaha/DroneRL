@@ -1,7 +1,7 @@
 """
-Test radial raycasting on manual manipulation of drone environment.
+Test extend line by radius.
 
-General environment performance test.
+Same as test-env-v1-3.py except each line in the obstacle list is extended manually by the agent's radius.
 """
 from envs.environment_v1 import DroneCatch
 
@@ -12,20 +12,19 @@ env = DroneCatch(
     manual_control=True,
     diagnostic=True,
     icon_scale=0.05,
-    min_distance=0.8,
+    min_distance=0.1,
     prey_move_speed=2,
     predator_move_speed=2,
-    predator_spawn_area=((0.2, 0.7), (0.8, 1)),
-    prey_spawn_area=((0.2, 0.6), (0.8, 0.7)),
     show_rays=True,
     num_rays=16,
     frame_delay=10,
-    obstacle_file="test_codes/obstacle-2.csv"
+    obstacle_file="test_codes/obstacle.csv"
 )
 
-num_eps = 5
+env.obstacle_list = [obs.extends(env.active_agents[0].radius) for obs in env.obstacle_list]
+env._update_obstacles()
 
-for ep in range(num_eps):
+for ep in range(5):
     state, info = env.reset()
     # print(state)
     custom = env.render()

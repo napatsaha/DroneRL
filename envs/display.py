@@ -166,6 +166,9 @@ class Mover(Circle):
     def sample_action(self) -> int:
         pass
 
+    def clear_obstacle(self) -> None:
+        self.obstacle_list = []
+
     def add_obstacle(self, obstacle: Union[List[Geometry], Geometry]):
         if isinstance(obstacle, list):
             self.obstacle_list.extend(obstacle)
@@ -204,12 +207,14 @@ class Predator(Mover):
     def __init__(self, canvas_size,
                  speed: float = 5,
                  icon_size = (32,32),
+                 spawn_area = None,
                  image = "drone2.png", **kwargs):
         super(Predator, self).__init__(canvas_size, icon_size, image=image, **kwargs)
 
         self.name = "predator"
         self.speed = speed
         self.move_speed = round(self.speed * 0.01 * self.canvas_size[0])
+        self.spawn_area = self._process_spawn_area(spawn_area)
         # self.icon = cv2.imread(image, 0) / 255
         # self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
@@ -217,14 +222,27 @@ class Predator(Mover):
         
         self.reset_position()
 
+    def _process_spawn_area(self, spawn_area) -> np.ndarray:
+        spawn_area = (self.canvas_size,) if spawn_area is None else spawn_area
+        spawn_area = np.array(spawn_area)
+        if spawn_area.max() <= 1.0:
+            spawn_area *= np.array(self.canvas_size)
+
+        return spawn_area
+
     def reset_position(self, x: float=None, y: float=None) -> None:
         """
         Reset position of Predator. Optionally, (x,y) coordinates can be specified.
         """
         if x is None: x = self.x_max/2
         if y is None: y = self.y_max/2
-        
+
+        self.x = x
+        self.y = y
+
         self.set_position(x, y)
+
+
 
     def convert_action(self, action):
         """
@@ -262,7 +280,8 @@ class Predator(Mover):
         self.move_to_position(*delta)
 
     def randomise_position(self):
-        rand_pos = np.random.randint(self.canvas_size)
+        rand_pos = np.random.randint(*self.spawn_area)
+        print(self.name, rand_pos)
         self.reset_position(*rand_pos)
 
     def sample_action(self) -> int:

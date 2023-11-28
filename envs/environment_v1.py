@@ -48,6 +48,8 @@ class DroneCatch(Env):
                  radius: float=0.8,
                  random_prey: bool=True,
                  random_predator: bool=True,
+                 predator_spawn_area: tuple = None,
+                 prey_spawn_area: tuple = None,
                  min_distance: float = 0,
                  verbose: int = 0,
                  dist_mult: float=0.1,
@@ -96,7 +98,6 @@ class DroneCatch(Env):
         super(DroneCatch, self).__init__()
 
         # Fields
-
         self.obs_image = obs_image
         self.num_predators = num_predators
         self.num_preys = num_preys
@@ -120,7 +121,12 @@ class DroneCatch(Env):
         self.icon_size = round(icon_scale * self.canvas_width)
         self.move_speed = round(predator_move_speed * 0.01 * self.canvas_width)
 
-
+        # Parameters related to spawning
+        self.random_prey = random_prey
+        self.random_predator = random_predator
+        self.prey_spawn_area = prey_spawn_area
+        self.predator_spawn_area = predator_spawn_area
+        self._verify_min_distance(min_distance, resolution)
 
         ##############
         # Prey, Predator and observation, action spaces
@@ -159,7 +165,9 @@ class DroneCatch(Env):
                 agent = CardinalPrey(
                     canvas_size=self.canvas_shape,
                     icon_size=(self.icon_size, self.icon_size),
-                    speed=self.prey_move_speed)
+                    speed=self.prey_move_speed,
+                    spawn_area=self.prey_spawn_area
+                )
             else:
                 agent = AngularPrey(
                     self.canvas_shape,
@@ -181,9 +189,12 @@ class DroneCatch(Env):
                 self.nonactive_agents.append(agent)
 
         for i in range(max(1, self.num_predators)):
-            agent = Predator(canvas_size=self.canvas_shape,
-                             icon_size=(self.icon_size, self.icon_size),
-                             speed=self.predator_move_speed)
+            agent = Predator(
+                canvas_size=self.canvas_shape,
+                icon_size=(self.icon_size, self.icon_size),
+                speed=self.predator_move_speed,
+                spawn_area=self.predator_spawn_area
+            )
             self.predator.append(agent)
             self.agents.append(agent)
             if self.num_predators > 0:
@@ -198,14 +209,6 @@ class DroneCatch(Env):
 
         self.observation_space = safe_simplify(self.observation_space)
         self.action_space = safe_simplify(self.action_space)
-
-        # Parameters related to spawning
-        self.random_prey = random_prey
-        self.random_predator = random_predator
-        self._verify_min_distance(min_distance, resolution)
-
-
-
 
         ###########
         # Obstacles
@@ -234,6 +237,10 @@ class DroneCatch(Env):
         }
 
     def _verify_min_distance(self, min_distance, resolution):
+        # To prevent infinite while loops
+        if self.predator_spawn_area is not None or self.prey_spawn_area is not None:
+            self.min_distance = 0.0
+            return
         if min_distance <= 1:
             assert min_distance >= 0, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
             self.min_distance = min_distance
@@ -243,6 +250,7 @@ class DroneCatch(Env):
 
     def _update_obstacles(self):
         for agent in self.agents:
+            agent.clear_obstacle()
             # Add obstacles
             agent.add_obstacle(self.obstacle_list)
             # Add other agents
@@ -554,3 +562,7 @@ class DroneCatch(Env):
 
     def set_frame_delay(self, frame_delay):
         self.frame_delay = frame_delay
+
+
+def spawn_in_area(x1, y1, x2, y2):
+    pass
