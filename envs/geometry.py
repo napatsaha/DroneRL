@@ -473,6 +473,13 @@ class Rectangle(LineSegment):
         return cls
 
 
+def extrapolate_angle(p0: Point, p1: Point):
+    delta_x = p1.x - p0.x
+    delta_y = p1.y - p0.y
+
+    angle = np.arctan2(delta_y, delta_x)
+    return angle
+
 
 class Circle(Geometry):
     def __init__(self, x: Union[float, Point], y: float, radius: Optional[float]=None):
@@ -610,8 +617,8 @@ class Circle(Geometry):
         """
         # sign_y = np.sign(self.y - line.substitute(x=self.x))
         # sign_x = np.sign(self.x - line.substitute(y=self.y))
-        sign_y = np.sign(self.y - point.y)
-        sign_x = np.sign(self.x - point.x)
+        sign_y = np.sign(np.round(self.y - point.y, -1))
+        sign_x = np.sign(np.round(self.x - point.x, -1))
 
         return sign_x, sign_y
 
@@ -620,6 +627,30 @@ class Circle(Geometry):
         Returns the point closest to where the circle can safely touch the line without overlapping.
 
         """
+        P = self.find_proximal_point(line)
+
+        center = Point(self.x, self.y)
+        angle = extrapolate_angle(center, P)
+
+        # Determines whether circle is above or underneath the line
+        # sign_x, sign_y = self.direction_from(P)
+
+        # Deviation from P to safe point G
+        # dx = sign_x * self.radius * np.sin(np.abs(line.angle))
+        # dy = sign_y * self.radius * np.cos(np.abs(line.angle))
+        dx = self.radius * np.cos(angle)
+        dy = self.radius * np.sin(angle)
+
+        # print(self.name, line, np.degrees(angle), np.degrees(line.angle))
+
+        # Add deviation to point P to get G
+        G = P - Point(dx, dy)
+
+        return G
+
+    def find_proximal_point(self, line):
+
+        # Closest point of OFF the line -> find nearest end_points
         if self.is_clear_of_line(line):
             # return None
             center = Point(self.x, self.y)
@@ -627,21 +658,11 @@ class Circle(Geometry):
             dist = [distance_point_to_point(center, end_point) for end_point in end_points]
             P = end_points[int(np.argmin(dist))]
 
+        # Closest point ON the line -> Find perpendicular point
         else:
-            # Closest point ON the line
             P = closest_point_on_line(Point(self.x, self.y), line)
 
-        # Determines whether circle is above or underneath the line
-        sign_x, sign_y = self.direction_from(P)
-
-        # Deviation from P to safe point G
-        x = sign_x * self.radius * np.sin(np.abs(line.angle))
-        y = sign_y * self.radius * np.cos(np.abs(line.angle))
-
-        # Add deviation to point P to get G
-        G = P + Point(x,y)
-
-        return G
+        return P
 
     def is_clear_of_line(self, line: LineSegment) -> bool:
         """Check whether circle is in a position where the closest perpendicular point lies
@@ -665,11 +686,11 @@ class Circle(Geometry):
         by returning Inf instead.
         """
         if self.is_clear_of_line(line):
-            return np.Inf
-            # center = Point(self.x, self.y)
-            # end_points = (line.point1, line.point2)
-            # dist = [distance_point_to_point(center, end_point) for end_point in end_points]
-            # return min(dist)
+            # return np.Inf
+            center = Point(self.x, self.y)
+            end_points = (line.point1, line.point2)
+            dist = [distance_point_to_point(center, end_point) for end_point in end_points]
+            return min(dist)
 
         else:
             return distance_point_to_line(Point(self.x, self.y), line)

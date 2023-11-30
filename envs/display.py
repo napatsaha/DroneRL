@@ -12,7 +12,7 @@ from gymnasium import spaces
 import matplotlib.pyplot as plt
 
 from utils.tools import identity
-from .geometry import Circle, Point, LineSegment, Canvas, Geometry, closest_point_on_line
+from .geometry import Circle, Point, LineSegment, Canvas, Geometry, closest_point_on_line, distance_point_to_point
 
 
 class Mover(Circle):
@@ -125,18 +125,22 @@ class Mover(Circle):
     def clamp_position_by_obstacle(self, x, y, obstacle: Union[LineSegment, Circle]):
         """Clamps position of circle with an obstacle (line), to prevent
         passing through obstacle when moving."""
+        center = Point(self.x, self.y)
+
         G = self.closest_position_to_line(obstacle)
 
-        if self.active and G is not None:
-            self._closest_point = Circle(G, self.radius)
-        else:
-            self._closest_point = None
+        # if self.active and G is not None:
+        #     self._closest_point = Circle(G, self.radius)
+        # else:
+        #     self._closest_point = None
 
-        if G is None:
+        if G is None or distance_point_to_point(G, center) > self.radius:
             return x, y
         else:
-            P = closest_point_on_line(Point(self.x, self.y), obstacle)
+            P = self.find_proximal_point(obstacle)
             sign_x, sign_y = self.direction_from(P)
+            # sign_x = np.sign(center.x - P.x // (0.01 * self.canvas_size[0]))
+            # sign_y = np.sign(center.y - P.y // (0.01 * self.canvas_size[0]))
 
             clamp_x = identity if sign_x == 0 else min if sign_x < 0 else max
             clamp_y = identity if sign_y == 0 else min if sign_y < 0 else max
