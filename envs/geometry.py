@@ -607,7 +607,7 @@ class Circle(Geometry):
             d = distance_line_point(line, center)
             return d <= self.radius
 
-    def direction_from(self, point: Point):
+    def direction_from(self, point: Point, center: Point = None):
         """
         Return (x, y) unit vector telling the direction of this object is in relation
         to another object (e.g. a line).
@@ -615,10 +615,12 @@ class Circle(Geometry):
         For example, if this circle is below and right of a line, this method will return
         (+1.0, -1.0).
         """
+        if center is None:
+            center = Point(self.x, self.y)
         # sign_y = np.sign(self.y - line.substitute(x=self.x))
         # sign_x = np.sign(self.x - line.substitute(y=self.y))
-        sign_y = np.sign(np.round(self.y - point.y, -1))
-        sign_x = np.sign(np.round(self.x - point.x, -1))
+        sign_y = np.sign(np.round(center.y - point.y, -1))
+        sign_x = np.sign(np.round(center.x - point.x, -1))
 
         return sign_x, sign_y
 
@@ -629,38 +631,54 @@ class Circle(Geometry):
         """
         P = self.find_proximal_point(line)
 
-        center = Point(self.x, self.y)
-        angle = extrapolate_angle(center, P)
+        G = self.find_safe_point(P)
+
+        return G
+
+    def find_safe_point(self, P, center: Optional[Point] = None, opposite: bool = False):
+        if center is None:
+            center = Point(self.x, self.y)
+
+        if opposite:
+            angle = extrapolate_angle(P, center)
+        else:
+            angle = extrapolate_angle(center, P)
 
         # Determines whether circle is above or underneath the line
         # sign_x, sign_y = self.direction_from(P)
-
         # Deviation from P to safe point G
         # dx = sign_x * self.radius * np.sin(np.abs(line.angle))
         # dy = sign_y * self.radius * np.cos(np.abs(line.angle))
+
         dx = self.radius * np.cos(angle)
         dy = self.radius * np.sin(angle)
 
         # print(self.name, line, np.degrees(angle), np.degrees(line.angle))
 
+        delta = Point(dx, dy)
+
         # Add deviation to point P to get G
-        G = P - Point(dx, dy)
+        G = P - delta
+
+        # print(angle, P, delta, G)
 
         return G
 
-    def find_proximal_point(self, line):
+    def find_proximal_point(self, line: LineSegment, center: Optional[Point] = None):
+
+        if center is None:
+            center = Point(self.x, self.y)
 
         # Closest point of OFF the line -> find nearest end_points
         if self.is_clear_of_line(line):
             # return None
-            center = Point(self.x, self.y)
             end_points = (line.point1, line.point2)
             dist = [distance_point_to_point(center, end_point) for end_point in end_points]
             P = end_points[int(np.argmin(dist))]
 
         # Closest point ON the line -> Find perpendicular point
         else:
-            P = closest_point_on_line(Point(self.x, self.y), line)
+            P = closest_point_on_line(center, line)
 
         return P
 

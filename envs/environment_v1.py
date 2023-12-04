@@ -57,6 +57,7 @@ class DroneCatch(Env):
                  trunc_limit: int=100,
                  show_rays: bool=False,
                  num_rays: int=8,
+                 num_buffers: int = 2,
                  obstacle_file: str=None,
                  frame_delay: int=50,
                  render_mode: str="human",
@@ -120,6 +121,7 @@ class DroneCatch(Env):
         self.icon_scale = icon_scale
         self.icon_size = round(icon_scale * self.canvas_width)
         self.move_speed = round(predator_move_speed * 0.01 * self.canvas_width)
+        self.num_buffers = num_buffers
 
         # Parameters related to spawning
         self.random_prey = random_prey
@@ -166,14 +168,16 @@ class DroneCatch(Env):
                     canvas_size=self.canvas_shape,
                     icon_size=(self.icon_size, self.icon_size),
                     speed=self.prey_move_speed,
-                    spawn_area=self.prey_spawn_area
+                    spawn_area=self.prey_spawn_area,
+                    num_buffers=self.num_buffers
                 )
             else:
                 agent = AngularPrey(
                     self.canvas_shape,
                     angle_delta=self.prey_move_angle,
                     radius=round(self.radius * self.canvas_width / 2),
-                    icon_size=(self.icon_size, self.icon_size)
+                    icon_size=(self.icon_size, self.icon_size),
+                    num_buffers=self.num_buffers
                 )
 
             self.prey.append(agent)
@@ -193,7 +197,8 @@ class DroneCatch(Env):
                 canvas_size=self.canvas_shape,
                 icon_size=(self.icon_size, self.icon_size),
                 speed=self.predator_move_speed,
-                spawn_area=self.predator_spawn_area
+                spawn_area=self.predator_spawn_area,
+                num_buffers=self.num_buffers
             )
             self.predator.append(agent)
             self.agents.append(agent)

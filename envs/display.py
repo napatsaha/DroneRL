@@ -30,10 +30,12 @@ class Mover(Circle):
                  canvas_size: Tuple[int, int],
                  icon_shape = (32,32),
                  image = None,
-                 obstacle_list = None):
+                 obstacle_list = None,
+                 num_buffers = 2):
 
         # self.x = 0
         # self.y = 0
+        self.num_buffers = num_buffers
         self.active = False
         self._diagnostic = False
         self._closest_point = None
@@ -88,7 +90,7 @@ class Mover(Circle):
         # Clamp by obstacle
         if len(self.obstacle_list) > 0:
             # Find nearest in-sight obstacles
-            closest_obstacle = self.get_closest_obstacle(num_closest=2)
+            closest_obstacle = self.get_closest_obstacle(num_closest=self.num_buffers)
             for obs in closest_obstacle:
                 # Clamp only to nearest effective obstacle
                 x, y = self.clamp_position_by_obstacle(x, y, obs)
@@ -126,19 +128,33 @@ class Mover(Circle):
         """Clamps position of circle with an obstacle (line), to prevent
         passing through obstacle when moving."""
         center = Point(self.x, self.y)
+        new_center = Point(x, y)
 
-        G = self.closest_position_to_line(obstacle)
+        old_P = self.find_proximal_point(obstacle, center)
+        new_P = self.find_proximal_point(obstacle, new_center)
+
+        sign_x, sign_y = self.direction_from(old_P)
+        new_sign_x, new_sign_y = self.direction_from(new_P, center=new_center)
+
+        opposite_x = sign_x * new_sign_x <= 0
+        opposite_y = sign_y * new_sign_y <= 0
+        opposite = opposite_x and opposite_y
+
+        G = self.find_safe_point(new_P, new_center, opposite)
+
+        # if self.active:
+        #     print(obstacle, "x", sign_x, new_sign_x, opposite_x)
+        #     print(obstacle, "y", sign_y, new_sign_y, opposite_y)
+        #     print(G)
 
         # if self.active and G is not None:
         #     self._closest_point = Circle(G, self.radius)
         # else:
         #     self._closest_point = None
 
-        if G is None or distance_point_to_point(G, center) > self.radius:
+        if G is None: #or distance_point_to_point(G, center) > self.radius:
             return x, y
         else:
-            P = self.find_proximal_point(obstacle)
-            sign_x, sign_y = self.direction_from(P)
             # sign_x = np.sign(center.x - P.x // (0.01 * self.canvas_size[0]))
             # sign_y = np.sign(center.y - P.y // (0.01 * self.canvas_size[0]))
 
@@ -199,7 +215,7 @@ class Mover(Circle):
         return canvas.canvas
 
     def _draw_buffer_point(self, canvas: Canvas):
-        closest_obstacles = self.get_closest_obstacle(num_closest=2)
+        closest_obstacles = self.get_closest_obstacle(num_closest=self.num_buffers)
         for obstacle in closest_obstacles:
             G = self.closest_position_to_line(obstacle) # Buffer point
             if G is not None:
@@ -285,7 +301,7 @@ class Predator(Mover):
 
     def randomise_position(self):
         rand_pos = np.random.randint(*self.spawn_area)
-        print(self.name, rand_pos)
+        # print(self.name, rand_pos)
         self.reset_position(*rand_pos)
 
     def sample_action(self) -> int:
