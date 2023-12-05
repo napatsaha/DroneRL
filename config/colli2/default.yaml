@@ -1,0 +1,62 @@
+agent:
+  learning_starts: 10000
+  learning_rate: 0.0001
+  buffer_size: 100000
+  batch_size: 128
+  gamma: 0.999
+  tau: 1.0
+  train_freq: 16
+  gradient_steps: 8
+  target_update_interval: 600
+  probabilistic:
+    - false
+    - false
+  exploration_fraction: 0.4
+  exploration_initial_eps: 1.0
+  exploration_final_eps: 0.07
+  stats_window_size: 100
+  max_grad_norm: 10.0
+  net_kwargs:
+    net_arch:
+    - 64
+    - 64
+agent_class: DQNAgent
+environment:
+  num_preys: 0
+  prey_spawn_area:
+    - - 0.4
+      - 0.4
+    - - 0.6
+      - 0.6
+  num_predators: 1
+  predator_spawn_area:
+    - - 0
+      - 0.7
+    - - 0.5
+      - 1
+  obstacle_file: test_codes/obstacle-letterL.csv
+  cardinal_prey: true
+  dist_mult: 0.01
+  intermediate_reward: false
+  random_action: false
+  frame_delay: 5
+  icon_scale: 0.05
+  manual_control: false
+  min_distance: 0.0
+  num_rays: 16
+  obs_image: false
+  predator_move_speed: 2
+#  prey_move_angle: 5
+  prey_move_speed: 2
+#  radius: 0.8
+  random_predator: true
+  random_prey: true
+#  render_mode: human
+  resolution: 800
+  reward_mult: 10.0
+  show_rays: false
+  trunc_limit: 300
+environment_class: DroneCatch-v1
+learn:
+  total_timesteps: 200000
+  log_interval: 10

@@ -13,11 +13,11 @@ from utils import extract_config, expand_dict
 if __name__ == "__main__":
     ##########
     # Training Details
-    parent_dir = "colli1"
-    run_name = "PredPrey"
+    parent_dir = "colli2"
+    run_name = "GridWorld"
     experiment_file = None
-    config_file = "config/colli1/default2.yaml"
-    num_reps = 4
+    config_file = "config/colli2/default.yaml"
+    num_reps = 1
     verbose = 1
     continue_run = False # False
     run_id = None # None

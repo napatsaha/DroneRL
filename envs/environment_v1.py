@@ -38,6 +38,7 @@ class DroneCatch(Env):
     def __init__(self,
                  num_preys: int = 0,
                  num_predators: int = 1,
+                 random_action: bool=True,
                  obs_image: bool=False,
                  resolution: int=800,
                  icon_scale: float=0.1,
@@ -53,6 +54,7 @@ class DroneCatch(Env):
                  min_distance: float = 0,
                  verbose: int = 0,
                  dist_mult: float=0.1,
+                 intermediate_reward: bool=True,
                  reward_mult: float=1.0,
                  trunc_limit: int=100,
                  show_rays: bool=False,
@@ -122,6 +124,7 @@ class DroneCatch(Env):
         self.icon_size = round(icon_scale * self.canvas_width)
         self.move_speed = round(predator_move_speed * 0.01 * self.canvas_width)
         self.num_buffers = num_buffers
+        self.random_action = random_action
 
         # Parameters related to spawning
         self.random_prey = random_prey
@@ -228,6 +231,7 @@ class DroneCatch(Env):
         # Learning/Rewards Variables
         self.dist_mult = dist_mult
         self.reward_mult = reward_mult
+        self.intermediate_reward = intermediate_reward
 
         # Render Mode
         self.frame_delay = frame_delay
@@ -389,16 +393,25 @@ class DroneCatch(Env):
             reward = self.reward_mult * np.array(terminal_reward)
         else:
             # reward = self.dist_mult * self.calculate_reward()
-            reward = []
-            for ag in self.active_agents:
-                if ag.name == "predator":
-                    reward.append(- self.calculate_distance(normalise=True))
-                else:
-                    reward.append(self.calculate_distance(normalise=True))
+            reward = self._intermediate_reward()
 
             reward = self.dist_mult * np.array(reward)
 
         return safe_simplify(reward)
+
+    def _intermediate_reward(self):
+        reward = []
+        for ag in self.active_agents:
+            if self.intermediate_reward:
+                intermediate = self.calculate_distance(normalise=True)
+            else:
+                intermediate = 1.0
+
+            if ag.name == "predator":
+                reward.append(-intermediate)
+            else:
+                reward.append(intermediate)
+        return reward
 
     def _move_agents(self, actions: Union[int, List[int]]):
         if not isinstance(actions, (list, tuple, np.ndarray)):
@@ -412,7 +425,8 @@ class DroneCatch(Env):
             agent.move(action)
 
         for agent in self.nonactive_agents:
-            agent.move(agent.sample_action())
+            action = agent.sample_action() if self.random_action else 0.0
+            agent.move(action)
 
     def render(self) -> Union[int, np.ndarray, None]:
 

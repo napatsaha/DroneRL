@@ -41,12 +41,12 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
     agent.evaluate(num_eps=num_eps, frame_delay=frame_delay)
 
 if __name__ == "__main__":
-    parent_dir = "colli1"
-    run_base_name = "PredPrey"
-    run_id = 3
+    parent_dir = "colli2"
+    run_base_name = "GridWorld"
+    run_id = 4
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,
-         frame_delay=5, num_eps=5, #min_distance = 0.2,
-         obstacle_file="test_codes/obstacle.csv",
-         show_rays=True)
+         frame_delay=1, num_eps=10, trunc_limit=300,
+         # obstacle_file="test_codes/obstacle.csv",
+         show_rays=True, diagnostic=True)

@@ -34,7 +34,7 @@ def restructure_log_dir(parent_dir, agent_names: Union[str, List[str]] = ("preda
                 print(f"Moving {file} from {dirpath} to {new_dir}")
 
 if __name__ == "__main__":
-    parent_dir = "colli1"
+    parent_dir = "colli2"
     agent_names = ["predator"]
     main_dir = "logs"
 

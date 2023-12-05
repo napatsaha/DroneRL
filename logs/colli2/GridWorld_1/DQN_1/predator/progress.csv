@@ -1,0 +1,4 @@
+time/time_elapsed,rollout/ep_len_mean,time/episodes,time/total_timesteps,rollout/ep_rew_mean,rollout/exploration_rate
+28,299.0,10,3000,-16.18699005289958,0.07
+55,299.0,20,6000,-17.942565019781487,0.07
+84,299.0,30,9000,-17.980032585172534,0.07

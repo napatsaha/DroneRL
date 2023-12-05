@@ -55,7 +55,7 @@ def plot(parent_dir, run_base_name, run_ids,
                 run_names = [f"{run_base_name}_{run_id}" for run_id in run_ids]
                 labels = sorted(labels)
     else:
-        if labels is not None:
+        if labels is None:
             labels = run_names
         plot_title = parent_dir
         legend_title = run_base_name
@@ -138,20 +138,20 @@ def plot(parent_dir, run_base_name, run_ids,
 
 
 if __name__ == "__main__":
-    parent_dir = "colli1"
-    run_base_name = "PredRay"
-    run_ids = [4, 6, 7, 8]
+    parent_dir = "colli2"
+    run_base_name = "GridWorld"
+    run_ids = [3, 4]
     # changing_var = None
     sort = False
-    save = True
+    save = False
 
-    plot_title = "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
-    legend_title = "Exploration Strategy:"
-    changing_var = ("agent", "probabilistic")
-    labels = ("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
+    plot_title = None # "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
+    legend_title = None# "Exploration Strategy:"
+    changing_var = None# ("agent", "probabilistic")
+    labels = None #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
-    scalars = ["ep_len_mean", "ep_rew_mean"]
+    scalars = ["ep_len_mean", "loss"]
     # scalars = ["loss"]
 
     # X-Axis
