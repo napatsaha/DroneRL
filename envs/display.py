@@ -310,8 +310,8 @@ class Predator(Mover):
 class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,
                  icon_size = (32,32),
-                 image = "drone.png"):
-        super(AngularPrey, self).__init__(canvas_size, icon_size, image=image)
+                 image = "drone.png", **kwargs):
+        super(AngularPrey, self).__init__(canvas_size, icon_size, image=image, **kwargs)
         self.name = "prey"
         # self.icon = cv2.imread(image, 0) / 255
         # self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))

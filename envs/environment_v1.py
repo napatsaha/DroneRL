@@ -63,6 +63,7 @@ class DroneCatch(Env):
                  obstacle_file: str=None,
                  frame_delay: int=50,
                  render_mode: str="human",
+                 simplify_output: bool=False,
                  manual_control: bool=False,
                  diagnostic: bool=False):
         """
@@ -104,6 +105,7 @@ class DroneCatch(Env):
         self.obs_image = obs_image
         self.num_predators = num_predators
         self.num_preys = num_preys
+        self.simplify_output = simplify_output
 
         # Raycasting
         self.num_rays = num_rays
@@ -215,8 +217,9 @@ class DroneCatch(Env):
             else:
                 self.nonactive_agents.append(agent)
 
-        self.observation_space = safe_simplify(self.observation_space)
-        self.action_space = safe_simplify(self.action_space)
+        if self.simplify_output:
+            self.observation_space = safe_simplify(self.observation_space)
+            self.action_space = safe_simplify(self.action_space)
 
         ###########
         # Obstacles
@@ -291,7 +294,7 @@ class DroneCatch(Env):
         obs = self.get_observation()
 
         # Imprints new positions onto environment canvas
-        self.draw_canvas()
+        # self.draw_canvas()
 
         self.timesteps = 0
 
@@ -359,14 +362,15 @@ class DroneCatch(Env):
 
         self._move_agents(action)
 
-        # Calculate reward
-        reward = self.get_reward(terminal=False)
-
         # Observation before termination
         obs = self.get_observation()
 
+        # Calculate reward
+        reward = self.get_reward(terminal=False, obs=obs)
+
+
         # Updates canvas
-        self.draw_canvas()
+        # self.draw_canvas()
 
         ## Reset episode if termination conditions met
         # Check for collision
@@ -385,7 +389,56 @@ class DroneCatch(Env):
 
         return obs, reward, done, truncated, info
 
-    def get_reward(self, terminal: bool=False):
+    collision_dict = {
+        "obstacle": 0,
+        "prey": 1,
+        "predator": -1
+    }
+
+    def get_observation(self) -> List[np.ndarray]:
+        """
+        Obtain observation at current time step.
+
+        Returns
+        -------
+        obs : np.ndarray
+            2D Array if obs_image, else (5,) 1D array.
+
+        """
+        if self.show_rays:
+            self.rays = []
+        observation = []
+        for agent in self.active_agents:
+            if self.obs_image:
+                obs = self.canvas.canvas
+                observation.append(obs)
+            else:
+                # Radial raycasting to obtain distances and points of contact
+                obs, rays, obj_types = agent.radial_raycast(
+                    agent.obstacle_list, self.canvas,
+                    return_rays=self.show_rays,
+                    num_rays=self.num_rays
+                )
+
+                # print(rays)
+
+
+
+                # Convert and Normalise values
+                obs = obs / self.max_width
+                obj_types = np.vectorize(self.collision_dict.get)(obj_types)
+                obs = np.r_[obs, obj_types]
+                observation.append(obs)
+
+                if self.show_rays:
+                    self.rays.extend(rays)
+
+        if self.simplify_output:
+            return safe_simplify(observation)
+        else:
+            return  observation
+
+    def get_reward(self, terminal: bool=False, obs=None):
 
         if terminal:
             # reward = 1.0 * self.reward_mult
@@ -393,25 +446,60 @@ class DroneCatch(Env):
             reward = self.reward_mult * np.array(terminal_reward)
         else:
             # reward = self.dist_mult * self.calculate_reward()
-            reward = self._intermediate_reward()
+            reward = self._intermediate_reward(obs=obs)
 
-            reward = self.dist_mult * np.array(reward)
+        if self.simplify_output:
+            return safe_simplify(reward)
+        else:
+            return reward
 
-        return safe_simplify(reward)
+    def _intermediate_reward(self, obs: List[np.ndarray]):
+        """
+        Observation must be passed into the function
 
-    def _intermediate_reward(self):
-        reward = []
-        for ag in self.active_agents:
-            if self.intermediate_reward:
-                intermediate = self.calculate_distance(normalise=True)
-            else:
-                intermediate = 1.0
+        :param obs:
+        :return:
+        """
+        rewards = []
+        for ag, ob in zip(self.active_agents, obs):
+            # Since the last `num_rays` observation will be object types
+            obj_type = ob[self.num_rays:]
+            obj_dist = ob[:self.num_rays]
 
+            # Case for predator
             if ag.name == "predator":
-                reward.append(-intermediate)
-            else:
-                reward.append(intermediate)
-        return reward
+                idx_hit = np.where(obj_type == self.collision_dict["prey"])[0]
+                num_targets = len(idx_hit)
+                # num_targets = np.sum(obj_type == self.collision_dict["prey"])
+
+                # Receives POSITIVE reward if detecting a prey on a ray cast
+                if num_targets > 0:
+                    dist = np.min(obj_dist[idx_hit])
+                    intermediate = (1 - dist) * self.reward_mult
+                # Otherwise receive distance-based NEGATIVE step reward
+                else:
+                    intermediate = - self.dist_mult * self.calculate_distance(normalise=True) \
+                        if self.intermediate_reward else - self.dist_mult
+
+            # Case for prey (opposite sign)
+            elif ag.name == "prey":
+                idx_hit = np.where(obj_type == self.collision_dict["predator"])[0]
+                num_targets = len(idx_hit)
+                # num_targets = np.sum(obj_type == self.collision_dict["predator"])
+
+                # Receives NEGATIVE reward if detecting a prey on a ray cast
+                if num_targets > 0:
+                    dist = np.min(obj_dist[idx_hit])
+                    intermediate = - (1 - dist) * self.reward_mult
+                # Otherwise receive distance-based POSITIVE step reward
+                else:
+                    intermediate = self.dist_mult * self.calculate_distance(normalise=True) \
+                        if self.intermediate_reward else - self.dist_mult
+
+            # print(ag.name, num_targets)
+            rewards.append(intermediate)
+
+        return rewards
 
     def _move_agents(self, actions: Union[int, List[int]]):
         if not isinstance(actions, (list, tuple, np.ndarray)):
@@ -430,6 +518,8 @@ class DroneCatch(Env):
 
     def render(self) -> Union[int, np.ndarray, None]:
 
+        self.draw_canvas()
+
         if self.render_mode == "human":
             key = self.canvas.show(frame_delay=self.frame_delay, manual=self.manual_control)
             if self.manual_control:
@@ -439,9 +529,6 @@ class DroneCatch(Env):
                 return None
         elif self.render_mode == "rgb_array":
             return self.canvas.canvas
-
-    def close(self):
-        self.canvas.close()
 
     def draw_canvas(self):
         """
@@ -461,6 +548,9 @@ class DroneCatch(Env):
         if self.show_rays:
             self.canvas.draw(self.rays)
 
+    def close(self):
+        self.canvas.close()
+
     def sample_action(self) -> List[int]:
         """
         Sample a random action from each of the active agents.
@@ -478,7 +568,6 @@ class DroneCatch(Env):
                 if has_collided:
                     return True
         return False
-
 
     def _detect_collision_between_objects(self, object1: Mover, object2: Mover) -> bool:
         """
@@ -521,63 +610,19 @@ class DroneCatch(Env):
 
         return dist
 
-    def calculate_reward(self) -> float:
-        """
-        Calculate current intermediate (non-terminal) reward for the agent.
-
-        Returns
-        -------
-        float
-            Intermediate reward.
-
-        """
-        intermediate_reward = - self.calculate_distance() / self.canvas_width
-
-        return intermediate_reward
-
-    def get_observation(self) -> List[np.ndarray]:
-        """
-        Obtain observation at current time step.
-
-        Returns
-        -------
-        obs : np.ndarray
-            2D Array if obs_image, else (5,) 1D array.
-
-        """
-        if self.show_rays:
-            self.rays = []
-        observation = []
-        for agent in self.active_agents:
-            if self.obs_image:
-                obs = self.canvas.canvas
-                observation.append(obs)
-            else:
-                # Radial raycasting to obtain distances and points of contact
-                obs, rays, obj_types = agent.radial_raycast(
-                    agent.obstacle_list, self.canvas,
-                    return_rays=self.show_rays,
-                    num_rays=self.num_rays
-                )
-
-                # print(rays)
-
-                collision_dict = {
-                    "obstacle": 0,
-                    "prey": 1,
-                    "predator": -1
-                }
-
-                # Convert and Normalise values
-                obs = obs / self.max_width
-                obj_types = np.vectorize(collision_dict.get)(obj_types)
-                obs = np.r_[obs, obj_types]
-                observation.append(obs)
-
-                if self.show_rays:
-                    self.rays.extend(rays)
-
-        return safe_simplify(observation)
+    # def calculate_reward(self) -> float:
+    #     """
+    #     Calculate current intermediate (non-terminal) reward for the agent.
+    #
+    #     Returns
+    #     -------
+    #     float
+    #         Intermediate reward.
+    #
+    #     """
+    #     intermediate_reward = - self.calculate_distance() / self.canvas_width
+    #
+    #     return intermediate_reward
 
     def set_frame_delay(self, frame_delay):
         self.frame_delay = frame_delay
