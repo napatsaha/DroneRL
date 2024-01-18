@@ -22,7 +22,8 @@ env = DroneCatch(
     frame_delay=10,
     obstacle_file="test_codes/obstacle-letterL.csv",
     num_buffers=2,
-    reward_mult=10
+    reward_mult=10,
+    dist_mult=0.01
 )
 
 num_eps = 5

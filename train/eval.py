@@ -43,7 +43,7 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 if __name__ == "__main__":
     parent_dir = "colli2"
     run_base_name = "GridWorld"
-    run_id = 4
+    run_id = 6
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,

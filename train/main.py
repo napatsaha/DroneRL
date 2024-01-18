@@ -20,7 +20,7 @@ if __name__ == "__main__":
     num_reps = 1
     verbose = 1
     continue_run = False # False
-    run_id = None # None
+    run_id = None
     ##########
 
     if experiment_file is not None:

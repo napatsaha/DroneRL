@@ -20,7 +20,7 @@ agent:
     net_arch:
     - 64
     - 64
-agent_class: DQNAgent
+agent_class: MultiAgent
 environment:
   num_preys: 0
   prey_spawn_area:

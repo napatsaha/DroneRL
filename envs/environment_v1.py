@@ -475,7 +475,7 @@ class DroneCatch(Env):
                 # Receives POSITIVE reward if detecting a prey on a ray cast
                 if num_targets > 0:
                     dist = np.min(obj_dist[idx_hit])
-                    intermediate = (1 - dist) * self.reward_mult
+                    intermediate = (1 - dist) * 0.1 * self.reward_mult
                 # Otherwise receive distance-based NEGATIVE step reward
                 else:
                     intermediate = - self.dist_mult * self.calculate_distance(normalise=True) \
@@ -490,7 +490,7 @@ class DroneCatch(Env):
                 # Receives NEGATIVE reward if detecting a prey on a ray cast
                 if num_targets > 0:
                     dist = np.min(obj_dist[idx_hit])
-                    intermediate = - (1 - dist) * self.reward_mult
+                    intermediate = - (1 - dist) * 0.1 * self.reward_mult
                 # Otherwise receive distance-based POSITIVE step reward
                 else:
                     intermediate = self.dist_mult * self.calculate_distance(normalise=True) \

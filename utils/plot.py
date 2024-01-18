@@ -140,7 +140,7 @@ def plot(parent_dir, run_base_name, run_ids,
 if __name__ == "__main__":
     parent_dir = "colli2"
     run_base_name = "GridWorld"
-    run_ids = [3, 4]
+    run_ids = [6]
     # changing_var = None
     sort = False
     save = False
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     labels = None #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
-    scalars = ["ep_len_mean", "loss"]
+    scalars = ["ep_rew_mean", "ep_len_mean", "loss"]
     # scalars = ["loss"]
 
     # X-Axis
@@ -159,5 +159,6 @@ if __name__ == "__main__":
     bin_width = 2000
 
     plot(parent_dir, run_base_name, run_ids,
+         agent_names=["predator1"],
          scalars=scalars, changing_var=changing_var,
          plot_title=plot_title, legend_title=legend_title, labels=labels)
