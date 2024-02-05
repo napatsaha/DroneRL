@@ -53,8 +53,13 @@ class DroneCatch(Env):
                  prey_spawn_area: tuple = None,
                  min_distance: float = 0,
                  verbose: int = 0,
+                 include_loc_obs = False,
+                 include_ray_obs = True,
+                 include_ray_type_obs = True,
                  dist_mult: float=0.1,
                  intermediate_reward: bool=True,
+                 intermediate_dist_reward: bool=True,
+                 intermediate_ray_reward: str="positive",
                  reward_mult: float=1.0,
                  trunc_limit: int=100,
                  show_rays: bool=False,
@@ -154,6 +159,21 @@ class DroneCatch(Env):
         self.prey_move_angle = prey_move_angle
         self.radius = radius
 
+        # Observation
+        self.include_loc_obs = bool(include_loc_obs)
+        self.include_ray_obs = bool(include_ray_obs)
+        self.include_ray_type_obs = bool(include_ray_type_obs)
+
+        # Number of observation per agent
+        num_obs = \
+        int(self.include_loc_obs) * (
+                max(self.num_preys, 1) * 2 +
+                max(self.num_predators, 1) * 2
+        ) \
+        + int(self.include_ray_obs) * (self.num_rays) \
+        + int(self.include_ray_type_obs) * (self.num_rays)
+
+        # Shared Observation space
         if self.obs_image:
             obs_space = spaces.Box(
                 low = np.zeros(self.canvas_shape),
@@ -162,8 +182,8 @@ class DroneCatch(Env):
             )
         else:
             obs_space = spaces.Box(
-                low=np.zeros(2 * self.num_rays),
-                high=np.ones(2 * self.num_rays),
+                low=np.zeros(num_obs),
+                high=np.ones(num_obs),
                 dtype=np.float64)
 
         # Initialises Predator and AngularPrey classes
@@ -234,7 +254,9 @@ class DroneCatch(Env):
         # Learning/Rewards Variables
         self.dist_mult = dist_mult
         self.reward_mult = reward_mult
-        self.intermediate_reward = intermediate_reward
+        self.intermediate_dist_reward = intermediate_dist_reward
+        int_ray_dict = {"positive": 1, "negative": -1, "none": 0}
+        self.intermediate_ray_reward = int_ray_dict.get(intermediate_ray_reward, 0)
 
         # Render Mode
         self.frame_delay = frame_delay
@@ -405,29 +427,41 @@ class DroneCatch(Env):
             2D Array if obs_image, else (5,) 1D array.
 
         """
+        observation = []
+
+        if self.include_loc_obs:
+            location_obs = []
+            for agent in self.agents:
+                loc = agent.get_position(normalise=True)
+                location_obs.extend(loc)
+
         if self.show_rays:
             self.rays = []
-        observation = []
         for agent in self.active_agents:
             if self.obs_image:
                 obs = self.canvas.canvas
                 observation.append(obs)
             else:
                 # Radial raycasting to obtain distances and points of contact
-                obs, rays, obj_types = agent.radial_raycast(
+                ray_obs, rays, obj_types = agent.radial_raycast(
                     agent.obstacle_list, self.canvas,
                     return_rays=self.show_rays,
                     num_rays=self.num_rays
                 )
 
-                # print(rays)
-
-
-
                 # Convert and Normalise values
-                obs = obs / self.max_width
-                obj_types = np.vectorize(self.collision_dict.get)(obj_types)
-                obs = np.r_[obs, obj_types]
+                obs = []
+                if self.include_ray_obs:
+                    ray_obs = ray_obs / self.max_width
+                    obs = np.r_[obs, ray_obs]
+
+                if self.include_ray_type_obs:
+                    obj_types = np.vectorize(self.collision_dict.get)(obj_types)
+                    obs = np.r_[obs, obj_types]
+
+                if self.include_loc_obs:
+                    obs = np.r_[obs, location_obs]
+
                 observation.append(obs)
 
                 if self.show_rays:
@@ -462,39 +496,51 @@ class DroneCatch(Env):
         """
         rewards = []
         for ag, ob in zip(self.active_agents, obs):
-            # Since the last `num_rays` observation will be object types
-            obj_type = ob[self.num_rays:]
-            obj_dist = ob[:self.num_rays]
+
+
+            if self.include_ray_obs and self.include_ray_type_obs:
+                # Since the last `num_rays` observation will be object types
+                obj_dist = ob[:self.num_rays] # Ray lengths
+                obj_type = ob[self.num_rays:self.num_rays*2] # Object types detected
 
             # Case for predator
             if ag.name == "predator":
-                idx_hit = np.where(obj_type == self.collision_dict["prey"])[0]
-                num_targets = len(idx_hit)
-                # num_targets = np.sum(obj_type == self.collision_dict["prey"])
+                if self.intermediate_ray_reward != 0:
+                    idx_hit = np.where(obj_type == self.collision_dict["prey"])[0]
+                    num_hits = len(idx_hit)
+                    # num_targets = np.sum(obj_type == self.collision_dict["prey"])
 
-                # Receives POSITIVE reward if detecting a prey on a ray cast
-                if num_targets > 0:
-                    dist = np.min(obj_dist[idx_hit])
-                    intermediate = (1 - dist) * 0.1 * self.reward_mult
-                # Otherwise receive distance-based NEGATIVE step reward
+                    # Receives POSITIVE reward if detecting a prey on a ray cast
+                    if num_hits > 0:
+                        dist = np.min(obj_dist[idx_hit])
+                        lim = np.sign(self.intermediate_ray_reward + 1)
+                        intermediate = (lim - dist) * 0.1 * self.reward_mult
+                            # (1 - dist) if positive; (- dist) if negative
+                    # Otherwise receive distance-based NEGATIVE step reward
+                    else:
+                        intermediate = - self.dist_mult * self.calculate_distance(normalise=True) \
+                            if self.intermediate_dist_reward else - self.dist_mult
                 else:
                     intermediate = - self.dist_mult * self.calculate_distance(normalise=True) \
-                        if self.intermediate_reward else - self.dist_mult
+                        if self.intermediate_dist_reward else - self.dist_mult
 
             # Case for prey (opposite sign)
             elif ag.name == "prey":
                 idx_hit = np.where(obj_type == self.collision_dict["predator"])[0]
-                num_targets = len(idx_hit)
+                num_hits = len(idx_hit)
                 # num_targets = np.sum(obj_type == self.collision_dict["predator"])
 
                 # Receives NEGATIVE reward if detecting a prey on a ray cast
-                if num_targets > 0:
+                if num_hits > 0:
                     dist = np.min(obj_dist[idx_hit])
                     intermediate = - (1 - dist) * 0.1 * self.reward_mult
                 # Otherwise receive distance-based POSITIVE step reward
                 else:
                     intermediate = self.dist_mult * self.calculate_distance(normalise=True) \
-                        if self.intermediate_reward else - self.dist_mult
+                        if self.intermediate_dist_reward else - self.dist_mult
+
+            else:
+                intermediate = 0.0
 
             # print(ag.name, num_targets)
             rewards.append(intermediate)

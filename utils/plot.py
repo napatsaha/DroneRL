@@ -140,7 +140,7 @@ def plot(parent_dir, run_base_name, run_ids,
 if __name__ == "__main__":
     parent_dir = "colli2"
     run_base_name = "GridWorld"
-    run_ids = [6]
+    run_ids = [9]
     # changing_var = None
     sort = False
     save = False

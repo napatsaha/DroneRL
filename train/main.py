@@ -15,12 +15,12 @@ if __name__ == "__main__":
     # Training Details
     parent_dir = "colli2"
     run_name = "GridWorld"
-    experiment_file = None
-    config_file = "config/colli2/default.yaml"
-    num_reps = 1
+    experiment_file = None # For comparing various parameters
+    config_file = "config/colli2/default.yaml" # Configuration file; will create copy with run_name_run_id
+    num_reps = 2 # Number of repetition in this run
     verbose = 1
-    continue_run = False # False
-    run_id = None
+    continue_run = False # True or False: To continue most recent run
+    run_id = None # Specific run to continue (ignores continue_run)
     ##########
 
     if experiment_file is not None:

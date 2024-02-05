@@ -1,9 +1,9 @@
 agent:
   batch_size: 128
   buffer_size: 100000
-  exploration_final_eps: 0.07
-  exploration_fraction: 0.4
-  exploration_initial_eps: 1.0
+  exploration_final_eps: 0.05
+  exploration_fraction: 0.8
+  exploration_initial_eps: 0.5
   gamma: 0.999
   gradient_steps: 8
   learning_rate: 0.0001
@@ -20,13 +20,17 @@ agent:
   target_update_interval: 600
   tau: 1.0
   train_freq: 16
-agent_class: DQNAgent
+agent_class: MultiAgent
 environment:
   cardinal_prey: true
-  dist_mult: 0.01
+  dist_mult: 1
   frame_delay: 5
   icon_scale: 0.05
-  intermediate_dist_reward: false
+  include_loc_obs: true
+  include_ray_obs: false
+  include_ray_type_obs: false
+  intermediate_dist_reward: true
+  intermediate_ray_reward: none
   manual_control: false
   min_distance: 0.0
   num_predators: 1
@@ -46,7 +50,7 @@ environment:
     - 0.4
   - - 0.6
     - 0.6
-  random_action: false
+  random_action: true
   random_predator: true
   random_prey: true
   resolution: 800

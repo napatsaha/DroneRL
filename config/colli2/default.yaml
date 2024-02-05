@@ -1,5 +1,5 @@
 agent:
-  learning_starts: 10000
+  learning_starts: 20000
   learning_rate: 0.0001
   buffer_size: 100000
   batch_size: 128
@@ -34,11 +34,15 @@ environment:
       - 0.7
     - - 0.5
       - 1
-  obstacle_file: test_codes/obstacle-letterL.csv
+  obstacle_file: test_codes/obstacle-letterL2.csv
   cardinal_prey: true
-  dist_mult: 0.01
-  intermediate_reward: false
-  random_action: false
+  dist_mult: 1
+  include_loc_obs: true
+  include_ray_obs: true
+  include_ray_type_obs: false
+  intermediate_dist_reward: true
+  intermediate_ray_reward: none
+  random_action: true
   frame_delay: 5
   icon_scale: 0.05
   manual_control: false

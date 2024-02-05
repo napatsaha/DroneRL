@@ -7,7 +7,7 @@ agent:
   gamma: 0.999
   gradient_steps: 8
   learning_rate: 0.0001
-  learning_starts: 10000
+  learning_starts: 20000
   max_grad_norm: 10.0
   net_kwargs:
     net_arch:
@@ -20,12 +20,13 @@ agent:
   target_update_interval: 600
   tau: 1.0
   train_freq: 16
-agent_class: DQNAgent
+agent_class: MultiAgent
 environment:
   cardinal_prey: true
-  dist_mult: 0.01
+  dist_mult: 0.1
   frame_delay: 5
   icon_scale: 0.05
+  include_loc_obs: true
   intermediate_dist_reward: false
   manual_control: false
   min_distance: 0.0

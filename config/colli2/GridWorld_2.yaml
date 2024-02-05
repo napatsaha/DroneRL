@@ -26,7 +26,7 @@ environment:
   dist_mult: 0.1
   frame_delay: 5
   icon_scale: 0.05
-  intermediate_reward: false
+  intermediate_dist_reward: false
   manual_control: false
   min_distance: 0.5
   num_predators: 1

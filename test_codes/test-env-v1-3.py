@@ -15,15 +15,20 @@ env = DroneCatch(
     min_distance=0.0,
     prey_move_speed=2,
     predator_move_speed=2,
-    predator_spawn_area=((0.4, 0.4), (0.6, 0.6)),
-    prey_spawn_area=((0.2, 0.6), (0.8, 0.7)),
+    predator_spawn_area=((0.0, 0.7), (0.5, 1.0)),
+    prey_spawn_area=((0.4, 0.4), (0.6, 0.6)),
     show_rays=True,
     num_rays=16,
     frame_delay=10,
-    obstacle_file="test_codes/obstacle-letterL.csv",
+    obstacle_file="test_codes/obstacle-letterL2.csv",
     num_buffers=2,
     reward_mult=10,
-    dist_mult=0.01
+    dist_mult=1,
+    include_loc_obs=True,
+    include_ray_obs=False,
+    include_ray_type_obs=False,
+    intermediate_ray_reward="none",
+    intermediate_dist_reward=True
 )
 
 num_eps = 5
@@ -41,7 +46,7 @@ for ep in range(num_eps):
             action[0] = custom
 
         state, reward, terminated, truncated, info = env.step(action)
-        # print(state)
+        print(state)
         print(reward)
         custom = env.render()
 

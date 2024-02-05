@@ -43,10 +43,10 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 if __name__ == "__main__":
     parent_dir = "colli2"
     run_base_name = "GridWorld"
-    run_id = 6
+    run_id = 8
     rep_name = "DQN_1"
 
     eval(parent_dir, run_base_name, run_id, rep_name,
          frame_delay=1, num_eps=10, trunc_limit=300,
-         # obstacle_file="test_codes/obstacle.csv",
-         show_rays=True, diagnostic=True)
+         # obstacle_file="test_codes/obstacle-letterL.csv",
+         show_rays=True, diagnostic=True, random_action=True)
