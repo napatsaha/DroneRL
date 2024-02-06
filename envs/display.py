@@ -228,7 +228,7 @@ class Predator(Mover):
                  speed: float = 5,
                  icon_size = (32,32),
                  spawn_area = None,
-                 image = "drone2.png", **kwargs):
+                 image = "assets/objects/drone2.png", **kwargs):
         super(Predator, self).__init__(canvas_size, icon_size, image=image, **kwargs)
 
         self.name = "predator"
@@ -310,7 +310,7 @@ class Predator(Mover):
 class AngularPrey(Mover):
     def __init__(self, canvas_size, angle_delta, radius,
                  icon_size = (32,32),
-                 image = "drone.png", **kwargs):
+                 image = "assets/objects/drone.png", **kwargs):
         super(AngularPrey, self).__init__(canvas_size, icon_size, image=image, **kwargs)
         self.name = "prey"
         # self.icon = cv2.imread(image, 0) / 255
@@ -378,7 +378,7 @@ class CardinalPrey(Predator):
         spawning in upper left quadrant instead of in the centre.
 
         """
-        super().__init__(canvas_size, image="drone.png", **kwargs)
+        super().__init__(canvas_size, image="assets/objects/drone.png", **kwargs)
         self.name = "prey"
 
     def reset_position(self, x: float = None, y: float = None) -> None:

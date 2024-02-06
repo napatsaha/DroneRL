@@ -28,16 +28,16 @@ environment:
   icon_scale: 0.05
   include_loc_obs: true
   include_ray_obs: true
-  include_ray_type_obs: false
+  include_ray_type_obs: true
   intermediate_dist_reward: true
-  intermediate_ray_reward: none
+  intermediate_ray_reward: negative
   manual_control: false
   min_distance: 0.0
   num_predators: 1
   num_preys: 0
   num_rays: 16
   obs_image: false
-  obstacle_file: assets/obstacles/obstacle-letterL2.csv
+  obstacle_file: assets/obstacles/obstacle-letterL.csv
   predator_move_speed: 2
   predator_spawn_area:
   - - 0

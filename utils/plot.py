@@ -140,15 +140,15 @@ def plot(parent_dir, run_base_name, run_ids,
 if __name__ == "__main__":
     parent_dir = "colli2"
     run_base_name = "GridWorld"
-    run_ids = [9]
+    run_ids = [12,8,11]
     # changing_var = None
     sort = False
     save = False
 
     plot_title = None # "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
-    legend_title = None# "Exploration Strategy:"
+    legend_title = "Reward based on:" # "Exploration Strategy:"
     changing_var = None# ("agent", "probabilistic")
-    labels = None #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
+    labels = ("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
     scalars = ["ep_rew_mean", "ep_len_mean", "loss"]
