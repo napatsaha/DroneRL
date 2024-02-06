@@ -514,7 +514,7 @@ class DroneCatch(Env):
                     if num_hits > 0:
                         dist = np.min(obj_dist[idx_hit])
                         lim = np.sign(self.intermediate_ray_reward + 1)
-                        intermediate = (lim - dist) * 0.1 * self.reward_mult
+                        intermediate = (lim - dist) * self.dist_mult
                             # (1 - dist) if positive; (- dist) if negative
                     # Otherwise receive distance-based NEGATIVE step reward
                     else:

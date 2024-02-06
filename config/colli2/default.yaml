@@ -43,7 +43,7 @@ environment:
   intermediate_dist_reward: true
   intermediate_ray_reward: neg
   random_action: true
-  frame_delay: 5
+  frame_delay: 1
   icon_scale: 0.05
   manual_control: false
   min_distance: 0.0

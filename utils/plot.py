@@ -151,7 +151,7 @@ if __name__ == "__main__":
     labels = ("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
-    scalars = ["ep_rew_mean", "ep_len_mean", "loss"]
+    scalars = ["ep_rew_mean", "ep_len_mean", "loss", "exploration_rate"]
     # scalars = ["loss"]
 
     # X-Axis

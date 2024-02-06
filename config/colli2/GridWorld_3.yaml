@@ -33,7 +33,7 @@ environment:
   num_preys: 0
   num_rays: 16
   obs_image: false
-  obstacle_file: test_codes/obstacle-2.csv
+  obstacle_file: assets/obstacles/obstacle-2.csv
   predator_move_speed: 2
   predator_spawn_area:
   - - 0

@@ -7,7 +7,7 @@ agent:
   gamma: 0.999
   gradient_steps: 8
   learning_rate: 0.0001
-  learning_starts: 1000
+  learning_starts: 20000
   max_grad_norm: 10.0
   net_kwargs:
     net_arch:
@@ -23,10 +23,14 @@ agent:
 agent_class: MultiAgent
 environment:
   cardinal_prey: true
-  dist_mult: 0.01
-  frame_delay: 5
+  dist_mult: 0.1
+  frame_delay: 1
   icon_scale: 0.05
-  intermediate_dist_reward: false
+  include_loc_obs: true
+  include_ray_obs: true
+  include_ray_type_obs: true
+  intermediate_dist_reward: true
+  intermediate_ray_reward: neg
   manual_control: false
   min_distance: 0.0
   num_predators: 1
@@ -46,7 +50,7 @@ environment:
     - 0.4
   - - 0.6
     - 0.6
-  random_action: false
+  random_action: true
   random_predator: true
   random_prey: true
   resolution: 800
@@ -56,4 +60,4 @@ environment:
 environment_class: DroneCatch-v1
 learn:
   log_interval: 10
-  total_timesteps: 20000
+  total_timesteps: 200000

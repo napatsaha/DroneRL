@@ -57,11 +57,13 @@ class QNetwork(nn.Module):
     
     def predict(self, observation: th.Tensor, deterministic: bool = True) -> th.Tensor:
         q_values = self(observation)
+
         if deterministic:
             # Greedy action
             action = q_values.argmax(dim=-1).reshape(-1)
         else:
             # Softmax probabilistic
             action = th.multinomial(th.softmax(q_values, dim=-1), 1)
+        # print(q_values, action)
         return action
     
