@@ -12,7 +12,7 @@ from envs.environment_v1 import DroneCatch
 
 env, agent = None, None
 
-def eval(parent_dir, run_base_name, run_id, rep_name,
+def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
          num_eps = 10, frame_delay = 20,
          probabilistic = None,
          **kwargs):
@@ -35,7 +35,7 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
     agent = AgentClass(env, **config["agent"])
 
     model_file = os.path.join("model", parent_dir, run_name)
-    agent.load(model_file, rep_name)
+    agent.load(model_file, rep_name, timestep)
 
     if probabilistic is not None:
         agent.probabilistic = probabilistic
@@ -45,10 +45,11 @@ def eval(parent_dir, run_base_name, run_id, rep_name,
 if __name__ == "__main__":
     parent_dir = "test1"
     run_base_name = "TestAlgo"
-    run_id = 3
+    run_id = 4
     rep_name = "DQN_1"
+    timestep = None
 
-    eval(parent_dir, run_base_name, run_id, rep_name,
+    eval(parent_dir, run_base_name, run_id, rep_name, timestep,
          frame_delay=5, num_eps=10, trunc_limit=300,
          # obstacle_file="test_codes/obstacle-letterL.csv",
          # show_rays=True, diagnostic=True

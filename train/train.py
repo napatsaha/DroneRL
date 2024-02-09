@@ -165,13 +165,15 @@ def train(
         else:
             agent.set_logger_by_dir(log_dir, format_strings=log_outputs)
 
-        agent.learn(
-            progress_bar=progress_bar,
-            **config["learn"]
-        )
-
         # Saving model
         model_dir = os.path.join("model",run_dir)
+
+        agent.learn(
+            progress_bar=progress_bar,
+            dir_path=model_dir,
+            run_name=rep_name,
+            **config["learn"]
+        )
 
         agent.save(model_dir, rep_name)
 

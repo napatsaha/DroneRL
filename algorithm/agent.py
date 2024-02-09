@@ -24,10 +24,12 @@ class DQNAgent:
             env: GymEnv,
             # num_reps: int = 1,
             learning_starts: int = 50000,
+            save_interval: int = None,
             **policy_kwargs
     ):
         # self.num_reps = num_reps
         self.learning_starts = learning_starts
+        self.save_interval = save_interval
 
         self.policy = DQNPolicy(
             env.observation_space, env.action_space,
@@ -192,7 +194,10 @@ class DualAgent:
             self,
             total_timesteps: int = 100000,
             log_interval: int = 4,
-            progress_bar: bool = False
+            save_interval: int = None,
+            progress_bar: bool = False,
+            dir_path = None,
+            run_name = None,
     ):
         # Setup learn in each policy
         self._setup_learn(total_timesteps, log_interval, self.learning_starts)
@@ -200,6 +205,9 @@ class DualAgent:
         # Initialise progress bar
         if progress_bar:
             pbar = tqdm(total=total_timesteps)
+
+        times_model_saved = 0
+        max_digits = len(str(total_timesteps))
 
         # Loop through episodes
         while self.num_timesteps < total_timesteps:
@@ -220,8 +228,8 @@ class DualAgent:
                 for i, policy in enumerate(self.agents.values()):
                     policy.store_transition(state[i], nextstate[i], action[i], reward[i], done, truncated, info)
 
-                    if self.num_timesteps % log_interval == 0:
-                        print(self.num_timesteps, state[i], action[i], done, truncated)
+                    # if self.num_timesteps % log_interval == 0:
+                    #     print(self.num_timesteps, state[i], action[i], done, truncated)
 
                     # Perform weight update if conditions met
                     if start_learning and \
@@ -230,6 +238,12 @@ class DualAgent:
 
                     # Update exploration rates within policy
                     policy.step(start_learning)
+
+                # Save intermediate model at every `save_interval` timesteps
+                if start_learning and self.num_timesteps % save_interval == 0:
+                    step_name = f"{times_model_saved:02}_{self.num_timesteps:0{max_digits}}"
+                    self.save(dir_path, run_name, step_name)
+                    times_model_saved += 1
 
                 self.num_timesteps += 1
 
@@ -248,7 +262,7 @@ class DualAgent:
         for policy in self.agents.values():
             policy.logger.close()
 
-    def save(self, dir_path, run_name):
+    def save(self, dir_path, run_name, step_name: str = None):
         """
         Specify folder (dir_path) to save models and name of the run (run_name).
         For each model in agents, a model will be saved with the name
@@ -260,15 +274,22 @@ class DualAgent:
         """
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-        for name, policy in self.agents.items():
-            model_to = os.path.join(dir_path, f"{run_name}_{name}.pt")
-            print(f"Saving {name} model to {model_to}")
+
+        for agent_name, policy in self.agents.items():
+            file_name = f"{run_name}_{agent_name}_{step_name}.pt" if step_name is not None else \
+                f"{run_name}_{agent_name}.pt"
+            model_to = os.path.join(dir_path, file_name)
+            print(f"Saving {agent_name} model to {model_to}")
             th.save(policy.q_net.state_dict(),
                     model_to)
 
-    def load(self, dir_path, run_name):
+    def load(self, dir_path, run_name, timestep = None):
         for name, policy in self.agents.items():
-            file = next(filter(lambda x: x.endswith(f"{run_name}_{name}.pt"), os.listdir(dir_path)))
+            # file = next(filter(lambda x: x.endswith(f"{run_name}_{name}.pt"), os.listdir(dir_path)))
+            if timestep is not None:
+                file = f"{run_name}_{name}_{timestep}.pt"
+            else:
+                file = f"{run_name}_{name}.pt"
             file_path = os.path.join(dir_path, file)
             print(f"Loading {name} model from {file_path}")
             state_dict = th.load(file_path)
