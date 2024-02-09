@@ -138,9 +138,9 @@ def plot(parent_dir, run_base_name, run_ids,
 
 
 if __name__ == "__main__":
-    parent_dir = "colli2"
-    run_base_name = "GridWorld"
-    run_ids = [12,8,11]
+    parent_dir = "test1"
+    run_base_name = "TestAlgo"
+    run_ids = [3]
     # changing_var = None
     sort = False
     save = False
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     plot_title = None # "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
     legend_title = "Reward based on:" # "Exploration Strategy:"
     changing_var = None# ("agent", "probabilistic")
-    labels = ("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
+    labels = None #("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
     scalars = ["ep_rew_mean", "ep_len_mean", "loss", "exploration_rate"]

@@ -20,10 +20,10 @@ from torch.nn import functional as F
 from gymnasium import Space
 
 from stable_baselines3.common.buffers import ReplayBuffer
-from stable_baselines3.common.policies import BasePolicy
-from stable_baselines3.common.base_class import BaseAlgorithm
+# from stable_baselines3.common.policies import BasePolicy
+# from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.utils import polyak_update, get_latest_run_id, safe_mean
-from stable_baselines3.dqn.policies import DQNPolicy
+# from stable_baselines3.dqn.policies import DQNPolicy
 from stable_baselines3.common.utils import get_device, get_linear_fn, obs_as_tensor
 from stable_baselines3.common.logger import configure, Logger
 
@@ -72,6 +72,7 @@ class DQNPolicy:
             # reset_num_timesteps: bool = False
     ):
         
+        self.learning_starts = None
         self.name = "DQN"
         
         self.observation_space = observation_space
@@ -95,7 +96,7 @@ class DQNPolicy:
             self._probabilistic_greedy = probabilistic
             self._probabilistic_random = probabilistic
 
-        self.exploration_rate = 0.0
+        self.exploration_rate = 1.0
         self.exploration_schedule = get_linear_fn(
             exploration_initial_eps, 
             exploration_final_eps,
@@ -192,16 +193,25 @@ class DQNPolicy:
         
         self.replay_buffer.add(obs, next_obs, action, reward, done, infos)
         
-    def step(self):
+    def step(self, start_learning: bool = True):
         """Update necessary values after each step in environment.
         
         Primarily, updates exploration rate, and target Q Network.
         """
         self.num_timesteps += 1
-        self.exploration_rate = self.exploration_schedule(1.0 - self.num_timesteps / self.total_timesteps)
-        if self.num_timesteps % self.target_update_freq == 0:
-            self._update_target_net()
-            
+
+        if start_learning:
+            # Updates exploration rate
+            self.exploration_rate = self.exploration_schedule(
+                1.0 - (self.num_timesteps - self.learning_starts) /
+                (self.total_timesteps - self.learning_starts)
+            )
+
+            # Updates target network at intervals
+            if self.num_timesteps % self.target_update_freq == 0:
+                self._update_target_net()
+
+        # Terminate training session
         if self.num_timesteps == self.total_timesteps:
             self.done = True
 
@@ -217,11 +227,10 @@ class DQNPolicy:
         :param done:
         :return:
         """
-        if not done:
-            self.episode_done = done
-            self.rewards.append(reward)
-        else:
-            self.episode_done = done
+        self.episode_done = done
+        self.rewards.append(reward)
+
+        if done:
             # At end of Episode
             self.ep_rew_buffer.append(sum(self.rewards))
             self.ep_len_buffer.append(len(self.rewards))
@@ -244,14 +253,15 @@ class DQNPolicy:
 
         self.logger.dump(step=self.num_timesteps)
 
-    def setup_learn(self, total_timesteps, log_interval):
+    def setup_learn(self, total_timesteps, log_interval, learning_starts = 0):
         if self.logger is None:
             raise Exception("Logger has not been setup yet. Cannot start learning.")
 
         self.total_timesteps = total_timesteps
         self.log_interval = log_interval
+        self.learning_starts = learning_starts
 
-    def predict(self, obs: th.Tensor, deterministic: bool = False):
+    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False):
         """
         Make prediction based on epsilon-greedy.
 
@@ -266,7 +276,7 @@ class DQNPolicy:
             Chosen action.
 
         """
-        explore = np.random.rand() < self.exploration_rate
+        explore = np.random.rand() < self.exploration_rate if not random else True
         if not deterministic and explore and not self._probabilistic_random:
             # Uniform random choice
             action = self.action_space.sample()

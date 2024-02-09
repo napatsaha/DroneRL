@@ -194,17 +194,24 @@ class DualAgent:
             log_interval: int = 4,
             progress_bar: bool = False
     ):
-        self._setup_learn(total_timesteps, log_interval)
+        # Setup learn in each policy
+        self._setup_learn(total_timesteps, log_interval, self.learning_starts)
+
+        # Initialise progress bar
         if progress_bar:
             pbar = tqdm(total=total_timesteps)
 
+        # Loop through episodes
         while self.num_timesteps < total_timesteps:
             state, _ = self.env.reset()
             done = False
             truncated = False
             while not (done or truncated):
+                start_learning = self.num_timesteps > self.learning_starts
+
+                # Moves randomly until started learning
                 action = [
-                    policy.predict(state[i]) for i, policy in enumerate(self.agents.values())
+                    policy.predict(state[i], random=not start_learning) for i, policy in enumerate(self.agents.values())
                 ]
 
                 nextstate, reward, done, truncated, info = self.env.step(action)
@@ -213,15 +220,18 @@ class DualAgent:
                 for i, policy in enumerate(self.agents.values()):
                     policy.store_transition(state[i], nextstate[i], action[i], reward[i], done, truncated, info)
 
+                    if self.num_timesteps % log_interval == 0:
+                        print(self.num_timesteps, state[i], action[i], done, truncated)
+
                     # Perform weight update if conditions met
-                    if policy.num_timesteps > self.learning_starts and \
+                    if start_learning and \
                             policy.num_timesteps % policy.train_freq == 0:
                         policy.train()
 
                     # Update exploration rates within policy
-                    policy.step()
+                    policy.step(start_learning)
 
-                self.num_timesteps = policy.num_timesteps
+                self.num_timesteps += 1
 
                 if progress_bar:
                     pbar.update()
@@ -289,9 +299,9 @@ class DualAgent:
 
         self.env.close()
 
-    def _setup_learn(self, total_timesteps, log_interval):
+    def _setup_learn(self, total_timesteps, log_interval, learning_starts):
         for policy in self.agents.values():
-            policy.setup_learn(total_timesteps, log_interval)
+            policy.setup_learn(total_timesteps, log_interval, learning_starts)
 
 
 class MultiAgent(DualAgent):

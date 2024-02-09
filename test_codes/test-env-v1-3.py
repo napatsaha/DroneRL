@@ -20,15 +20,15 @@ env = DroneCatch(
     show_rays=True,
     num_rays=16,
     frame_delay=10,
-    obstacle_file="test_codes/obstacle-letterL2.csv",
+    obstacle_file="assets/obstacles/obstacle-letterL.csv",
     num_buffers=2,
     reward_mult=10,
-    dist_mult=1,
+    dist_mult=0,
     include_loc_obs=True,
     include_ray_obs=False,
     include_ray_type_obs=False,
     intermediate_ray_reward="none",
-    intermediate_dist_reward=True
+    intermediate_dist_reward=False
 )
 
 num_eps = 5
