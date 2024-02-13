@@ -140,13 +140,13 @@ def plot(parent_dir, run_base_name, run_ids,
 if __name__ == "__main__":
     parent_dir = "test1"
     run_base_name = "TestAlgo"
-    run_ids = [3]
+    run_ids = [6]
     # changing_var = None
     sort = False
     save = False
 
     plot_title = None # "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
-    legend_title = "Reward based on:" # "Exploration Strategy:"
+    legend_title = None #"Reward based on:" # "Exploration Strategy:"
     changing_var = None# ("agent", "probabilistic")
     labels = None #("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 

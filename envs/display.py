@@ -381,11 +381,11 @@ class CardinalPrey(Predator):
         super().__init__(canvas_size, image="assets/objects/drone.png", **kwargs)
         self.name = "prey"
 
-    def reset_position(self, x: float = None, y: float = None) -> None:
-        """
-        Reset position of Predator. Optionally, (x,y) coordinates can be specified.
-        """
-        if x is None: x = self.x_max / 4
-        if y is None: y = self.y_max / 4
-
-        self.set_position(x, y)
+    # def reset_position(self, x: float = None, y: float = None) -> None:
+    #     """
+    #     Reset position of Predator. Optionally, (x,y) coordinates can be specified.
+    #     """
+    #     if x is None: x = self.x_max / 4
+    #     if y is None: y = self.y_max / 4
+    #
+    #     self.set_position(x, y)

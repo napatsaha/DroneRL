@@ -241,7 +241,7 @@ class DualAgent:
 
                 # Save intermediate model at every `save_interval` timesteps
                 if start_learning and self.num_timesteps % save_interval == 0:
-                    step_name = f"{times_model_saved:02}_{self.num_timesteps:0{max_digits}}"
+                    step_name = f"{self.num_timesteps:0{max_digits}}"
                     self.save(dir_path, run_name, step_name)
                     times_model_saved += 1
 

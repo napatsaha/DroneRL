@@ -45,13 +45,14 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
 if __name__ == "__main__":
     parent_dir = "test1"
     run_base_name = "TestAlgo"
-    run_id = 4
+    run_id = 6
     rep_name = "DQN_1"
-    timestep = None
+    timestep = "060000"
 
     eval(parent_dir, run_base_name, run_id, rep_name, timestep,
          frame_delay=5, num_eps=10, trunc_limit=300,
-         # obstacle_file="test_codes/obstacle-letterL.csv",
+         obstacle_file="assets/obstacles/obstacle-letterL2.csv",
          # show_rays=True, diagnostic=True
-         random_action=True
+         # random_prey=True,
+         # random_action=False, random_prey=False
          )
