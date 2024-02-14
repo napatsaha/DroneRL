@@ -20,12 +20,12 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test1"
 run_base_name = "TestAlgo"
-run_id = 8
-rep_name = "DQN_10"
+run_id = 9
+rep_name = "DQN_1"
 # timestep = "050000"
 # timestep = None
-save = True
-show = False
+save = False
+show = True
 
 # Modifiable spawn position (for both interpolation and visualising
 prey_spawn_pos = 0.5,0.5

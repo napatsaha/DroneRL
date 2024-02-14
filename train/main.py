@@ -16,11 +16,11 @@ if __name__ == "__main__":
     parent_dir = "test1"
     run_name = "TestAlgo"
     experiment_file = None # For comparing various parameters
-    config_file = "config/test1/TestAlgo_7.yaml" # Configuration file; will create copy with run_name_run_id
-    num_reps = 9 # Number of repetition in this run
+    config_file = "config/test1/default.yaml" # Configuration file; will create copy with run_name_run_id
+    num_reps = 5 # Number of repetition in this run
     verbose = 1
-    continue_run = False # True or False: To continue most recent run
-    run_id = 7 # Specific run to continue (ignores continue_run)
+    continue_run = False # [True or False]: To continue most recent run
+    run_id = None # [int or None] Specific run to continue (ignores continue_run)
     ##########
 
     if experiment_file is not None:
