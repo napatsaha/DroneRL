@@ -1,67 +1,64 @@
 agent:
-  learning_starts: 20000
-  learning_rate: 0.0001
-  buffer_size: 1000
   batch_size: 128
-  gamma: 0.95
-  tau: 1.0
-  train_freq: 16
-  gradient_steps: 8
-  target_update_interval: 80
-  probabilistic:
-    - false
-    - false
+  buffer_size: 1000
+  exploration_final_eps: 0.1
   exploration_fraction: 0.9
   exploration_initial_eps: 1.0
-  exploration_final_eps: 0.1
-  stats_window_size: 100
+  gamma: 0.95
+  gradient_steps: 8
+  learning_rate: 0.0001
+  learning_starts: 20000
   max_grad_norm: 10.0
   net_kwargs:
     net_arch:
     - 64
     - 64
+  probabilistic:
+  - false
+  - false
+  stats_window_size: 100
+  target_update_interval: 80
+  tau: 1.0
+  train_freq: 16
 agent_class: MultiAgent
 environment:
-  num_preys: 0
-  prey_spawn_area:
-    - - 0.5
-      - 0.5
-    - - 0.5
-      - 0.5
-  num_predators: 1
-  predator_spawn_area:
-    - - 0
-      - 0
-    - - 1
-      - 1
-  obstacle_file: assets/obstacles/obstacle-letterL2.csv
   cardinal_prey: true
   dist_mult: 0
+  frame_delay: 1
+  icon_scale: 0.05
   include_loc_obs: true
   include_ray_obs: false
   include_ray_type_obs: false
   intermediate_dist_reward: false
   intermediate_ray_reward: none
-  random_action: false
-  frame_delay: 1
-  icon_scale: 0.05
   manual_control: false
   min_distance: 0.2
+  num_predators: 1
+  num_preys: 0
   num_rays: 4
   obs_image: false
+  obstacle_file: assets/obstacles/obstacle-letterL2.csv
   predator_move_speed: 2
-#  prey_move_angle: 5
+  predator_spawn_area:
+  - - 0
+    - 0
+  - - 1
+    - 1
   prey_move_speed: 2
-#  radius: 0.8
+  prey_spawn_area:
+  - - 0.5
+    - 0.5
+  - - 0.5
+    - 0.5
+  random_action: false
   random_predator: true
   random_prey: false
-#  render_mode: human
   resolution: 800
   reward_mult: 1
   show_rays: false
   trunc_limit: 300
 environment_class: DroneCatch-v1
 learn:
-  total_timesteps: 100000
   log_interval: 10
   save_interval: 10000
+  total_timesteps: 100000
