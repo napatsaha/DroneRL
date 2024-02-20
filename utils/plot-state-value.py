@@ -20,12 +20,14 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test1"
 run_base_name = "TestAlgo"
-run_id = 21
+run_id = 24
 rep_name = "DQN_1"
-# timestep = "100000"
+# timestep = "140000"
 # timestep = None
 save = False
 show = True
+
+show_gradient = True # Show gradient of colours instead of contours for q-values
 
 # Modifiable spawn position (for both interpolation and visualising
 prey_spawn_pos = 0.5,0.5
@@ -110,8 +112,12 @@ for timestep in timestep_list:
     fig, ax = plt.subplots(1,2, figsize=(15,5))
 
     # Plot Max Q-values
-    ctr = ax[0].contourf(X, Y, Z_qmax, alpha=0.5)
-    ax[0].imshow(canvas.T, extent=(0,1,0,1), cmap=plt.get_cmap("gray"), origin="lower")
+    if show_gradient:
+        ax[0].imshow(canvas.T, extent=(0,1,0,1), cmap=plt.get_cmap("gray"), origin="lower")
+        ctr = ax[0].imshow(Z_qmax, extent=(0,1,0,1), alpha=0.5)
+    else:
+        ctr = ax[0].contourf(X, Y, Z_qmax, alpha=0.5)
+        ax[0].imshow(canvas.T, extent=(0,1,0,1), cmap=plt.get_cmap("gray"), origin="lower")
     plt.colorbar(ctr, ax=ax[0])
     ax[0].set_title("Max Q-Value" + "\n" + model_name)
     ax[0].axis("off")
