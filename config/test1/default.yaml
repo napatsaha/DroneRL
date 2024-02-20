@@ -11,7 +11,7 @@ agent:
   probabilistic:
     - false
     - false
-  exploration_fraction: 0.5
+  exploration_fraction: 0.6
   exploration_initial_eps: 1.0
   exploration_final_eps: 0.1
   stats_window_size: 100
@@ -34,7 +34,7 @@ environment:
       - 0
     - - 1
       - 1
-  obstacle_file: assets/obstacles/obstacle-letterL2.csv
+  obstacle_file: assets/obstacles/obstacle-letterL.csv
   cardinal_prey: true
   dist_mult: 0
   include_loc_obs: true
@@ -62,6 +62,6 @@ environment:
   trunc_limit: 300
 environment_class: DroneCatch-v1
 learn:
-  total_timesteps: 100000
+  total_timesteps: 140000
   log_interval: 10
-  save_interval: 10000
+  save_interval: 20000

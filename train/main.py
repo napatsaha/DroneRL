@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Training Details
     parent_dir = "test1"
     run_name = "TestAlgo"
-    experiment_file = None # For comparing various parameters
+    experiment_file = "config/test1/experiment22-24.yaml" # For comparing various parameters
     config_file = "config/test1/default.yaml" # Configuration file; will create copy with run_name_run_id
     num_reps = 3 # Number of repetition in this run
     verbose = 1

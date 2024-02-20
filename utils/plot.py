@@ -140,7 +140,7 @@ def plot(parent_dir, run_base_name, run_ids,
 if __name__ == "__main__":
     parent_dir = "test1"
     run_base_name = "TestAlgo"
-    run_ids = [11,15]
+    run_ids = [20,21]
     # changing_var = None
     sort = False
     save = False
