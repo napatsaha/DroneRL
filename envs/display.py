@@ -243,10 +243,15 @@ class Predator(Mover):
         self.reset_position()
 
     def _process_spawn_area(self, spawn_area) -> np.ndarray:
-        spawn_area = (self.canvas_size,) if spawn_area is None else spawn_area
+        spawn_area = ((0,0), self.canvas_size) if spawn_area is None else spawn_area
         spawn_area = np.array(spawn_area)
         if spawn_area.max() <= 1.0:
             spawn_area *= np.array(self.canvas_size)
+
+        # if spawn_area[0, 0] == spawn_area[1, 0]:
+        #     self.fixed_x = True
+        # if spawn_area[0, 1] == spawn_area[1, 1]:
+        #     self.fixed_y = True
 
         return spawn_area
 
@@ -300,7 +305,8 @@ class Predator(Mover):
         self.move_to_position(*delta)
 
     def randomise_position(self):
-        rand_pos = np.random.randint(*self.spawn_area)
+        rand_pos = np.apply_along_axis(safe_random, 0, self.spawn_area)
+        # rand_pos = np.random.randint(*self.spawn_area)
         # print(self.name, rand_pos)
         self.reset_position(*rand_pos)
 
@@ -389,3 +395,11 @@ class CardinalPrey(Predator):
     #     if y is None: y = self.y_max / 4
     #
     #     self.set_position(x, y)
+
+
+def safe_random(a):
+    if len(np.unique(a)) == 1:
+        return int(a[0])
+    else:
+        return np.random.randint(a[0], a[1])
+
