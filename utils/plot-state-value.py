@@ -20,7 +20,7 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test1"
 run_base_name = "TestAlgo"
-run_id = 24
+run_id = 26
 rep_name = "DQN_1"
 # timestep = "140000"
 # timestep = None
@@ -74,16 +74,22 @@ total_timesteps = config['learn']['total_timesteps']
 
 timestep_list = np.arange(learning_starts+save_interval, total_timesteps+1, save_interval)
 
-for timestep in timestep_list:
-    if not isinstance(timestep, str):
+for timestep in np.r_[timestep_list, None]:
+    if timestep is not None and not isinstance(timestep, str):
         digits = len(str(total_timesteps))
         timestep = f"{timestep:0{digits}}"
 
     # Download model
     model_file = os.path.join("model", parent_dir, run_name)
-    agent.load(model_file, rep_name, timestep)
+    try:
+        agent.load(model_file, rep_name, timestep)
+    except:
+        continue
 
-    model_name = " | ".join([run_name, rep_name, timestep])
+    if timestep is None:
+        model_name = " | ".join([run_name, rep_name, "Final"])
+    else:
+        model_name = " | ".join([run_name, rep_name, timestep])
 
     policy = agent.agents['predator1']
     policy.q_net = policy.q_net.cpu()

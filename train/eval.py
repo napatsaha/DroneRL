@@ -45,14 +45,14 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
 if __name__ == "__main__":
     parent_dir = "test1"
     run_base_name = "TestAlgo"
-    run_id = 23
-    rep_name = "DQN_2"
-    timestep = "100000"
+    run_id = 26
+    rep_name = "DQN_1"
+    timestep = "120000"
 
     eval(parent_dir, run_base_name, run_id, rep_name, timestep,
-         frame_delay=1, num_eps=20, trunc_limit=300,
-         predator_spawn_area=((0.9,0.1),(0.9,0.9)),
-         probabilistic=True
+         frame_delay=1, num_eps=10, trunc_limit=300,
+         # predator_spawn_area=((0.9,0.1),(0.9,0.9)),
+         # probabilistic=True
          # min_distance = 0.4,
          # obstacle_file="assets/obstacles/obstacle-letterL2.csv",
          # show_rays=True, diagnostic=True
