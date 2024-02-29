@@ -13,10 +13,10 @@ from utils import extract_config, expand_dict
 if __name__ == "__main__":
     ##########
     # Training Details
-    parent_dir = "test1"
-    run_name = "TestAlgo"
+    parent_dir = "test2"
+    run_name = "TestLog"
     experiment_file = None #"config/test1/experiment22-24.yaml" # For comparing various parameters
-    config_file = "config/test1/default.yaml" # Configuration file; will create copy with run_name_run_id
+    config_file = "config/test2/default.yaml" # Configuration file; will create copy with run_name_run_id
     num_reps = 1 # Number of repetition in this run
     verbose = 1
     continue_run = False # [True or False]: To continue most recent run

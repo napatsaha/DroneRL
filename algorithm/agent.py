@@ -4,7 +4,11 @@ Created on Thu Sep  7 13:22:37 2023
 
 @author: napat
 """
+import _csv
+import csv
 import os
+from _csv import Writer
+from io import TextIOWrapper
 from typing import Optional, List, Dict
 from tqdm.rich import tqdm
 import torch as th
@@ -14,6 +18,7 @@ from stable_baselines3.common.type_aliases import GymEnv
 from stable_baselines3.common.logger import Logger, configure
 from collections import namedtuple
 from envs import DualDrone, MultiDrone
+
 
 class DQNAgent:
     """
@@ -132,18 +137,24 @@ class DualAgent:
             self,
             env: DualDrone,
             agent_order: Optional[List[str]] = ("predator", "prey"),
-            # num_reps: int = 1,
             learning_starts: int = 50000,
             verbose: Optional[int] = 0,
+            should_log_trajectory: bool = False,
             **policy_kwargs
     ):
-        # self.num_reps = num_reps
         self.verbose = verbose
         self.learning_starts = learning_starts
         self.num_timesteps = 0
 
+        # Regarding logging trajectory
+        self.should_log_trajectory = should_log_trajectory
+        self.trajectory_file: TextIOWrapper = None
+        self.trajectory_writer: Writer = None
+        self.log_dir = None
+
         self.env = env
 
+        # Define policy for each agent
         self.agent_order = agent_order
         self.agents = {name: None for name in self.agent_order}
 
@@ -155,21 +166,6 @@ class DualAgent:
             )
             self.agents[agent_name] = agent
 
-        # self.predator_policy = DQNPolicy(
-        #     env.observation_space, env.action_space,
-        #     **policy_kwargs
-        # )
-        #
-        # self.prey_policy = DQNPolicy(
-        #     env.observation_space, env.action_space,
-        #     **policy_kwargs
-        # )
-        #
-        #
-        # Agent = namedtuple("Agent", self.agent_order)
-        # self.agents = Agent(self.predator_policy, self.prey_policy)
-
-
     def set_logger(self, logger):
         if isinstance(logger, str):
             self.set_logger_by_dir(logger)
@@ -178,6 +174,7 @@ class DualAgent:
                             "Please pass log_dir to .set_logger_by_dir() instead.")
 
     def set_logger_by_dir(self, log_dir, format_strings: List[str] = ["csv"]):
+        self.log_dir = log_dir
 
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
@@ -196,8 +193,8 @@ class DualAgent:
             log_interval: int = 4,
             save_interval: int = None,
             progress_bar: bool = False,
-            dir_path = None,
-            run_name = None,
+            dir_path: str = None,
+            run_name: str = None,
     ):
         # Setup learn in each policy
         self._setup_learn(total_timesteps, log_interval, self.learning_starts)
@@ -208,6 +205,8 @@ class DualAgent:
 
         times_model_saved = 0
         max_digits = len(str(total_timesteps))
+        self.num_timesteps = 0
+        episode = 0
 
         # Loop through episodes
         while self.num_timesteps < total_timesteps:
@@ -223,6 +222,8 @@ class DualAgent:
                 ]
 
                 nextstate, reward, done, truncated, info = self.env.step(action)
+
+                self.log_trajectory(self.num_timesteps, episode)
 
                 # For each agent in environment: store, train and step
                 for i, policy in enumerate(self.agents.values()):
@@ -252,15 +253,33 @@ class DualAgent:
 
                 state = nextstate
 
+            episode += 1
+
         self.close_logger()
         self.env.close()
         if progress_bar:
             pbar.refresh()
             pbar.close()
 
+    def log_trajectory(self, timestep, episode) -> None:
+        """
+        Records position informations of each agent in the environment for each step of the training.
+
+        Returns
+        -------
+        None
+
+        """
+        pos = self.env.return_positions(normalise=False)
+        self.trajectory_writer.writerow([timestep, episode, *pos])
+
+
     def close_logger(self):
         for policy in self.agents.values():
             policy.logger.close()
+
+        if self.should_log_trajectory:
+            self.trajectory_file.close()
 
     def save(self, dir_path, run_name, step_name: str = None):
         """
@@ -321,6 +340,11 @@ class DualAgent:
         self.env.close()
 
     def _setup_learn(self, total_timesteps, log_interval, learning_starts):
+        if self.should_log_trajectory:
+            log_file = os.path.join(self.log_dir, "trajectory.csv")
+            self.trajectory_file = open(log_file, "a+", newline='')
+            self.trajectory_writer = csv.writer(self.trajectory_file)
+
         for policy in self.agents.values():
             policy.setup_learn(total_timesteps, log_interval, learning_starts)
 

@@ -30,7 +30,6 @@ from stable_baselines3.common.logger import configure, Logger
 from algorithm.network import QNetwork
 
 
-
 class DQNPolicy:
     """
     Deep Q-Network policy that is decoupled from an environment.
@@ -71,7 +70,7 @@ class DQNPolicy:
             # log_output=["csv","stdout"],
             # reset_num_timesteps: bool = False
     ):
-        
+
         self.learning_starts = None
         self.name = "DQN"
         
@@ -144,11 +143,6 @@ class DQNPolicy:
             **self.net_kwargs
         ).to(self.device)
     
-    def _update_target_net(self, tau: float=None) -> None:
-        """Perform Polyak Update on target Q Network."""
-        if tau is None: tau = self.tau
-        polyak_update(self.q_net.parameters(), self.q_net_target.parameters(), tau)
-    
     def _setup(self):
         """Setup Replay Buffer."""
         self.replay_buffer = ReplayBuffer(self.replay_buffer_size, self.observation_space, self.action_space)
@@ -157,7 +151,7 @@ class DQNPolicy:
         self.rewards: List[float] = []
         self._episode_num = 0
         self.start_time = time.time_ns()
-
+    
     def _setup_logger(self, log_output, log_dir, log_name, reset_num_timesteps) -> Logger:
         """
         Default logger setup if no logger is passed through.
@@ -165,59 +159,19 @@ class DQNPolicy:
         """
         log_name = self.name if log_name is None else log_name
         lastest_id = get_latest_run_id(log_dir, log_name)
-        if reset_num_timesteps: 
+        if reset_num_timesteps:
             lastest_id -= 1
         run_name = f"{log_name}_{lastest_id + 1}"
         save_path = os.path.join(log_dir, run_name)
         self.run_name = run_name
-        
+
         logger = configure(save_path, log_output)
         return logger
 
-    def set_logger(self, logger: Logger):
-        self.logger = logger
-
-    def store_transition(self, obs, next_obs, action, reward, done, truncated, info):
-        """Store transition into buffer after storing truncated in info"""
-        obs = np.array(obs)
-        next_obs = np.array(next_obs)
-        action = np.array(action)
-        reward = np.array(reward)
-        done = np.array(done)
-        info["TimeLimit.truncated"] = truncated
-        infos = [info]
-
-        self._update_episode_info(reward, done | truncated)
-        
-        # self.logger.record("reward", reward)
-        
-        self.replay_buffer.add(obs, next_obs, action, reward, done, infos)
-        
-    def step(self, start_learning: bool = True):
-        """Update necessary values after each step in environment.
-        
-        Primarily, updates exploration rate, and target Q Network.
-        """
-        self.num_timesteps += 1
-
-        if start_learning:
-            # Updates exploration rate
-            self.exploration_rate = self.exploration_schedule(
-                1.0 - (self.num_timesteps - self.learning_starts) /
-                (self.total_timesteps - self.learning_starts)
-            )
-
-            # Updates target network at intervals
-            if self.num_timesteps % self.target_update_freq == 0:
-                self._update_target_net()
-
-        # Terminate training session
-        if self.num_timesteps == self.total_timesteps:
-            self.done = True
-
-        # Only record once at the end of episode and when at log_interval intervals
-        if self.episode_done and self._episode_num % self.log_interval == 0:
-            self._dump_logs()
+    def _update_target_net(self, tau: float=None) -> None:
+        """Perform Polyak Update on target Q Network."""
+        if tau is None: tau = self.tau
+        polyak_update(self.q_net.parameters(), self.q_net_target.parameters(), tau)
 
     def _update_episode_info(self, reward, done):
         """
@@ -252,6 +206,51 @@ class DQNPolicy:
         self.logger.record("time/total_timesteps", self.num_timesteps)
 
         self.logger.dump(step=self.num_timesteps)
+        
+    def set_logger(self, logger: Logger):
+        self.logger = logger
+
+    def store_transition(self, obs, next_obs, action, reward, done, truncated, info):
+        """Store transition into buffer after storing truncated in info"""
+        obs = np.array(obs)
+        next_obs = np.array(next_obs)
+        action = np.array(action)
+        reward = np.array(reward)
+        done = np.array(done)
+        info["TimeLimit.truncated"] = truncated
+        infos = [info]
+
+        self._update_episode_info(reward, done | truncated)
+
+        # self.logger.record("reward", reward)
+
+        self.replay_buffer.add(obs, next_obs, action, reward, done, infos)
+
+    def step(self, start_learning: bool = True):
+        """Update necessary values after each step in environment.
+
+        Primarily, updates exploration rate, and target Q Network.
+        """
+        self.num_timesteps += 1
+
+        if start_learning:
+            # Updates exploration rate
+            self.exploration_rate = self.exploration_schedule(
+                1.0 - (self.num_timesteps - self.learning_starts) /
+                (self.total_timesteps - self.learning_starts)
+            )
+
+            # Updates target network at intervals
+            if self.num_timesteps % self.target_update_freq == 0:
+                self._update_target_net()
+
+        # Terminate training session
+        if self.num_timesteps == self.total_timesteps:
+            self.done = True
+
+        # Only record once at the end of episode and when at log_interval intervals
+        if self.episode_done and self._episode_num % self.log_interval == 0:
+            self._dump_logs()
 
     def setup_learn(self, total_timesteps, log_interval, learning_starts = 0):
         if self.logger is None:
@@ -261,12 +260,31 @@ class DQNPolicy:
         self.log_interval = log_interval
         self.learning_starts = learning_starts
 
-    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False):
+    def get_qvalues(self, obs: Union[th.Tensor, np.ndarray]) -> object:
+        """
+        Returns q-values for given observation
+
+        Parameters
+        ----------
+        obs : Union[th.Tensor, np.ndarray]
+            observation
+
+        Returns
+        -------
+
+        """
+        with th.no_grad():
+            q = self.q_net(obs)
+            return q
+
+    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False) -> object:
         """
         Make prediction based on epsilon-greedy.
 
         Parameters
         ----------
+        random
+        deterministic
         obs : th.Tensor
             Observation.
 

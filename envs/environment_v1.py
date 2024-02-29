@@ -390,7 +390,6 @@ class DroneCatch(Env):
         # Calculate reward
         reward = self.get_reward(terminal=False, obs=obs)
 
-
         # Updates canvas
         # self.draw_canvas()
 
@@ -496,8 +495,6 @@ class DroneCatch(Env):
         """
         rewards = []
         for ag, ob in zip(self.active_agents, obs):
-
-
             if self.include_ray_obs and self.include_ray_type_obs:
                 # Since the last `num_rays` observation will be object types
                 obj_dist = ob[:self.num_rays] # Ray lengths
@@ -672,6 +669,26 @@ class DroneCatch(Env):
 
     def set_frame_delay(self, frame_delay):
         self.frame_delay = frame_delay
+
+    def return_positions(self, normalise: bool = True) -> np.ndarray:
+        """
+        Return current positions of all agents in the environment as a single array.
+
+        Parameters
+        ----------
+        normalise : bool, default = False
+            Whether to normalise positions between 0 and 1.
+
+        Returns
+        -------
+        ndarray[num_agents * 2, ]
+
+        """
+        pos = np.zeros((len(self.agents), 2))
+        for i, a in enumerate(self.agents):
+            pos[i, :] = a.get_position(normalise=normalise)
+        pos = pos.flatten()
+        return pos
 
 
 def spawn_in_area(x1, y1, x2, y2):

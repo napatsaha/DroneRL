@@ -7,3 +7,7 @@ ALG_DICT = {
     "MultiAgent": MultiAgent,
     "DualAgent": DualAgent
 }
+
+POLICY_DICT = {
+    "DQN": DQNPolicy
+}

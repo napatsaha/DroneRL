@@ -50,7 +50,7 @@ class QNetwork(nn.Module):
         # dtype check
         if obs.dtype is not self.dtype:
             obs = obs.type(self.dtype)
-        # # Check same device
+        # Check same device
         # if obs.device != self.device:
         #     obs = obs.to(self.device)
         return self.q_net(obs)
