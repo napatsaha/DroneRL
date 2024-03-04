@@ -573,7 +573,7 @@ class DroneCatch(Env):
         elif self.render_mode == "rgb_array":
             return self.canvas.canvas
 
-    def draw_canvas(self):
+    def draw_canvas(self, draw_agents: bool = True, return_canvas: bool = False) -> Optional[Canvas]:
         """
         Draw a frame of canvas based on active elements.
         """
@@ -584,12 +584,16 @@ class DroneCatch(Env):
         for obstacle in self.obstacle_list:
             self.canvas.draw(obstacle)
 
-        # Draw icons
-        for icon in self.agents:
-            self.canvas.draw(icon)
+        if draw_agents:
+            # Draw icons
+            for icon in self.agents:
+                self.canvas.draw(icon)
 
-        if self.show_rays:
-            self.canvas.draw(self.rays)
+            if self.show_rays:
+                self.canvas.draw(self.rays)
+
+        if return_canvas:
+            return self.canvas
 
     def close(self):
         self.canvas.close()

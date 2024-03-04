@@ -18,9 +18,9 @@ from algorithm import ALG_DICT
 from envs import ENV_DICT
 
 # Configurations
-parent_dir = "test1"
-run_base_name = "TestAlgo"
-run_id = 26
+parent_dir = "test2"
+run_base_name = "TestLog"
+run_id = 1
 rep_name = "DQN_1"
 # timestep = "140000"
 # timestep = None

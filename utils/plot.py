@@ -82,9 +82,10 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
             above_current_dir = str.split(dirpath, os.path.sep)[-2]
 
             if current_dir in agent_names:
-                if above_current_dir in rep_name or rep_name is None:
+                if rep_name is None or above_current_dir in rep_name:
                     # Read file and append to dictionary
-                    csv_file = next(filter(lambda x: x.endswith("csv"), filenames))
+                    # csv_file = next(filter(lambda x: x.endswith("csv"), filenames))
+                    csv_file = "progress.csv"
                     df = pd.read_csv(os.path.join(dirpath, csv_file))
                     df_run_dict[current_dir].append(df)
                 else:
@@ -155,10 +156,10 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
 
 
 if __name__ == "__main__":
-    parent_dir = "test1"
-    run_base_name = "TestAlgo"
-    run_ids = [24]
-    rep_name = ["DQN_1", "DQN_3"]
+    parent_dir = "test2"
+    run_base_name = "TestLog"
+    run_ids = [1]
+    rep_name = None #["DQN_1", "DQN_3"]
     # changing_var = None
     sort = False
     save = False

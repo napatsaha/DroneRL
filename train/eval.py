@@ -43,11 +43,11 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
     agent.evaluate(num_eps=num_eps, frame_delay=frame_delay)
 
 if __name__ == "__main__":
-    parent_dir = "test1"
-    run_base_name = "TestAlgo"
-    run_id = 26
+    parent_dir = "test2"
+    run_base_name = "TestLog"
+    run_id = 1
     rep_name = "DQN_1"
-    timestep = "120000"
+    timestep = None #"120000"
 
     eval(parent_dir, run_base_name, run_id, rep_name, timestep,
          frame_delay=1, num_eps=10, trunc_limit=300,
