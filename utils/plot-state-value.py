@@ -8,6 +8,7 @@ Assume fixed position of Prey, and Predator taking only global location observat
 """
 
 import os
+import re
 
 import numpy as np
 import yaml
@@ -20,10 +21,10 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test2"
 run_base_name = "TestLog"
-run_id = 2
+run_id = 3
 rep_name = "DQN_1"
 # timestep = "140000"
-# timestep = None
+timestep = None
 save = False
 show = True
 
@@ -67,21 +68,25 @@ agent = AgentClass(env, **config["agent"])
 
 
 # Loop over timestep models
+model_file = os.path.join("model", parent_dir, run_name)
 
+timestep_list = [r.group(1) for r in [re.search("_(\d+).pt", m) for m in os.listdir(model_file)] if r is not None]
+timestep_list = np.unique(timestep_list)
 
-learning_starts = config["agent"]['learning_starts']
-save_interval = config['learn']['save_interval']
+iter_list = [timestep] if timestep is not None else np.r_[timestep_list, None]
+
+# learning_starts = config["agent"]['learning_starts']
+# save_interval = config['learn']['save_interval']
 total_timesteps = config['learn']['total_timesteps']
+max_digits = len(str(total_timesteps))
 
-timestep_list = np.arange(learning_starts+save_interval, total_timesteps+1, save_interval)
+# timestep_list = np.arange(learning_starts+save_interval, total_timesteps+1, save_interval)
 
-for timestep in np.r_[timestep_list, None]:
-    if timestep is not None and not isinstance(timestep, str):
-        digits = len(str(total_timesteps))
-        timestep = f"{timestep:0{digits}}"
+for timestep in iter_list:
+    if timestep is not None and len(str(timestep)) < max_digits:
+        timestep = f"{timestep:0{max_digits}}"
 
     # Download model
-    model_file = os.path.join("model", parent_dir, run_name)
     try:
         agent.load(model_file, rep_name, timestep)
     except:
