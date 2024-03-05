@@ -8,7 +8,7 @@ import datetime
 from train import train
 from envs import DualLateral, MultiDrone
 from algorithm import DualAgent, MultiAgent
-from utils import extract_config, expand_dict
+from utils.config import extract_config, expand_dict
 
 if __name__ == "__main__":
     ##########

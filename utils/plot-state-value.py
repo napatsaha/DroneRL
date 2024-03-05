@@ -20,7 +20,7 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test2"
 run_base_name = "TestLog"
-run_id = 1
+run_id = 2
 rep_name = "DQN_1"
 # timestep = "140000"
 # timestep = None
@@ -67,6 +67,7 @@ agent = AgentClass(env, **config["agent"])
 
 
 # Loop over timestep models
+
 
 learning_starts = config["agent"]['learning_starts']
 save_interval = config['learn']['save_interval']
@@ -180,5 +181,6 @@ for timestep in np.r_[timestep_list, None]:
         plt.savefig(plot_name)
 
     if show:
+        print(f"Showing plot for {model_name}")
         plt.show()
 

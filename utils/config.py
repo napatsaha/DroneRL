@@ -1,8 +1,6 @@
 import os, yaml, itertools
 from typing import Dict
 
-from envs import ENV_DICT
-
 
 def extract_config(path=None,
                    parent_dir=None,
@@ -32,16 +30,6 @@ def get_config(parent_dir=None, run_base_name=None, run_id=None) -> dict:
         config = yaml.load(file, yaml.SafeLoader)
     return config
 
-def create_env(config: dict):
-    key_params = "environment"
-    key_construct = "environment_class"
-    if key_params not in config or key_construct not in config:
-        raise Exception(f"Both {key_params} and {key_construct} must in configuration dictionary.")
-
-    EnvironmentClass = ENV_DICT[config[key_construct]]
-    env = EnvironmentClass(**config[key_params])
-
-    return env
 
 def update_nested_dict(old_dict: Dict, new_dict: Dict):
     for key, val in new_dict.items():

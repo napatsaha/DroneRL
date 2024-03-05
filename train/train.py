@@ -16,7 +16,7 @@ from algorithm.agent import DualAgent, DQNAgent
 from envs import ENV_DICT
 from utils.config import extract_config
 from envs.dual import DualDrone
-from utils import update_nested_dict
+from utils.config import update_nested_dict
 
 
 def train(

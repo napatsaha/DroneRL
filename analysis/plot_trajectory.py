@@ -7,11 +7,12 @@ import os
 # from envs import environment_v1
 # from utils import get_config
 import utils
+from utils import env as env_utils
 
 # Metadata
 parent_dir = "test2"
 run_base_name = "TestLog"
-run_id = 1
+run_id = 3
 rep_name = "DQN_1"
 save = True
 
@@ -21,6 +22,7 @@ base_file_name = "trajectory.csv"
 run_name = f"{run_base_name}_{run_id}"
 
 # Init path
+plot_path = None
 if save:
     plot_path = os.path.join("plot", parent_dir)
     if not os.path.exists(plot_path):
@@ -61,8 +63,8 @@ segments = segments.reshape(-1, 2, 2)
 num_eps = int(df2[1].max())
 
 # Environment
-config = utils.get_config(parent_dir, run_base_name, run_id)
-env = utils.create_env(config)
+config = utils.config.get_config(parent_dir, run_base_name, run_id)
+env = env_utils.create_env(config)
 
 canvas = env.draw_canvas(draw_agents=False, return_canvas=True)
 canvas = canvas.canvas.T
