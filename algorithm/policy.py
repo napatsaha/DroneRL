@@ -31,6 +31,7 @@ from stable_baselines3.common.utils import get_device, get_linear_fn, obs_as_ten
 from stable_baselines3.common.logger import configure, Logger
 
 from algorithm.network import QNetwork
+from utils.rl_utils import Prediction
 
 
 class DQNPolicy:
@@ -282,7 +283,7 @@ class DQNPolicy:
                 n_actions = self.action_space.n
                 st = [f"s{s}" for s in range(n_states)]
                 qt = [f"q{a}" for a in range(n_actions)]
-                header = ["episode", "timestep", *st, "action", "reward", *qt]
+                header = ["episode", "timestep", *st, "action", "reward", *qt, "explore"]
                 self.trajectory_writer.writerow(header)
 
     def finish_learn(self):
@@ -312,57 +313,76 @@ class DQNPolicy:
             q = self.q_net(obs)
             return q
 
-    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False,
-                return_qvalues: bool = False) -> Union[int, tuple[int, th.Tensor]]:
+    def predict(self, obs: Union[th.Tensor, np.ndarray], *,
+                deterministic: bool = False, random: bool = False,
+                return_qvalues: bool = False) -> Prediction: #Union[int, tuple[int, th.Tensor]]:
         """
-        Make prediction based on epsilon-greedy.
+        Make prediction based on epsilon-greedy or softmax exploration.
 
         Parameters
         ----------
-        random
-        deterministic
-        obs : th.Tensor
-            Observation.
+        obs : Union[th.Tensor, np.ndarray]
+            observation
+        return_qvalues : bool
+            Whether to compute qvalues
+        random : bool
+            Whether to force policy to explore
+        deterministic : bool
+            Whether to force policy to be greedy
 
         Returns
         -------
-        action : int
-            Chosen action.
+        action : Prediction
+            Prediction object that contains information on chosen action, qvalues, and whether the policy explored
 
         """
-        qvalues = None
+        prediction = Prediction()
+
+        # qvalues = None
         explore = np.random.rand() < self.exploration_rate if not random else True
+
         if not deterministic and explore and not self._probabilistic_random:
             # Uniform random choice
-            action = self.action_space.sample()
+            prediction.action = self.action_space.sample()
             if return_qvalues:
-                qvalues = self.get_qvalues(obs)
+                prediction.qvalues = self.get_qvalues(obs)
         elif not deterministic and \
                 ((not explore and self._probabilistic_greedy) or
                  (explore and self._probabilistic_random)):
             # Softmax probabilistic choice
             with th.no_grad():
-                obs = obs_as_tensor(np.array(obs), self.device)
-                if return_qvalues:
-                    action, qvalues = self.q_net.predict(obs, deterministic=False, return_output=return_qvalues)
-                else:
-                    action = self.q_net.predict(obs, deterministic=False)
-                if len(action) == 1:
-                    action = action.item()
+                prediction.qvalues = self.get_qvalues(obs)
+                prediction.action = prediction.softmax_predict()
+
+                # obs = obs_as_tensor(np.array(obs), self.device)
+                # if return_qvalues:
+                #     action, qvalues = self.q_net.predict(obs, deterministic=False, return_output=return_qvalues)
+                # else:
+                #     action = self.q_net.predict(obs, deterministic=False)
+                # if len(action) == 1:
+                #     action = action.item()
         else:
             # Greedy deterministic choice
             with th.no_grad():
-                obs = obs_as_tensor(np.array(obs), self.device)
-                if return_qvalues:
-                    action, qvalues = self.q_net.predict(obs, return_output=return_qvalues)
-                else:
-                    action = self.q_net.predict(obs)
-                if len(action) == 1:
-                    action = action.item()
-        if return_qvalues:
-            return action, qvalues
-        else:
-            return action
+                prediction.qvalues = self.get_qvalues(obs)
+                prediction.action = prediction.greedy_predict()
+
+                # obs = obs_as_tensor(np.array(obs), self.device)
+                # if return_qvalues:
+                #     action, qvalues = self.q_net.predict(obs, return_output=return_qvalues)
+                # else:
+                #     action = self.q_net.predict(obs)
+                # if len(action) == 1:
+                #     action = action.item()
+
+        prediction.explore = explore
+
+        return prediction
+
+        # if return_qvalues:
+        #     return action, qvalues
+        # else:
+        #     return action
     
     def train(self, gradient_steps: Optional[int] = None,
               batch_size: int = None) -> None:
@@ -432,7 +452,8 @@ class DQNPolicy:
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/loss", np.mean(losses))
 
-    def log_trajectory(self, episode: int, timestep: int, state: np.ndarray, action: int, reward: float, qvalues: th.Tensor):
+    def log_trajectory(self, episode: int, timestep: int, state: np.ndarray, action: int, reward: float,
+                       qvalues: th.Tensor, explore: bool):
         """
         Log trajectory onto the policy's trajectory file in the following order:
         - episode number since start of training
@@ -461,7 +482,8 @@ class DQNPolicy:
         """
         if self.save_log_trajectory:
             qvalues = qvalues.numpy(force=True)
-            row = [episode, timestep, *state, action, reward, *qvalues]
+            explore = int(explore)
+            row = [episode, timestep, *state, action, reward, *qvalues, explore]
             self.trajectory_writer.writerow(row)
 
 

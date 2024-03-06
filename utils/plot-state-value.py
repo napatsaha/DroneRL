@@ -20,8 +20,8 @@ from envs import ENV_DICT
 
 # Configurations
 parent_dir = "test2"
-run_base_name = "TestLog"
-run_id = 4
+run_base_name = "TestQvalues"
+run_id = 2
 rep_name = "DQN_1"
 # timestep = "140000"
 timestep = None

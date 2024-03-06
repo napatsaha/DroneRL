@@ -18,6 +18,7 @@ from stable_baselines3.common.type_aliases import GymEnv
 from stable_baselines3.common.logger import Logger, configure
 from collections import namedtuple
 from envs import DualDrone, MultiDrone
+from utils.rl_utils import Prediction
 
 
 class DQNAgent:
@@ -223,14 +224,17 @@ class DualAgent:
                     start_learning = self.num_timesteps > self.learning_starts
 
                     # Moves randomly until started learning
-                    action = [
+                    predictions: List[Prediction] = [
                         policy.predict(state[i], random=not start_learning,
                                        return_qvalues=self.should_log_policy_trajectory
                                        ) for i, policy in enumerate(self.agents.values())
                     ]
-                    # Format if qvalues
-                    if self.should_log_policy_trajectory:
-                        action, qvalues = tuple(zip(*action))
+                    # Extract values from prediction object
+                    action = [pred.action for pred in predictions]
+                    qvalues = [pred.qvalues for pred in predictions]
+                    explore = [pred.explore for pred in predictions]
+                    # if self.should_log_policy_trajectory:
+                    #     action, qvalues = tuple(zip(*action))
 
                     nextstate, reward, done, truncated, info = self.env.step(action)
 
@@ -243,7 +247,7 @@ class DualAgent:
                         # if self.num_timesteps % log_interval == 0:
                         #     print(self.num_timesteps, state[i], action[i], done, truncated)
 
-                        policy.log_trajectory(episode, eps_timestep, state[i], action[i], reward[i], qvalues[i])
+                        policy.log_trajectory(episode, eps_timestep, state[i], action[i], reward[i], qvalues[i], explore[i])
 
                         # Perform weight update if conditions met
                         if start_learning and \
@@ -341,10 +345,11 @@ class DualAgent:
             done = False
             truncated = False
             while not (done or truncated):
-                action = [
+                predictions = [
                     policy.predict(state[i], deterministic=True)
                     for i, policy in enumerate(self.agents.values())
                 ]
+                action = [pred.action for pred in predictions]
 
                 nextstate, reward, done, truncated, info = self.env.step(action)
 
