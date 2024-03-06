@@ -21,11 +21,11 @@ from envs import ENV_DICT
 # Configurations
 parent_dir = "test2"
 run_base_name = "TestLog"
-run_id = 3
+run_id = 4
 rep_name = "DQN_1"
 # timestep = "140000"
 timestep = None
-save = False
+save = True
 show = True
 
 show_gradient = True # Show gradient of colours instead of contours for q-values
