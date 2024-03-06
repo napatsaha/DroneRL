@@ -20,7 +20,7 @@ if __name__ == "__main__":
     num_reps = 1 # Number of repetition in this run
     verbose = 1
     continue_run = False # [True or False]: To continue most recent run
-    run_id = None # [int or None] Specific run to continue (ignores continue_run)
+    run_id = 1 # [int or None] Specific run to continue (ignores continue_run)
     ##########
 
     if experiment_file is not None:

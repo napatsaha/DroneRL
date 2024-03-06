@@ -360,6 +360,11 @@ class DualAgent:
 
         self.env.close()
 
+    def set_probabilistic(self):
+        for agent in self.agents.values():
+            agent._probabilistic_random = True
+            agent._probabilistic_greedy = True
+
     def _setup_learn(self, total_timesteps, log_interval, learning_starts):
         if self.should_log_trajectory:
             log_file = os.path.join(self.log_dir, "trajectory.csv")

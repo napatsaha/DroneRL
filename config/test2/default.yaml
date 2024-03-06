@@ -1,6 +1,6 @@
 agent:
-  should_log_trajectory: true
-  should_log_policy_trajectory: true
+  should_log_trajectory: false
+  should_log_policy_trajectory: false
   learning_starts: 10000
   learning_rate: 0.0001
   buffer_size: 10000
@@ -38,7 +38,7 @@ environment:
       - 1
   obstacle_file: assets/obstacles/obstacle-letterL.csv
   cardinal_prey: true
-  dist_mult: 0.1
+  dist_mult: 0.01
   include_loc_obs: true
   include_ray_obs: false
   include_ray_type_obs: false

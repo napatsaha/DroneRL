@@ -38,21 +38,21 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
     agent.load(model_file, rep_name, timestep)
 
     if probabilistic is not None:
-        agent.probabilistic = probabilistic
+        agent.set_probabilistic()
 
     agent.evaluate(num_eps=num_eps, frame_delay=frame_delay)
 
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestQvalues"
-    run_id = 2
-    rep_name = "DQN_1"
+    run_id = 1
+    rep_name = "DQN_2"
     timestep = "060000"
 
     eval(parent_dir, run_base_name, run_id, rep_name, timestep,
          frame_delay=1, num_eps=10, trunc_limit=300,
-         predator_spawn_area=((0,0),(0.8,0.7)),
-         # probabilistic=True
+         # predator_spawn_area=((0,0),(0.8,0.7)),
+         probabilistic=True
          # min_distance = 0.4,
          # obstacle_file="assets/obstacles/obstacle-letterL2.csv",
          # show_rays=True, diagnostic=True
