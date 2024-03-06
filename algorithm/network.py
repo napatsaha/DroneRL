@@ -5,7 +5,7 @@ Created on Tue Sep  5 11:14:07 2023
 @author: napat
 """
 
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, Tuple, Union
 
 import torch as th
 from torch import nn
@@ -55,7 +55,8 @@ class QNetwork(nn.Module):
         #     obs = obs.to(self.device)
         return self.q_net(obs)
     
-    def predict(self, observation: th.Tensor, deterministic: bool = True) -> th.Tensor:
+    def predict(self, observation: th.Tensor, deterministic: bool = True,
+                return_output: bool = False) -> Union[th.Tensor, Tuple[th.Tensor, ...]]:
         q_values = self(observation)
 
         if deterministic:
@@ -65,5 +66,8 @@ class QNetwork(nn.Module):
             # Softmax probabilistic
             action = th.multinomial(th.softmax(q_values, dim=-1), 1)
         # print(q_values, action)
-        return action
+        if return_output:
+            return action, q_values
+        else:
+            return action
     

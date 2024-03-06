@@ -140,6 +140,7 @@ class DualAgent:
             learning_starts: int = 50000,
             verbose: Optional[int] = 0,
             should_log_trajectory: bool = False,
+            should_log_policy_trajectory: bool = False,
             **policy_kwargs
     ):
         self.verbose = verbose
@@ -148,6 +149,7 @@ class DualAgent:
 
         # Regarding logging trajectory
         self.should_log_trajectory = should_log_trajectory
+        self.should_log_policy_trajectory = should_log_policy_trajectory
         self.trajectory_file: TextIOWrapper = None
         self.trajectory_writer: Writer = None
         self.log_dir = None
@@ -162,6 +164,8 @@ class DualAgent:
             agent = DQNPolicy(
                 env.observation_space[i],
                 env.action_space[i],
+                name=agent_name,
+                save_log_trajectory=should_log_policy_trajectory,
                 **policy_kwargs
             )
             self.agents[agent_name] = agent
@@ -208,60 +212,71 @@ class DualAgent:
         self.num_timesteps = 0
         episode = 0
 
-        # Loop through episodes
-        while self.num_timesteps < total_timesteps:
-            state, _ = self.env.reset()
-            done = False
-            truncated = False
-            while not (done or truncated):
-                start_learning = self.num_timesteps > self.learning_starts
+        try:
+            # Loop through episodes
+            while self.num_timesteps < total_timesteps:
+                eps_timestep = 0
+                state, _ = self.env.reset()
+                done = False
+                truncated = False
+                while not (done or truncated):
+                    start_learning = self.num_timesteps > self.learning_starts
 
-                # Moves randomly until started learning
-                action = [
-                    policy.predict(state[i], random=not start_learning) for i, policy in enumerate(self.agents.values())
-                ]
+                    # Moves randomly until started learning
+                    action = [
+                        policy.predict(state[i], random=not start_learning,
+                                       return_qvalues=self.should_log_policy_trajectory
+                                       ) for i, policy in enumerate(self.agents.values())
+                    ]
+                    # Format if qvalues
+                    if self.should_log_policy_trajectory:
+                        action, qvalues = tuple(zip(*action))
 
-                nextstate, reward, done, truncated, info = self.env.step(action)
+                    nextstate, reward, done, truncated, info = self.env.step(action)
 
-                self.log_trajectory(self.num_timesteps, episode)
+                    self._log_trajectory(self.num_timesteps, episode)
 
-                # For each agent in environment: store, train and step
-                for i, policy in enumerate(self.agents.values()):
-                    policy.store_transition(state[i], nextstate[i], action[i], reward[i], done, truncated, info)
+                    # For each agent in environment: store, train and step
+                    for i, policy in enumerate(self.agents.values()):
+                        policy.store_transition(state[i], nextstate[i], action[i], reward[i], done, truncated, info)
 
-                    # if self.num_timesteps % log_interval == 0:
-                    #     print(self.num_timesteps, state[i], action[i], done, truncated)
+                        # if self.num_timesteps % log_interval == 0:
+                        #     print(self.num_timesteps, state[i], action[i], done, truncated)
 
-                    # Perform weight update if conditions met
-                    if start_learning and \
-                            policy.num_timesteps % policy.train_freq == 0:
-                        policy.train()
+                        policy.log_trajectory(episode, eps_timestep, state[i], action[i], reward[i], qvalues[i])
 
-                    # Update exploration rates within policy
-                    policy.step(start_learning)
+                        # Perform weight update if conditions met
+                        if start_learning and \
+                                policy.num_timesteps % policy.train_freq == 0:
+                            policy.train()
 
-                # Save intermediate model at every `save_interval` timesteps
-                if start_learning and self.num_timesteps % save_interval == 0:
-                    step_name = f"{self.num_timesteps:0{max_digits}}"
-                    self.save(dir_path, run_name, step_name)
-                    times_model_saved += 1
+                        # Update exploration rates within policy
+                        policy.step(start_learning)
 
-                self.num_timesteps += 1
+                    # Save intermediate model at every `save_interval` timesteps
+                    if start_learning and self.num_timesteps % save_interval == 0:
+                        step_name = f"{self.num_timesteps:0{max_digits}}"
+                        self.save(dir_path, run_name, step_name)
+                        times_model_saved += 1
 
-                if progress_bar:
-                    pbar.update()
+                    self.num_timesteps += 1
+                    eps_timestep += 1
 
-                state = nextstate
+                    if progress_bar:
+                        pbar.update()
 
-            episode += 1
+                    state = nextstate
 
-        self.close_logger()
-        self.env.close()
-        if progress_bar:
-            pbar.refresh()
-            pbar.close()
+                episode += 1
 
-    def log_trajectory(self, timestep, episode) -> None:
+        finally:
+            self.close_logger()
+            self.env.close()
+            if progress_bar:
+                pbar.refresh()
+                pbar.close()
+
+    def _log_trajectory(self, timestep, episode) -> None:
         """
         Records position informations of each agent in the environment for each step of the training.
 
@@ -270,13 +285,14 @@ class DualAgent:
         None
 
         """
-        pos = self.env.return_positions(normalise=False)
-        self.trajectory_writer.writerow([timestep, episode, *pos])
+        if self.should_log_trajectory:
+            pos = self.env.return_positions(normalise=False)
+            self.trajectory_writer.writerow([timestep, episode, *pos])
 
 
     def close_logger(self):
         for policy in self.agents.values():
-            policy.logger.close()
+            policy.finish_learn()
 
         if self.should_log_trajectory:
             self.trajectory_file.close()
@@ -346,7 +362,9 @@ class DualAgent:
             self.trajectory_writer = csv.writer(self.trajectory_file)
 
         for policy in self.agents.values():
-            policy.setup_learn(total_timesteps, log_interval, learning_starts)
+            policy.setup_learn(total_timesteps, log_interval, learning_starts, self.log_dir)
+
+
 
 
 class MultiAgent(DualAgent):

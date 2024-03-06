@@ -7,8 +7,11 @@ Created on Tue Sep  5 11:05:46 2023
 
 @author: napat
 """
+import csv
+from _csv import Writer
+from io import TextIOWrapper
 import time, sys
-from typing import Any, Dict, List, Optional, Type, Tuple, Union
+from typing import Any, Dict, List, Optional, Type, Tuple, Union, Iterable
 
 import os
 import numpy as np
@@ -41,11 +44,14 @@ class DQNPolicy:
     
     """
     _episode_num: int
+    trajectory_file: TextIOWrapper
+    trajectory_writer: Writer
 
     def __init__(
             self, 
             observation_space: Space,
             action_space: Space,
+            name: str = None,
             learning_rate: float = 1e-4,
             buffer_size: int = 1_000_000,
             batch_size: int = 100,
@@ -56,6 +62,7 @@ class DQNPolicy:
             total_timesteps: int = 100000,
             target_update_interval: int = 10,
             log_interval: int = 4,
+            save_log_trajectory: bool = False,
             probabilistic: Union[bool, Tuple[bool], List[bool]] = False,
             exploration_fraction: float = 0.1,
             exploration_initial_eps: float = 1.0,
@@ -72,7 +79,8 @@ class DQNPolicy:
     ):
 
         self.learning_starts = None
-        self.name = "DQN"
+        self.algorithm_name = "DQN"
+        self.name = name
         
         self.observation_space = observation_space
         self.action_space = action_space
@@ -113,6 +121,9 @@ class DQNPolicy:
         self.optim_kwargs = optim_kwargs if optim_kwargs is not None else {}
 
         self.logger = None
+        self.save_log_trajectory = save_log_trajectory
+        self.trajectory_file = None
+        self.trajectory_writer = None
         # if logger is not None:
         #     self.logger = logger
         # else:
@@ -157,7 +168,7 @@ class DQNPolicy:
         Default logger setup if no logger is passed through.
         Depreciated for passing explicit logger
         """
-        log_name = self.name if log_name is None else log_name
+        log_name = self.algorithm_name if log_name is None else log_name
         lastest_id = get_latest_run_id(log_dir, log_name)
         if reset_num_timesteps:
             lastest_id -= 1
@@ -252,7 +263,7 @@ class DQNPolicy:
         if self.episode_done and self._episode_num % self.log_interval == 0:
             self._dump_logs()
 
-    def setup_learn(self, total_timesteps, log_interval, learning_starts = 0):
+    def setup_learn(self, total_timesteps, log_interval, learning_starts, log_dir=None):
         if self.logger is None:
             raise Exception("Logger has not been setup yet. Cannot start learning.")
 
@@ -260,7 +271,30 @@ class DQNPolicy:
         self.log_interval = log_interval
         self.learning_starts = learning_starts
 
-    def get_qvalues(self, obs: Union[th.Tensor, np.ndarray]) -> object:
+        if self.save_log_trajectory:
+            log_file = os.path.join(log_dir, self.name, "trajectory.csv")
+            self.trajectory_file = open(log_file, "a+", newline='')
+            self.trajectory_writer = csv.writer(self.trajectory_file)
+
+            # Init headers
+            if self.save_log_trajectory:
+                n_states = self.observation_space.shape[0]
+                n_actions = self.action_space.n
+                st = [f"s{s}" for s in range(n_states)]
+                qt = [f"q{a}" for a in range(n_actions)]
+                header = ["episode", "timestep", *st, "action", "reward", *qt]
+                self.trajectory_writer.writerow(header)
+
+    def finish_learn(self):
+        """
+        Close any loggers
+        """
+        self.logger.close()
+
+        if self.save_log_trajectory:
+            self.trajectory_file.close()
+
+    def get_qvalues(self, obs: Union[th.Tensor, np.ndarray]) -> th.Tensor:
         """
         Returns q-values for given observation
 
@@ -274,10 +308,12 @@ class DQNPolicy:
 
         """
         with th.no_grad():
+            obs = th.Tensor(obs).to(self.device)
             q = self.q_net(obs)
             return q
 
-    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False) -> object:
+    def predict(self, obs: th.Tensor, deterministic: bool = False, random: bool = False,
+                return_qvalues: bool = False) -> Union[int, tuple[int, th.Tensor]]:
         """
         Make prediction based on epsilon-greedy.
 
@@ -294,27 +330,39 @@ class DQNPolicy:
             Chosen action.
 
         """
+        qvalues = None
         explore = np.random.rand() < self.exploration_rate if not random else True
         if not deterministic and explore and not self._probabilistic_random:
             # Uniform random choice
             action = self.action_space.sample()
+            if return_qvalues:
+                qvalues = self.get_qvalues(obs)
         elif not deterministic and \
                 ((not explore and self._probabilistic_greedy) or
                  (explore and self._probabilistic_random)):
             # Softmax probabilistic choice
             with th.no_grad():
                 obs = obs_as_tensor(np.array(obs), self.device)
-                action = self.q_net.predict(obs, deterministic=False)
+                if return_qvalues:
+                    action, qvalues = self.q_net.predict(obs, deterministic=False, return_output=return_qvalues)
+                else:
+                    action = self.q_net.predict(obs, deterministic=False)
                 if len(action) == 1:
                     action = action.item()
         else:
             # Greedy deterministic choice
             with th.no_grad():
                 obs = obs_as_tensor(np.array(obs), self.device)
-                action = self.q_net.predict(obs)
+                if return_qvalues:
+                    action, qvalues = self.q_net.predict(obs, return_output=return_qvalues)
+                else:
+                    action = self.q_net.predict(obs)
                 if len(action) == 1:
                     action = action.item()
-        return action
+        if return_qvalues:
+            return action, qvalues
+        else:
+            return action
     
     def train(self, gradient_steps: Optional[int] = None,
               batch_size: int = None) -> None:
@@ -383,5 +431,37 @@ class DQNPolicy:
         
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/loss", np.mean(losses))
+
+    def log_trajectory(self, episode: int, timestep: int, state: np.ndarray, action: int, reward: float, qvalues: th.Tensor):
+        """
+        Log trajectory onto the policy's trajectory file in the following order:
+        - episode number since start of training
+        - timestep since episode start
+        - (ns) x observation values at current step
+        - action: chosen action according to policy (may include exploration)
+        - reward from chosen action
+        - (na) x q-values calculated from current observation
+
+        where:
+        - ns = number of observations
+        - na = number of actions (discrete)
+
+        Parameters
+        ----------
+        episode : number of current episode
+        timestep : timestep since episode start
+        state : observation at this timestep
+        action : chosen action from training policy at this timestep
+        reward : received reward at this timestep
+
+        Returns
+        -------
+        None
+
+        """
+        if self.save_log_trajectory:
+            qvalues = qvalues.numpy(force=True)
+            row = [episode, timestep, *state, action, reward, *qvalues]
+            self.trajectory_writer.writerow(row)
 
 
