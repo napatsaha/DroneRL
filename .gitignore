@@ -1,5 +1,4 @@
 .spyproject/
 __pycache__/
 archive/
-trajectory.csv
-
+**/trajectory.csv
