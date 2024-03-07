@@ -55,7 +55,7 @@ class Mover(Circle):
 
         # Radius = Distance from center to corner of rectangle
         radius = ((self.icon_h / 2) **2 + (self.icon_w / 2)**2)**0.5
-        
+
         self.canvas_size = canvas_size
         self.x_min = 0
         self.x_max = canvas_size[1]
@@ -73,19 +73,19 @@ class Mover(Circle):
     def set_position(self, x, y):
         # self.x = x
         # self.y = y
-        
+
         self.x, self.y = self.clamp_position(x, y)
-        
+
     def get_position(self, normalise=False):
         scale = self.x_max if normalise else 1.0
         return np.array((self.x, self.y)) / scale
-        
+
     def move_to_position(self, x, y):
         x = self.x + x
         y = self.y + y
 
         self.x, self.y = self.clamp_position(x, y)
-        
+
     def clamp_position(self, x, y):
         # Clamp by obstacle
         if len(self.obstacle_list) > 0:
@@ -239,7 +239,7 @@ class Predator(Mover):
         # self.icon = cv2.resize(self.icon, (self.icon_h, self.icon_w))
 
         self.action_space = spaces.Discrete(5)
-        
+
         self.reset_position()
 
     def _process_spawn_area(self, spawn_area) -> np.ndarray:
@@ -267,9 +267,8 @@ class Predator(Mover):
 
         self.set_position(x, y)
 
-
-
-    def convert_action(self, action):
+    @staticmethod
+    def convert_action(action):
         """
         Converts scalar action into (x,y) directional movement.
 
@@ -327,7 +326,7 @@ class AngularPrey(Mover):
         self.angle_delta = angle_delta
         self.radius = radius
         self.reset_position()
-        
+
     def reset_position(self, default_angle: int=0):
         """
         Reset angle of AngularPrey on the circumference. Optionally, an angle can be specified.
@@ -343,14 +342,14 @@ class AngularPrey(Mover):
 
         """
         self.angle = default_angle
-        self.update_position()        
-        
+        self.update_position()
+
     def update_position(self):
         """Converts current angle to x, y positions"""
         angle = np.deg2rad(self.angle)
         self.y = self.radius * np.sin(angle) + self.y_max / 2
         self.x = self.radius * np.cos(angle) + self.x_max / 2
-        
+
     def move_in_circle(self, action: int = None):
         """Move position counter-clockwise by angle_delta each step."""
         if action is None:
@@ -359,7 +358,7 @@ class AngularPrey(Mover):
             assert 0 <= action <= 2, "AngularPrey Action out of range: Only accept [0, 1, 2]"
             mapper = {0:0, 1:-1, 2:1}
             action = mapper[action]
-            
+
         self.angle = (self.angle + action * self.angle_delta) % 360
         self.update_position()
 

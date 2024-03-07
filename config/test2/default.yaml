@@ -1,6 +1,6 @@
 agent:
   should_log_trajectory: false
-  should_log_policy_trajectory: false
+  should_log_policy_trajectory: true
   learning_starts: 10000
   learning_rate: 0.0001
   buffer_size: 10000
