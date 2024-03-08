@@ -12,7 +12,7 @@ import matplotlib.animation as anim
 import utils
 from utils import env as env_utils
 
-# import matplotlib; matplotlib.use("TkAgg")
+import matplotlib; matplotlib.use("TkAgg")
 from IPython.display import HTML
 
 
@@ -153,7 +153,7 @@ ani = anim.FuncAnimation(fig, func=update, frames=num_steps, interval=100)
 
 
 
-# plt.show()
+plt.show()
 
 
-ani.save(filename=f"plot/test2/TestQvalues_1/anim/walker_ep_{eps_match}.mp4", writer="ffmpeg")
+# ani.save(filename=f"plot/test2/TestQvalues_1/anim/walker_ep_{eps_match}.mp4", writer="ffmpeg")

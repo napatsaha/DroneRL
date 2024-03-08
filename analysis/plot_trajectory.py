@@ -16,8 +16,8 @@ class ColorCategory(enum.Enum):
 # Metadata
 parent_dir = "test2"
 run_base_name = "TestLog"
-run_id = 4
-rep_name = "DQN_1"
+run_id = 6
+rep_name = "DQN_2"
 save = True
 color_by = ColorCategory.by_steps
 
