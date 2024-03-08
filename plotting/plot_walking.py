@@ -99,12 +99,14 @@ fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot()
 
 # Background
-# config = utils.config.get_config(parent_dir, run_base_name, run_id)
-# env = env_utils.create_env(config)
-#
-# canvas = env.draw_canvas(draw_agents=False, return_canvas=True)
-# canvas = canvas.canvas.T
-# ax.imshow(canvas, cmap=plt.get_cmap("gray"), zorder=4)
+config = utils.config.get_config(parent_dir, run_base_name, run_id)
+env = env_utils.create_env(config)
+env.reset()
+
+canvas = env.draw_canvas(draw_agents=False, return_canvas=True)
+canvas.draw(env.agents[0])
+canvas = canvas.canvas.T
+ax.imshow(canvas, cmap=plt.get_cmap("gray"), extent=(0,1,0,1), origin="lower")
 
 
 # frame = 30
@@ -121,6 +123,7 @@ ax.add_collection(actioncols)
 ax.set_xticks([])
 ax.set_yticks([])
 ax.set_title(f"Episode {eps_match} | Global Timestep {timestep}")
+# txt = ax.text(0.9,0.5, "test")
 
 actioncols.set_clim(q_normaliser.vmin, q_normaliser.vmax)
 
