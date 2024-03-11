@@ -33,7 +33,7 @@ if show:
 # Prepare data
 
 test_file = f"logs/{parent_dir}/{run_base_name}_{run_id}/{rep_name}/{agent_name}/trajectory.csv"
-timestep = 80000
+timestep = 20000
 
 data = pd.read_csv(test_file)
 
@@ -109,6 +109,14 @@ def generate_circles(ts):
     circle_edge = [unactivated_color if a != chosen_action else activated_color for a in range(num_actions)]
     return circle_patches, circle_colors, circle_edge
 
+def update_lines(frame):
+
+    for act_id, line in enumerate(lines):
+        xt = data["timestep"][:frame].values
+        yt = qa[:frame, act_id]
+        line.set_data(xt, yt)
+
+    return lines
 
 ## Animation update
 def update(frame):
@@ -124,19 +132,23 @@ def update(frame):
     linecols.set_segments(segments)
     linecols.set_color(segment_colors)
 
-    return (linecols, actioncols, *qtexts)
+    lines = update_lines(frame)
+
+    return (linecols, actioncols, *qtexts, *lines)
 
 
-## Plotting
-
-fig = plt.figure(figsize=(10,10))
-ax = fig.add_subplot()
-
-# Background
+# Draw Background
 
 canvas = env.draw_canvas(draw_agents=False, return_canvas=True)
 canvas.draw(env.agents[0]) # Draw prey
 canvas = canvas.canvas.T
+
+## Plotting
+
+fig = plt.figure(figsize=(15,7), tight_layout=True)
+gs = fig.add_gridspec(1,2,width_ratios=[3,4])
+ax = fig.add_subplot(gs[0, 1])
+
 ax.imshow(canvas, cmap=plt.get_cmap("gray"), extent=(0,1,0,1), origin="lower")
 
 ## INTERACTIVE
@@ -158,17 +170,30 @@ qtexts = [ax.text(0,0,"", horizontalalignment="center", fontsize='x-small') for 
 # Axes formatting
 ax.set_xticks([])
 ax.set_yticks([])
-ax.set_title(f"{BASE_TITLE}\nEpisode: #{eps_match} | Around Timestep: #{timestep}")
+ax.set_title("Walking animation")
 
 # Colorbar
 actioncols.set_clim(q_normaliser.vmin, q_normaliser.vmax)
 
-cb = plt.colorbar(actioncols, fraction=0.04, pad=0.05)
+cb = plt.colorbar(actioncols, fraction=0.04, pad=0.05, ax=ax)
 cb.set_label("Q-Value")
 
 ## INTERACTIVE
 # update(frame)
 
+# Line axis
+ax = fig.add_subplot(gs[0, 0])
+
+lines = ax.plot(qa)
+ax.set_ylim([q_normaliser.vmin, q_normaliser.vmax])
+ax.set_xlim([0, num_steps])
+ax.set_xlabel("Timestep")
+ax.set_ylabel("Q-Values")
+ax.set_title("Action Q-values for states visited")
+
+fig.suptitle(f"{BASE_TITLE}\nEpisode: #{eps_match} | Around Timestep: #{timestep}")
+
+# Generate Animation
 ani = anim.FuncAnimation(fig, func=update, frames=num_steps, interval=100, blit=True)
 
 if show:
