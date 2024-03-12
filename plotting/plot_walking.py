@@ -5,9 +5,11 @@ import matplotlib.collections as mcol
 import matplotlib.patches as patch
 import matplotlib.colors as mcl
 import matplotlib.animation as anim
+from tqdm.autonotebook import tqdm
 
 import utils
 from utils import env as env_utils
+from utils.plot_utils import ACTION_DICT_CARDINAL
 
 import matplotlib
 
@@ -21,6 +23,7 @@ rep_name = "DQN_1"
 agent_name = 'predator1'
 save = True
 show = False
+timestep = 5 # Either integer (to create equally spaced timesteps), or list of timesteps
 
 if show:
     matplotlib.use("TkAgg")
@@ -29,9 +32,13 @@ if show:
 
 # Load entire csv file
 test_file = f"logs/{parent_dir}/{run_base_name}_{run_id}/{rep_name}/{agent_name}/trajectory.csv"
-timestep = [20000, 40000, 60000, 80000]
 
 data = pd.read_csv(test_file)
+
+# Process if timestep is an int
+max_timestep = data.index.max()
+if isinstance(timestep, int):
+    timestep = np.linspace(0, max_timestep, num=timestep, dtype='int')
 
 # Slice data frame according to episodes that envelopes the requested timesteps
 # eps_match = data.episode[data.index == timestep].values[0]
@@ -42,7 +49,10 @@ data = data[data.episode.isin(eps_match)]
 # num_steps = data.shape[0]
 num_steps = data.groupby("episode")["timestep"].max()
 
+
 # Set index to (episode, timestep) for easy indexing
+data.reset_index(inplace=True)
+data.rename(columns={'index': "global_timestep"}, inplace=True)
 data.set_index(["episode", "timestep"], inplace=True)
 idx = pd.IndexSlice # MultiIndex slicing helper
 
@@ -88,6 +98,7 @@ canvas = canvas.canvas.T
 #######
 # Helper function for animating
 
+
 def generate_trajectory(ep, ts):
     # pos = data.iloc[:ts,:].loc[:, ["s2", "s3"]].values
     pos = data.loc[idx[ep, :ts], ["s2","s3"]].values
@@ -100,8 +111,6 @@ def generate_trajectory(ep, ts):
     trj_c = pos_cmap(trj_c)
 
     return seg, trj_c
-
-
 
 
 def generate_circles(ep, ts):
@@ -130,6 +139,7 @@ def generate_circles(ep, ts):
     circle_edge = [unactivated_color if a != chosen_action else activated_color for a in range(num_actions)]
     return circle_patches, circle_colors, circle_edge
 
+
 def update_lines(ep, ts):
     """
     Update lines with qvaluse up to current (episode, timestep).
@@ -144,16 +154,19 @@ def update_lines(ep, ts):
 
     return lines
 
+
 def reset_axis(ep, ts):
     """
     Reset axis and figure when a new episode is reached.
     Currently only changes x-axis limit for line plot, and change episode and timestep number in figure title.
     """
 
-    global_ts = timestep[num_steps.index.to_list().index(ep)]
-    fig.suptitle(f"{BASE_TITLE}\nEpisode: #{ep} | Around Timestep: #{global_ts}")
+    # global_ts = timestep[num_steps.index.to_list().index(ep)]
+    ts_start, ts_end = data.loc[idx[ep,:], "global_timestep"].agg(lambda x: (x.min(), x.max()))
+    fig.suptitle(f"{BASE_TITLE}\nEpisode: #{ep} | Around Timestep: #{ts_start}-{ts_end}")
 
     # Secondary plot
+    # ax2.clear()
     ax2.set_xlim([0, num_steps[ep]])
 
 
@@ -179,7 +192,7 @@ def update(frame):
     linecols.set_segments(segments)
     linecols.set_color(segment_colors)
 
-    lines = update_lines(ep, ts)
+    update_lines(ep, ts)
 
     return (linecols, actioncols, *qtexts, *lines)
 
@@ -231,24 +244,37 @@ cb.set_label("Q-Value")
 ## Secondary figure -- Line plot of qvalues over timesteps
 ax2 = fig.add_subplot(gs[0, 0])
 
-lines = ax2.plot(qa)
+# lines = ax2.plot(qa)
+line_cmap = plt.get_cmap("Set1")
+lines = []
+for a in range(num_actions):
+    line, = ax2.plot(np.arange(10), np.random.uniform(-1,1,10), color=line_cmap(a),
+                     label=ACTION_DICT_CARDINAL[a])
+    lines.append(line)
+
+# Set static axis properties
 ax2.set_ylim([q_normaliser.vmin, q_normaliser.vmax])
-ax2.set_xlim([0,1])
+# ax2.set_xlim([0, env.trunc_limit])
 ax2.set_xlabel("Timestep")
 ax2.set_ylabel("Q-Values")
 ax2.set_title("Action Q-values for states visited")
+handles, labels = ax2.get_legend_handles_labels()
+ax2.legend(handles, labels, loc="lower right", title="Action")
 
 # fig.suptitle(f"{BASE_TITLE}\nEpisode: #{eps_match} | Around Timestep: #{timestep}")
 
 
 ## Generate Animation
 frames_iterator = iter(data.index)
-ani = anim.FuncAnimation(fig, func=update, frames=frames_iterator, interval=10, blit=False, save_count=len(data.index))
+ani = anim.FuncAnimation(fig, func=update, frames=frames_iterator, interval=40, blit=False, save_count=len(data.index))
 
 ## Saving and Showing
 if show:
     plt.show()
 
 if save:
+    bar = tqdm(total=len(data.index))
     f_name = f"walker_{rep_name}_{agent_name}_ts-{'-'.join([str(t) for t in timestep])}.{FORMAT.lower()}"
-    ani.save(filename=f"plot/{parent_dir}/{run_base_name}_{run_id}/anim/{f_name}", writer="ffmpeg")
+    ani.save(filename=f"plot/{parent_dir}/{run_base_name}_{run_id}/anim/{f_name}", writer="ffmpeg",
+             progress_callback=lambda i, n: bar.update())
+    bar.close()
