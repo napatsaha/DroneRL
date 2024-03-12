@@ -19,7 +19,7 @@ from envs.display import Predator
 parent_dir = "test2"
 run_base_name = "TestQvalues"
 run_id = 1
-rep_name = "DQN_1"
+rep_name = "DQN_4"
 agent_name = 'predator1'
 save = True
 show = False

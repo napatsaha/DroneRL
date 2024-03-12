@@ -16,8 +16,8 @@ agent:
   probabilistic:
   - false
   - false
-  should_log_policy_trajectory: false
-  should_log_trajectory: false
+  should_log_policy_trajectory: true
+  should_log_trajectory: true
   stats_window_size: 100
   target_update_interval: 80
   tau: 1.0
