@@ -159,7 +159,7 @@ if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestQvalues"
     run_ids = [1]
-    rep_name = ["DQN_3"]
+    rep_name = ["DQN_1", "DQN_3", "DQN_4"]
     # changing_var = None
     sort = False
     save = True
