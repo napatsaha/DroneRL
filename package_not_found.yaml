@@ -1,0 +1,6 @@
+ResolvePackageNotFound:
+  - icc_rt=2022.1.0
+  - pywin32=305
+  - pywin32-ctypes=0.2.0
+  - vs2015_runtime=14.27.29016
+  - vc=14.2
