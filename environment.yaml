@@ -10,6 +10,7 @@ dependencies:
   - aiohttp=3.8.3=py311h2bbff1b_0
   - aiosignal=1.2.0=pyhd3eb1b0_0
   - alabaster=0.7.12=pyhd3eb1b0_0
+  - aom=3.6.0=hd77b12b_0
   - arrow=1.2.3=py311haa95532_1
   - astroid=2.14.2=py311haa95532_0
   - asttokens=2.0.5=pyhd3eb1b0_0
@@ -26,6 +27,7 @@ dependencies:
   - blas=1.0=mkl
   - bleach=4.1.0=pyhd3eb1b0_0
   - blinker=1.4=py311haa95532_0
+  - blosc=1.21.3=h6c2663c_0
   - bottleneck=1.3.5=py311h5bb9823_0
   - brotli=1.0.9=h2bbff1b_7
   - brotli-bin=1.0.9=h2bbff1b_7
@@ -36,7 +38,9 @@ dependencies:
   - cachetools=4.2.2=pyhd3eb1b0_0
   - certifi=2023.7.22=py311haa95532_0
   - cffi=1.15.1=py311h2bbff1b_3
+  - cfitsio=3.470=h2bbff1b_7
   - chardet=4.0.0=py311haa95532_1003
+  - charls=2.2.0=h6c2663c_0
   - charset-normalizer=2.0.4=pyhd3eb1b0_0
   - click=8.0.4=py311haa95532_0
   - cloudpickle=2.2.1=py311haa95532_0
@@ -56,6 +60,9 @@ dependencies:
   - cuda-nvtx=11.7.91=0
   - cuda-runtime=11.7.1=0
   - cycler=0.11.0=pyhd3eb1b0_0
+  - cytoolz=0.12.0=py311h2bbff1b_0
+  - dask-core=2023.6.0=py311haa95532_0
+  - dav1d=1.2.1=h2bbff1b_0
   - debugpy=1.6.7=py311hd77b12b_0
   - decorator=5.1.1=pyhd3eb1b0_0
   - defusedxml=0.7.1=pyhd3eb1b0_0
@@ -73,6 +80,7 @@ dependencies:
   - fonttools=4.25.0=pyhd3eb1b0_0
   - freetype=2.12.1=ha860e81_0
   - frozenlist=1.3.3=py311h2bbff1b_0
+  - fsspec=2023.9.2=py311haa95532_0
   - giflib=5.2.1=h8cc25b3_3
   - glib=2.69.1=h5dc1a3c_2
   - google-auth=2.6.0=pyhd3eb1b0_0
@@ -86,6 +94,8 @@ dependencies:
   - icc_rt=2022.1.0=h6049295_2
   - icu=58.2=ha925a31_3
   - idna=3.4=py311haa95532_0
+  - imagecodecs=2023.1.23=py311he6ff3c7_0
+  - imageio=2.31.4=py311haa95532_0
   - imagesize=1.4.1=py311haa95532_0
   - importlib-metadata=6.0.0=py311haa95532_0
   - importlib_metadata=6.0.0=hd3eb1b0_0
@@ -111,7 +121,11 @@ dependencies:
   - kiwisolver=1.4.4=py311hd77b12b_0
   - krb5=1.19.4=h5b6d351_0
   - lazy-object-proxy=1.6.0=py311h2bbff1b_0
+  - lazy_loader=0.3=py311haa95532_0
+  - lcms2=2.12=h83e58a3_0
   - lerc=3.0=hd77b12b_0
+  - libaec=1.0.4=h33f27b4_1
+  - libavif=0.11.1=h2bbff1b_0
   - libbrotlicommon=1.0.9=h2bbff1b_7
   - libbrotlidec=1.0.9=h2bbff1b_7
   - libbrotlienc=1.0.9=h2bbff1b_7
@@ -146,6 +160,8 @@ dependencies:
   - libwebp-base=1.2.4=h2bbff1b_1
   - libxml2=2.10.3=h0ad7f3c_0
   - libxslt=1.1.37=h2bbff1b_0
+  - libzopfli=1.0.3=ha925a31_0
+  - locket=1.0.0=py311haa95532_0
   - lxml=4.9.2=py311h2bbff1b_0
   - lz4-c=1.9.4=h2bbff1b_0
   - markdown=3.4.1=py311haa95532_0
@@ -177,12 +193,14 @@ dependencies:
   - numpydoc=1.5.0=py311haa95532_0
   - oauthlib=3.2.2=py311haa95532_0
   - opencv=4.6.0=py311h5d08a89_5
+  - openjpeg=2.4.0=h4fc8c34_0
   - openssl=1.1.1w=h2bbff1b_0
   - packaging=23.0=py311haa95532_0
   - pandas=1.5.3=py311heda8569_0
   - pandocfilters=1.5.0=pyhd3eb1b0_0
   - paramiko=2.8.1=pyhd3eb1b0_0
   - parso=0.8.3=pyhd3eb1b0_0
+  - partd=1.4.0=py311haa95532_0
   - pathspec=0.10.3=py311haa95532_0
   - pcre=8.45=hd77b12b_0
   - pexpect=4.8.0=pyhd3eb1b0_3
@@ -229,6 +247,7 @@ dependencies:
   - pytorch-cuda=11.7=h16d0643_5
   - pytorch-mutex=1.0=cuda
   - pytz=2022.7=py311haa95532_0
+  - pywavelets=1.4.1=py311h2bbff1b_0
   - pywin32=305=py311h2bbff1b_0
   - pywin32-ctypes=0.2.0=py311haa95532_1000
   - pyyaml=6.0=py311h2bbff1b_1
@@ -248,9 +267,12 @@ dependencies:
   - rope=1.7.0=py311haa95532_0
   - rsa=4.7.2=pyhd3eb1b0_1
   - rtree=1.0.1=py311h2eaa2aa_0
+  - scikit-image=0.20.0=py311h3513d60_0
+  - scipy=1.11.3=py311hc1ccb85_0
   - setuptools=68.0.0=py311haa95532_0
   - sip=6.6.2=py311hd77b12b_0
   - six=1.16.0=pyhd3eb1b0_1
+  - snappy=1.1.9=h6c2663c_0
   - snowballstemmer=2.2.0=pyhd3eb1b0_0
   - sortedcontainers=2.4.0=pyhd3eb1b0_0
   - soupsieve=2.4=py311haa95532_0
@@ -273,10 +295,12 @@ dependencies:
   - text-unidecode=1.3=pyhd3eb1b0_0
   - textdistance=4.2.1=pyhd3eb1b0_0
   - three-merge=0.1.1=pyhd3eb1b0_0
+  - tifffile=2023.4.12=py311haa95532_0
   - tinycss2=1.2.1=py311haa95532_0
   - tk=8.6.12=h2bbff1b_0
   - toml=0.10.2=pyhd3eb1b0_0
   - tomlkit=0.11.1=py311haa95532_0
+  - toolz=0.12.0=py311haa95532_0
   - tornado=6.3.2=py311h2bbff1b_0
   - traitlets=5.7.1=py311haa95532_0
   - typing-extensions=4.7.1=py311haa95532_0
@@ -300,6 +324,7 @@ dependencies:
   - yapf=0.31.0=pyhd3eb1b0_0
   - yarl=1.8.1=py311h2bbff1b_0
   - zeromq=4.3.4=hd77b12b_0
+  - zfp=1.0.0=hd77b12b_0
   - zipp=3.11.0=py311haa95532_0
   - zlib=1.2.13=h8cc25b3_0
   - zstd=1.5.5=hd43e919_0
