@@ -1,4 +1,3 @@
-
 import gymnasium as gym
 import numpy as np
 import os, yaml
@@ -14,7 +13,7 @@ env, agent = None, None
 
 def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
          num_eps = 10, frame_delay = 20,
-         probabilistic = None,
+         probabilistic = None, render: bool = True,
          **kwargs):
     global env, agent
 
@@ -40,17 +39,21 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
     if probabilistic is not None:
         agent.set_probabilistic()
 
-    agent.evaluate(num_eps=num_eps, frame_delay=frame_delay)
+    result = agent.evaluate(num_eps=num_eps, frame_delay=frame_delay, render=render)
+
+    return result
 
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestQvalues"
     run_id = 1
-    rep_name = "DQN_2"
-    timestep = "060000"
+    rep_name = "DQN_1"
+    timestep = "020000"
 
-    eval(parent_dir, run_base_name, run_id, rep_name, timestep,
-         frame_delay=1, num_eps=10, trunc_limit=300,
+    result = eval(
+        parent_dir, run_base_name, run_id, rep_name, timestep,
+        frame_delay=1, num_eps=10, trunc_limit=300,
+        render=False,
          # predator_spawn_area=((0,0),(0.8,0.7)),
          probabilistic=True
          # min_distance = 0.4,

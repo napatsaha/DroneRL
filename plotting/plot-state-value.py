@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 
 from algorithm import ALG_DICT
 from envs import ENV_DICT
+from utils.plot_utils import ACTION_DICT_CARDINAL
 
 # Configurations
 parent_dir = "test2"
@@ -162,14 +163,14 @@ for timestep in iter_list:
     # plt.show()
 
     # Setup for action plots
-    action_dict = {
-        0: "Stationary",
-        1: "Up",
-        2: "Left",
-        3: "Down",
-        4: "Right"
-    }
-    formatter = plt.FuncFormatter(lambda val, pos: action_dict[val])
+    # action_dict = {
+    #     0: "Stationary",
+    #     1: "Up",
+    #     2: "Left",
+    #     3: "Down",
+    #     4: "Right"
+    # }
+    formatter = plt.FuncFormatter(lambda val, pos: ACTION_DICT_CARDINAL[val])
     cmap = plt.get_cmap("viridis", 5)
 
     # Plot greedy actions taken

@@ -10,6 +10,8 @@ import os
 from _csv import Writer
 from io import TextIOWrapper
 from typing import Optional, List, Dict
+
+import numpy as np
 from tqdm.rich import tqdm
 import torch as th
 import gymnasium as gym
@@ -340,8 +342,16 @@ class DualAgent:
         if render:
             self.env.set_frame_delay(frame_delay)
 
+        num_agents = len(self.env.active_agents)
+        num_cols = 1 + 2*len(self.env.agents) + num_agents + 2
+        result = np.empty((num_eps, num_cols))
+
         for episode in range(num_eps):
             state, _ = self.env.reset()
+            starting_pos = self.env.return_positions()
+            eps_reward = [0.0 for _ in range(num_agents)]
+            eps_length = 0.0
+
             done = False
             truncated = False
             while not (done or truncated):
@@ -356,9 +366,18 @@ class DualAgent:
                 if render:
                     self.env.render()
 
+                for i in range(num_agents):
+                    eps_reward[i] += reward[i]
+                eps_length += 1
+
                 state = nextstate
 
+            # Record information
+            result[episode] = np.r_[episode, starting_pos, eps_reward, eps_length, float(truncated)]
+
         self.env.close()
+
+        return result
 
     def set_probabilistic(self):
         for agent in self.agents.values():
