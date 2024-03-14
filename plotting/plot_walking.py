@@ -1,3 +1,5 @@
+from typing import Iterable, Tuple, Optional
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,29 +19,85 @@ from envs.display import Predator
 
 
 def plot_walking(
-        parent_dir,
-        run_base_name,
-        run_id,
-        rep_name,
-        agent_name,
-        timestep,
+        parent_dir: str,
+        run_base_name: str,
+        run_id: int,
+        rep_name: str,
+        agent_name: str,
+        timestep: int | Iterable[int],
         *,
-        save=False,
-        show=True,
-        position_columns=("s2", "s3"),
-        circle_offset=0.05,
-        radius = 0.01,
-        decimal_place = 2,
-        text_offset = 0.01,
-        qval_cmap="cool",
-        trajectory_cmap = "pink",
-        action_cmap = "Set1",
-        chosen_action_color="red",
-        non_chosen_action_color="white",
-        base_title=None,
-        output_format="mp4",
-        output_writer="ffmpeg"
-):
+        save: bool = False,
+        show: bool = True,
+        position_columns: Tuple[str] = ("s2", "s3"),
+        circle_offset: float = 0.05,
+        radius: float = 0.01,
+        decimal_place: int = 2,
+        text_offset: float = 0.01,
+        qval_cmap: str = "cool",
+        trajectory_cmap: str = "pink",
+        action_cmap: str = "Set1",
+        chosen_action_color: str = "red",
+        non_chosen_action_color: str = "white",
+        base_title: Optional[str] = None,
+        output_format: str = "mp4",
+        output_writer: str = "ffmpeg"
+) -> None:
+    """
+
+    Parameters
+    ----------
+    parent_dir : str
+        Higher directory name of run (e.g. test1, colli1)
+    run_base_name :
+        Base Run Name (e.g. TestLog)
+    run_id :
+        Specific Run ID (e.g. 4)
+    rep_name :
+        Name for this Repetition / Trial (e.g. DQN_1)
+    agent_name :
+        Agent nameID (e.g. predator1)
+    timestep : int | Iterable[int]
+        Specify which timestep(s) to plot animation. Can be one of two things:
+        - If an integer n, will assume n equally-spaced timesteps throughout the length of the training session \
+        (including beginning and end)
+        - If a list or tuple, will find the corresponding episodes that include those timesteps
+    save : bool
+        Whether to save the animation as a file
+    show : bool
+        Whether to visualise immediately
+    position_columns :
+        Column names where the position of the agent is located (in the trajectory file)
+    circle_offset :
+        Distance the action circles are spaced apart from each other (in width of canvas [0-1])
+    radius :
+        Size of the action circles
+    decimal_place :
+        Decimal places for the text display of q-values above the action circles.
+    text_offset :
+        How far the text should be placed above the action circles.
+    qval_cmap :
+        Colour map for the q-values action circles
+    trajectory_cmap :
+        Colour map for the trailing trajectory of the agent's path
+    action_cmap :
+        Colour map for the different actions on the line plot (discrete)
+    chosen_action_color :
+        Colour of the edge of the action circle for the chosen action at that timestep
+    non_chosen_action_color :
+        Edge colour for all actions not chosen at that timestep
+    base_title :
+        Title for the entire figure. Defaults to "Q-Values Walking Animation" if None.
+    output_format :
+        File format for output file if save=True
+    output_writer : str | MovieWriter
+        File writer accepted by matplotlib.animation.FuncAnimation.save(). Refer here[!https://matplotlib.org/stable/users/explain/animations/animations.html#animation-writers]
+        for supported formats and writers.
+
+    Returns
+    -------
+    None
+
+    """
 
     # Metadata
     # parent_dir = "test2"
