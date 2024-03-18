@@ -17,10 +17,15 @@ if __name__ == "__main__":
     run_name = "TestQvalues"
     experiment_file = None #"config/test1/experiment22-24.yaml" # For comparing various parameters
     config_file = "config/test2/TestQvalues_1.yaml" # Configuration file; will create copy with run_name_run_id
-    num_reps = 1 # Number of repetition in this run
+    num_reps = 3 # Number of repetition in this run
     verbose = 1
     continue_run = False # [True or False]: To continue most recent run
     run_id = 1 # [int or None] Specific run to continue (ignores continue_run)
+    ##########
+
+    ##########
+    # Result saving settings
+    num_eval = 100 # Number of episodes to evaluate
     ##########
 
     if experiment_file is not None:
@@ -38,7 +43,8 @@ if __name__ == "__main__":
                 config_overrides=config,
                 verbose=verbose,
                 continue_previous=continue_run,
-                specific_run_id=run_id
+                specific_run_id=run_id,
+                num_eval=num_eval
             )
             print()
         print(datetime.datetime.now())
@@ -54,7 +60,8 @@ if __name__ == "__main__":
             num_reps=num_reps,
             verbose=verbose,
             continue_previous=continue_run,
-            specific_run_id=run_id
+            specific_run_id=run_id,
+            num_eval=num_eval
         )
         print()
         print(datetime.datetime.now())

@@ -260,7 +260,7 @@ class DualAgent:
                         policy.step(start_learning)
 
                     # Save intermediate model at every `save_interval` timesteps
-                    if start_learning and self.num_timesteps % save_interval == 0:
+                    if save_interval is not None and start_learning and self.num_timesteps % save_interval == 0:
                         step_name = f"{self.num_timesteps:0{max_digits}}"
                         self.save(dir_path, run_name, step_name)
                         times_model_saved += 1
@@ -276,6 +276,8 @@ class DualAgent:
                 episode += 1
 
         finally:
+            self.save(dir_path, run_name)
+
             self.close_logger()
             self.env.close()
             if progress_bar:
@@ -337,7 +339,7 @@ class DualAgent:
             policy.q_net.load_state_dict(state_dict)
 
     def evaluate(self, num_eps: int = 20, render: bool = True,
-                 frame_delay: int = 20):
+                 frame_delay: int = 20, savefile: str = None):
 
         if render:
             self.env.set_frame_delay(frame_delay)
@@ -345,6 +347,7 @@ class DualAgent:
         num_agents = len(self.env.active_agents)
         num_cols = 1 + 2*len(self.env.agents) + num_agents + 2
         result = np.empty((num_eps, num_cols))
+        pbar = tqdm(total=num_eps)
 
         for episode in range(num_eps):
             state, _ = self.env.reset()
@@ -375,7 +378,17 @@ class DualAgent:
             # Record information
             result[episode] = np.r_[episode, starting_pos, eps_reward, eps_length, float(truncated)]
 
+            pbar.update(1)
+
         self.env.close()
+        pbar.close()
+
+        if savefile is not None:
+            pos_headers = [f"{a}_{p}" for a in self.env.agent_list_all for p in ("x", "y")]
+            rew_headers = [f"{a}_reward" for a in self.env.agent_list]
+            header = ["episode"] + pos_headers + rew_headers + ["ep_len", "has_truncated"]
+            header = ",".join(header)
+            np.savetxt(savefile, result, fmt="%.5g", delimiter=",", header=header, comments="")
 
         return result
 

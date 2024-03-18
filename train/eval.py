@@ -14,6 +14,7 @@ env, agent = None, None
 def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
          num_eps = 10, frame_delay = 20,
          probabilistic = None, render: bool = True,
+         save: bool = False,
          **kwargs):
     global env, agent
 
@@ -39,7 +40,11 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
     if probabilistic is not None:
         agent.set_probabilistic()
 
-    result = agent.evaluate(num_eps=num_eps, frame_delay=frame_delay, render=render)
+    if save:
+        savefile = os.path.join("logs", parent_dir, run_name, rep_name, "eval_result.csv")
+    else:
+        savefile = None
+    result = agent.evaluate(num_eps=num_eps, frame_delay=frame_delay, render=render, savefile=savefile)
 
     return result
 
@@ -48,14 +53,16 @@ if __name__ == "__main__":
     run_base_name = "TestQvalues"
     run_id = 1
     rep_name = "DQN_1"
-    timestep = "020000"
+    timestep = None #"020000"
 
     result = eval(
         parent_dir, run_base_name, run_id, rep_name, timestep,
-        frame_delay=1, num_eps=10, trunc_limit=300,
+        #frame_delay=1,
+        num_eps=100, #trunc_limit=300,
         render=False,
+        save=True
          # predator_spawn_area=((0,0),(0.8,0.7)),
-         probabilistic=True
+         # probabilistic=True
          # min_distance = 0.4,
          # obstacle_file="assets/obstacles/obstacle-letterL2.csv",
          # show_rays=True, diagnostic=True

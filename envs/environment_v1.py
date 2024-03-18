@@ -150,6 +150,7 @@ class DroneCatch(Env):
         self.active_agents = []
         self.nonactive_agents = []
         self.agent_list = []
+        self.agent_list_all = []
 
         # Predator/AngularPrey configurations
         self.predator_move_speed = predator_move_speed
@@ -207,6 +208,7 @@ class DroneCatch(Env):
 
             self.prey.append(agent)
             self.agents.append(agent)
+            self.agent_list_all.append(f"{agent.name}{i + 1}")
             if self.num_preys > 0:
                 agent.set_active()
                 agent.set_diagnostic(self.diagnostic)
@@ -227,6 +229,7 @@ class DroneCatch(Env):
             )
             self.predator.append(agent)
             self.agents.append(agent)
+            self.agent_list_all.append(f"{agent.name}{i + 1}")
             if self.num_predators > 0:
                 agent.set_active()
                 agent.set_diagnostic(self.diagnostic)
@@ -272,9 +275,12 @@ class DroneCatch(Env):
 
     def _verify_min_distance(self, min_distance, resolution):
         # To prevent infinite while loops
-        if self.predator_spawn_area is not None or self.prey_spawn_area is not None:
-            self.min_distance = 0.0
-            return
+        # if self.predator_spawn_area is not None or self.prey_spawn_area is not None:
+        #     self.min_distance = 0.0
+        #     return
+        # TODO: Implement algorithm to check min_distance from predator/prey spawn areas
+
+        # Check range of min_distance
         if min_distance <= 1:
             assert min_distance >= 0, "Minimum spawn distance should be between 0 and 1, or as pixels less than resolution."
             self.min_distance = min_distance

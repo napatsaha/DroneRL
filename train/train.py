@@ -30,10 +30,10 @@ def train(
         continue_previous: Optional[bool] = False,
         num_reps: Optional[int] = 1,
         config_overrides: Dict = None,
-        log_outputs: Optional[List[str]] = ['csv',],
+        log_outputs=None,
         progress_bar: Optional[bool] = True,
-        verbose: Optional[int] = 1
-):
+        verbose: Optional[int] = 1,
+        num_eval=100):
     """
     Train an Agent on an Environment. Supports multiple agents in the same environment.
 
@@ -76,6 +76,8 @@ def train(
     None
 
     """
+    if log_outputs is None:
+        log_outputs = ['csv', ]
     if verbose < 1:
         progress_bar = False
     elif verbose == 1:
@@ -168,6 +170,7 @@ def train(
         # Saving model
         model_dir = os.path.join("model",run_dir)
 
+        # Train Model
         agent.learn(
             progress_bar=progress_bar,
             dir_path=model_dir,
@@ -175,7 +178,20 @@ def train(
             **config["learn"]
         )
 
-        agent.save(model_dir, rep_name)
+        # Save final model
+        # agent.save(model_dir, rep_name)
+
+        # TODO: Evaluate and save result
+        #
+        res_file = os.path.join("logs", rep_path, "eval_result.csv")
+        agent.evaluate(num_eps=num_eval, render=False, savefile=res_file)
+
+
+        # TODO: Plot necessary ones
+        #
+
 
         if verbose >= 1:
             print(f"Finished training on Repetition: {rep_name}!")
+
+
