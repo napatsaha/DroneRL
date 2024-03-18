@@ -183,6 +183,7 @@ def train(
 
         # TODO: Evaluate and save result
         #
+        print(f"Evaluating on {num_eval} episodes")
         res_file = os.path.join("logs", rep_path, "eval_result.csv")
         agent.evaluate(num_eps=num_eval, render=False, savefile=res_file)
 
