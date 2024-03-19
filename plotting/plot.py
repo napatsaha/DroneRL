@@ -157,12 +157,12 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
 
 if __name__ == "__main__":
     parent_dir = "test2"
-    run_base_name = "TestQvalues"
-    run_ids = [1]
-    rep_name = ["DQN_1", "DQN_3", "DQN_4"]
+    run_base_name = "TestWorked"
+    run_ids = [2]
+    rep_name = [f"DQN_{i}" for i in range(1, 11)]
     # changing_var = None
     sort = False
-    save = True
+    save = False
 
     plot_title = None # "Epsilon-greedy vs variations of Softmax probabilistic Exploration"
     legend_title = None #"Reward based on:" # "Exploration Strategy:"
