@@ -326,7 +326,7 @@ class DualAgent:
             th.save(policy.q_net.state_dict(),
                     model_to)
 
-    def load(self, dir_path, run_name, timestep = None):
+    def load(self, dir_path, run_name, timestep = None, verbose=1):
         for name, policy in self.agents.items():
             # file = next(filter(lambda x: x.endswith(f"{run_name}_{name}.pt"), os.listdir(dir_path)))
             if timestep is not None:
@@ -334,7 +334,8 @@ class DualAgent:
             else:
                 file = f"{run_name}_{name}.pt"
             file_path = os.path.join(dir_path, file)
-            print(f"Loading {name} model from {file_path}")
+            if verbose >= 1:
+                print(f"Loading {name} model from {file_path}")
             state_dict = th.load(file_path)
             policy.q_net.load_state_dict(state_dict)
 

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     run_base_name = "TestWorked"
     run_id = 1
     rep_base_name = "DQN"
-    rep_range = [*range(1, 6)]
+    rep_range = [*range(1, 31)]
 
     eval_result(parent_dir,
                 run_base_name,
