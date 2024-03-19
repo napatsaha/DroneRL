@@ -60,6 +60,8 @@ def plot_state_value(
 
     """
 
+    # Todo: Add option to pass in model directly
+
     # Download Meta data
     run_name = f"{run_base_name}_{run_id}"
     config_file = os.path.join("config", parent_dir, f"{run_name}.yaml")
@@ -187,12 +189,12 @@ def plot_state_value(
         # Save and display
         if save:
             plot_name = os.path.join(plot_path, f"{run_name}_{rep_name}_{timestep_label}.png")
-            if verbose >= 2:
-                print(f"Saving plot to {plot_name}")
+            if verbose >= 1:
+                print(f"Saving state value plot to {plot_name}")
             plt.savefig(plot_name)
 
         if show:
-            if verbose >= 2:
+            if verbose >= 1:
                 print(f"Showing plot for {model_name}")
             plt.show()
         else:

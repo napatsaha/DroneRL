@@ -16,11 +16,11 @@ if __name__ == "__main__":
     parent_dir = "test2"
     run_name = "TestWorked"
     experiment_file = None #"config/test1/experiment22-24.yaml" # For comparing various parameters
-    config_file = "config/test2/TestWorked_1.yaml" # Configuration file; will create copy with run_name_run_id
-    num_reps = 25 # Number of repetition in this run
-    verbose = 1
+    config_file = "config/test2/default2.yaml" # Configuration file; will create copy with run_name_run_id
+    num_reps = 10 # Number of repetition in this run
+    verbose = 1 # Progress bar and task updates (model saved, eval, plot etc)
     continue_run = False # [True or False]: To continue most recent run
-    run_id = 1 # [int or None] Specific run to continue (ignores continue_run)
+    run_id = None # [int or None] Specific run to continue (ignores continue_run) or None to create new run
     ##########
 
     ##########

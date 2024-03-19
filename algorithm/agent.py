@@ -334,13 +334,15 @@ class DualAgent:
             else:
                 file = f"{run_name}_{name}.pt"
             file_path = os.path.join(dir_path, file)
-            if verbose >= 1:
+            if verbose >= 2:
                 print(f"Loading {name} model from {file_path}")
             state_dict = th.load(file_path)
             policy.q_net.load_state_dict(state_dict)
 
     def evaluate(self, num_eps: int = 20, render: bool = True,
                  frame_delay: int = 20, savefile: str = None):
+        if self.verbose >= 1:
+            print(f"Starting evaluation on {num_eps} episodes.")
 
         if render:
             self.env.set_frame_delay(frame_delay)

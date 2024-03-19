@@ -14,6 +14,7 @@ import numpy as np
 from algorithm import ALG_DICT
 from algorithm.agent import DualAgent, DQNAgent
 from envs import ENV_DICT
+from plotting.plot_state_value import plot_state_value
 from utils.config import extract_config
 from envs.dual import DualDrone
 from utils.config import update_nested_dict
@@ -187,10 +188,19 @@ def train(
         res_file = os.path.join("logs", rep_path, "eval_result.csv")
         agent.evaluate(num_eps=num_eval, render=False, savefile=res_file)
 
-
-        # TODO: Plot necessary ones
-        #
-
+        # TODO: Add boolean trigger for which plot to plot
+        # Plot state values
+        plot_state_value(
+            parent_dir=parent_dir,
+            run_base_name=current_dir.split("_")[0],
+            run_id=int(current_dir.split("_")[-1]),
+            rep_name=rep_name,
+            timestep=None,
+            no_timestep_behaviour="final",
+            save=True,
+            show=False,
+            verbose=verbose
+        )
 
         if verbose >= 1:
             print(f"Finished training on Repetition: {rep_name}!")
