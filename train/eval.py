@@ -50,16 +50,16 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
 
 if __name__ == "__main__":
     parent_dir = "test2"
-    run_base_name = "TestQvalues"
-    run_id = 1
-    rep_name = "DQN_1"
+    run_base_name = "TestWorked"
+    run_id = 3
+    rep_name = "DQN_10"
     timestep = None #"020000"
 
     result = eval(
         parent_dir, run_base_name, run_id, rep_name, timestep,
         #frame_delay=1,
-        num_eps=100, #trunc_limit=300,
-        render=False,
+        num_eps=10, #trunc_limit=300,
+        render=True,
         save=True
          # predator_spawn_area=((0,0),(0.8,0.7)),
          # probabilistic=True

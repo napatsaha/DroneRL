@@ -158,8 +158,8 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_ids = [2]
-    rep_name = [f"DQN_{i}" for i in range(1, 11)]
+    run_ids = [3]
+    rep_name = None #[f"DQN_{i}" for i in range(1, 31)]
     # changing_var = None
     sort = False
     save = False
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     labels = None #("Distance only", "Ray Trigger", "Both") #("Epsilon-greedy", "Softmax-Greedy", "Epsilon-Softmax", "Plain Softmax")
 
     # Y-axis
-    scalars = ["ep_rew_mean", "ep_len_mean", "loss", "exploration_rate"]
+    scalars = ["ep_rew_mean", "ep_len_mean", "loss"] #, "exploration_rate"]
     # scalars = ["loss"]
 
     # X-Axis

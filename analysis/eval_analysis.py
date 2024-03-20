@@ -30,9 +30,9 @@ def eval_result(parent_dir,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_id = 1
+    run_id = 3
     rep_base_name = "DQN"
-    rep_range = [*range(1, 31)]
+    rep_range = [*range(1, 11)]
 
     eval_result(parent_dir,
                 run_base_name,
