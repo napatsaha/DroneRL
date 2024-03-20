@@ -158,7 +158,7 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_ids = [3]
+    run_ids = [1, 3]
     rep_name = None #[f"DQN_{i}" for i in range(1, 31)]
     # changing_var = None
     sort = False

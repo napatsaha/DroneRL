@@ -51,7 +51,7 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_id = 3
+    run_id = 4
     rep_name = "DQN_10"
     timestep = None #"020000"
 
