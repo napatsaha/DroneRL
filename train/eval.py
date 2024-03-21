@@ -51,14 +51,14 @@ def eval(parent_dir, run_base_name, run_id, rep_name, timestep = None,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_id = 4
-    rep_name = "DQN_10"
+    run_id = 6
+    rep_name = "DQN_2"
     timestep = None #"020000"
 
     result = eval(
         parent_dir, run_base_name, run_id, rep_name, timestep,
         #frame_delay=1,
-        num_eps=10, #trunc_limit=300,
+        num_eps=20, #trunc_limit=300,
         render=True,
         save=True
          # predator_spawn_area=((0,0),(0.8,0.7)),

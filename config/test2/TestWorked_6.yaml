@@ -4,7 +4,7 @@ agent:
   exploration_final_eps: 0.1
   exploration_fraction: 0.6
   exploration_initial_eps: 1.0
-  gamma: 0.9
+  gamma: 0.99
   gradient_steps: 8
   learning_rate: 0.0001
   learning_starts: 10000
@@ -34,7 +34,7 @@ environment:
   intermediate_dist_reward: false
   intermediate_ray_reward: none
   manual_control: false
-  min_distance: 0.2
+  min_distance: 0.0
   num_predators: 1
   num_preys: 0
   num_rays: 4
@@ -62,5 +62,4 @@ environment:
 environment_class: DroneCatch-v1
 learn:
   log_interval: 10
-#  save_interval: 20000
   total_timesteps: 100000
