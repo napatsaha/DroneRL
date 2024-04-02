@@ -158,7 +158,7 @@ def plot(parent_dir, run_base_name, run_ids, rep_name=None,
 if __name__ == "__main__":
     parent_dir = "test2"
     run_base_name = "TestWorked"
-    run_ids = [5,6,7]
+    run_ids = [1,2,3,4,5,6,7]
     rep_name = None #[f"DQN_{i}" for i in range(1, 31)]
     # changing_var = None
     sort = False
@@ -178,6 +178,7 @@ if __name__ == "__main__":
     bin_width = 2000
 
     plot(parent_dir, run_base_name, run_ids, rep_name,
+         save=save,
          agent_names=["predator1"],
          scalars=scalars, changing_var=changing_var,
          plot_title=plot_title, legend_title=legend_title, labels=labels)
