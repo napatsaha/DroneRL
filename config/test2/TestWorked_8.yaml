@@ -62,5 +62,4 @@ environment:
 environment_class: DroneCatch-v1
 learn:
   log_interval: 10
-#  save_interval: 20000
   total_timesteps: 100000
