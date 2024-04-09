@@ -1,6 +1,4 @@
-from analysis.plot_eval_result import plot_info_background
 from utils.plot_utils import draw_background
-from utils.config import get_config
 import matplotlib.pyplot as plt
 import numpy as np
 import string
